@@ -19,5 +19,11 @@
   "block.keralatemple.idol_pedestal": "Idol Pedestal (Peetham)",
   "item.keralatemple.temple_wand": "Temple Wand",
   "entity.keralatemple.keezhshanthi": "Keezhshanthi (Assistant Priest)",
-  "item.keralatemple.keezhshanthi_spawn_egg": "Keezhshanthi Spawn Egg"
+  "item.keralatemple.keezhshanthi_spawn_egg": "Keezhshanthi Spawn Egg",
+  "block.keralatemple.anjana_shila": "Anjana Shila",
+  "block.keralatemple.krishna_shila": "Krishna Shila",
+  "item.keralatemple.chisel": "Chisel",
+  "item.keralatemple.cast_idol": "Cast Idol",
+  "item.keralatemple.achari_spawn_egg": "Achari Spawn Egg",
+  "entity.keralatemple.achari": "Achari"
 }

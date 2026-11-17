@@ -106,12 +106,28 @@ public class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.STONE)));
     public static final RegistryObject<Block> IDOL_PEDESTAL = registerBlock("idol_pedestal",
-            () -> new IdolBlock(BlockBehaviour.Properties.of()
+            () -> new IdolBlock(IdolBlock.Kind.PEETHAM, BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
                     .strength(2.0F, 8.0F)
                     .requiresCorrectToolForDrops()
                     .noOcclusion()
                     .sound(SoundType.STONE)));
+
+    // --- Sacred stones for carving idols (left-click with the Chisel) ---
+    public static final RegistryObject<Block> ANJANA_SHILA = registerBlock("anjana_shila",
+            () -> new IdolBlock(IdolBlock.Kind.ANJANA, BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLACK)
+                    .strength(3.0F, 9.0F)
+                    .requiresCorrectToolForDrops()
+                    .noOcclusion()
+                    .sound(SoundType.STONE)));
+    public static final RegistryObject<Block> KRISHNA_SHILA = registerBlock("krishna_shila",
+            () -> new IdolBlock(IdolBlock.Kind.KRISHNA, BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.DEEPSLATE)
+                    .strength(3.0F, 9.0F)
+                    .requiresCorrectToolForDrops()
+                    .noOcclusion()
+                    .sound(SoundType.DEEPSLATE)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> registered = BLOCKS.register(name, block);

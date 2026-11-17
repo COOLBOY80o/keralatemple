@@ -28,7 +28,7 @@ To let everyone use them, set `commandPermissionLevel=0` in `config/keralatemple
 | Pooja Station (Sreekovil Mat) | Where the priest performs poojas |
 | Seeveli Waypoint | Optional extra stop on the seeveli route |
 | **Bali Stone** | A small balikkal |
-| **Idol Pedestal** | Shows a 3D idol made from your photo |
+| **Idol Pedestal** | Holds a cast idol |
 | **Temple Wand** | Marks temples, bali stones and valiya balikkals |
 | Melshanti and Keezhshanthi spawn eggs | The two priests |
 
@@ -81,21 +81,22 @@ Other commands: `/keralatemple status`, `temple list|info|select|delete|center|r
 
 **The default timings are typical, not any one temple's real schedule.** Kerala temples keep their own timings and customs, and the in-game rites are a simple stylised version. Please check them with a thantri or melshanti before treating them as accurate.
 
-## Idols from photos
+## Idols: Chisel, shilas and the Achari
 
-1. Put a photo in the **`keralatemple_idols`** folder inside your Minecraft game folder (created on first launch), for example `ganapathy.jpg`. Use lowercase letters, digits, `_` or `-` in the name. PNG, JPG and JPEG work.
-2. Place an **Idol Pedestal**. It faces you.
-3. Look at the pedestal and run `/keralatemple idol set ganapathy` (add a height in blocks, 0.5 to 8, default 2: `/keralatemple idol set ganapathy 3`).
+**Stone idols.** Place an **Anjana Shila** or **Krishna Shila** (craft from 4 polished blackstone / 4 polished deepslate), then **left-click it with the Chisel** (iron ingot over a stick). A designer window opens:
+- **Design** tab: draw the idol's front view (pen, erase, fill, mirror, 24 colours).
+- **Import** tab: drag a PNG or JPG from your computer onto the window; the game removes a plain background and shrinks it.
+- Set the **height** (0.5 to 6 blocks) and **thickness**, pick the **peetham** (none, simple, lotus, tiered) and whether to keep the picture's own colours or carve it in the stone.
+- Press **Carve idol**. The idol appears standing on the stone.
 
-Replace the photo file and the idol updates within a couple of seconds. `/keralatemple idol clear` and `idol info` also work.
+**Metal idols.** Spawn an **Achari** (spawn egg) and **left-click him**. Same window, plus a metal (panchaloha, bronze, silver, gold). He casts it, which takes a while (more for taller idols; `achariCastSeconds` in the config), then hands you a Cast Idol. Right-click an **Idol Pedestal** with it to set it up; sneak with an empty hand to take it back.
 
-**What this really is.** A single photo cannot hold the true shape of a statue. The mod cuts the idol out of its background, makes a rounded relief from the outline (like inflating a sculpture), colours the front with your photo, and gives it a darker back and solid sides, at up to 64 cells on the long side.
-- Best results: a front-facing photo against a plain background, or a PNG with a transparent background.
-- A busy background may be treated as part of the idol; crop or cut it out first.
-- Side views and fine detail will not come through.
-- The photo is read on each player's own computer, so on a multiplayer server every player needs the same file in their own folder.
+**What this really is.** A picture cannot hold the true shape of a statue. The mod makes a rounded relief from the outline (like inflating a sculpture), colours the front, and gives it a darker back and solid sides, up to 64 cells on the long side. It is not a full 3D sculpture, and there is no 3D preview inside the window.
+- Best results: a front-facing picture on a plain background, or a PNG with a transparent background.
+- Breaking a shila loses the idol carved on it. Breaking a pedestal gives the idol back.
+- The Achari does not charge materials yet.
 
-Only use photos you have the right to use, and treat real murtis with respect: the in-game idol is a decorative model, not a consecrated one.
+Only use pictures you have the right to use, and treat real murtis with respect: the in-game idol is a decorative model, not a consecrated one.
 
 ## Layout
 

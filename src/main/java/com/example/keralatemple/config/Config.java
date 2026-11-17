@@ -45,5 +45,9 @@ public class Config {
                     "SEEVELI_NIGHT, NADA_ADAKKAL_NIGHT, EXTRA_POOJA_1, EXTRA_POOJA_2, EXTRA_POOJA_3, EXTRA_SEEVELI")
             .defineList("ritualSchedule", RitualSchedule.DEFAULT_SCHEDULE, o -> o instanceof String);
 
+    public static final ForgeConfigSpec.IntValue ACHARI_CAST_SECONDS = BUILDER
+            .comment("How many seconds the achari takes to cast a 2-block-tall idol (taller idols take longer).")
+            .defineInRange("achariCastSeconds", 30, 1, 3600);
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 }

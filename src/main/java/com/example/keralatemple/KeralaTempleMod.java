@@ -1,6 +1,7 @@
 package com.example.keralatemple;
 
 import com.example.keralatemple.config.Config;
+import com.example.keralatemple.network.ModNetwork;
 import com.example.keralatemple.registry.ModBlockEntities;
 import com.example.keralatemple.registry.ModBlocks;
 import com.example.keralatemple.registry.ModCreativeTabs;
@@ -25,6 +26,8 @@ public class KeralaTempleMod {
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);
         ModCreativeTabs.CREATIVE_TABS.register(modEventBus);
+
+        ModNetwork.register();
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

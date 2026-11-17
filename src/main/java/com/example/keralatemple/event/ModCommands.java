@@ -1,7 +1,6 @@
 package com.example.keralatemple.event;
 
 import com.example.keralatemple.KeralaTempleMod;
-import com.example.keralatemple.blockentity.IdolBlockEntity;
 import com.example.keralatemple.config.Config;
 import com.example.keralatemple.item.TempleWandItem;
 import com.example.keralatemple.ritual.KeralaClock;
@@ -52,7 +51,6 @@ import java.util.regex.Pattern;
  *   temple   create | delete | list | info | select | center | radius
  *   schedule list | set | remove | reset
  *   balikkal list | remove | clearstones | save | place
- *   idol     set | clear | info
  *   wand     mode
  */
 @Mod.EventBusSubscriber(modid = KeralaTempleMod.MOD_ID)
@@ -78,7 +76,6 @@ public class ModCommands {
         root.then(templeNode());
         root.then(scheduleNode());
         root.then(balikkalNode());
-        root.then(idolNode());
         root.then(wandNode());
         event.getDispatcher().register(root);
     }
@@ -395,52 +392,6 @@ public class ModCommands {
         template.get().placeInWorld(level, pos, pos, new StructurePlaceSettings(), level.getRandom(), 2);
         say(ctx, "Placed '" + name + "' with its corner at " + pos.toShortString()
                 + ". Register it with the Temple Wand (Valiya balikkal mode) so the priest visits it.");
-        return 1;
-    }
-
-    // ------------------------------------------------------------------ idols
-
-    private static LiteralArgumentBuilder<CommandSourceStack> idolNode() {
-        return Commands.literal("idol").requires(ModCommands::canEdit)
-                .then(Commands.literal("set")
-                        .then(Commands.argument("image", StringArgumentType.word())
-                                .executes(ctx -> idolSet(ctx, 2.0F))
-                                .then(Commands.argument("height", FloatArgumentType.floatArg(0.5F, 8.0F))
-                                        .executes(ctx -> idolSet(ctx, FloatArgumentType.getFloat(ctx, "height"))))))
-                .then(Commands.literal("clear").executes(ModCommands::idolClear))
-                .then(Commands.literal("info").executes(ModCommands::idolInfo));
-    }
-
-    private static IdolBlockEntity targetIdol(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        ServerPlayer player = ctx.getSource().getPlayerOrException();
-        HitResult hit = player.pick(8.0D, 1.0F, false);
-        if (hit.getType() == HitResult.Type.BLOCK) {
-            BlockEntity be = player.level().getBlockEntity(((BlockHitResult) hit).getBlockPos());
-            if (be instanceof IdolBlockEntity idol) {
-                return idol;
-            }
-        }
-        throw ERROR.create("Look at an Idol Pedestal (within 8 blocks) first.");
-    }
-
-    private static int idolSet(CommandContext<CommandSourceStack> ctx, float height) throws CommandSyntaxException {
-        String image = nameArg(ctx, "image");
-        IdolBlockEntity idol = targetIdol(ctx);
-        idol.setIdol(image, height);
-        say(ctx, "Idol set to '" + image + "' at " + height + " blocks tall. The photo must be in the keralatemple_idols "
-                + "folder of the game directory as " + image + ".png / .jpg / .jpeg (on every player's computer).");
-        return 1;
-    }
-
-    private static int idolClear(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        targetIdol(ctx).setIdol("", 2.0F);
-        say(ctx, "Idol cleared.");
-        return 1;
-    }
-
-    private static int idolInfo(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
-        IdolBlockEntity idol = targetIdol(ctx);
-        say(ctx, "Idol image: " + (idol.getImage().isEmpty() ? "(none)" : idol.getImage()) + ", height " + idol.getHeight() + " blocks");
         return 1;
     }
 

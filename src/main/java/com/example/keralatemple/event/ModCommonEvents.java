@@ -13,6 +13,7 @@ public class ModCommonEvents {
     @SubscribeEvent
     public static void onAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.PRIEST.get(), PriestEntity.createAttributes().build());
+        event.put(ModEntities.ACHARI.get(), PriestEntity.createAttributes().build());
         event.put(ModEntities.KEEZHSHANTHI.get(), PriestEntity.createAttributes().build());
     }
 }

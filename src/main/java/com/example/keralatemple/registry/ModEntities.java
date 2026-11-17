@@ -1,6 +1,7 @@
 package com.example.keralatemple.registry;
 
 import com.example.keralatemple.KeralaTempleMod;
+import com.example.keralatemple.entity.AchariEntity;
 import com.example.keralatemple.entity.KeezhshanthiEntity;
 import com.example.keralatemple.entity.PriestEntity;
 import net.minecraft.resources.ResourceLocation;
@@ -25,4 +26,10 @@ public class ModEntities {
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(10)
                     .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "keezhshanthi").toString()));
+
+    public static final RegistryObject<EntityType<AchariEntity>> ACHARI = ENTITY_TYPES.register("achari",
+            () -> EntityType.Builder.of(AchariEntity::new, MobCategory.MISC)
+                    .sized(0.5F, 1.6F)
+                    .clientTrackingRange(10)
+                    .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "achari").toString()));
 }

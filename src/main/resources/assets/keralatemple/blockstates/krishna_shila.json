@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "keralatemple:block/krishna_shila"
+    },
+    "facing=east": {
+      "model": "keralatemple:block/krishna_shila"
+    },
+    "facing=south": {
+      "model": "keralatemple:block/krishna_shila"
+    },
+    "facing=west": {
+      "model": "keralatemple:block/krishna_shila"
+    }
+  }
+}

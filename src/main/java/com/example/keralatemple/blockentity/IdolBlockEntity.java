@@ -1,5 +1,6 @@
 package com.example.keralatemple.blockentity;
 
+import com.example.keralatemple.idol.IdolData;
 import com.example.keralatemple.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -10,29 +11,24 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 
-/**
- * Remembers which photo this idol shows and how tall it is. The photo itself is read on each player's own
- * computer (keralatemple_idols folder), so only the name and height are saved and synced.
- */
+import javax.annotation.Nullable;
+
+/** Holds the idol (picture, size, material...) of a shila stone or an idol pedestal. */
 public class IdolBlockEntity extends BlockEntity {
-    private String image = "";
-    private float height = 2.0F;
+    @Nullable
+    private IdolData data;
 
     public IdolBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.IDOL.get(), pos, state);
     }
 
-    public String getImage() {
-        return this.image;
+    @Nullable
+    public IdolData getData() {
+        return this.data;
     }
 
-    public float getHeight() {
-        return this.height;
-    }
-
-    public void setIdol(String image, float height) {
-        this.image = image;
-        this.height = height;
+    public void setData(@Nullable IdolData data) {
+        this.data = data;
         this.setChanged();
         if (this.level != null) {
             this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
@@ -42,15 +38,15 @@ public class IdolBlockEntity extends BlockEntity {
     @Override
     protected void saveAdditional(CompoundTag tag) {
         super.saveAdditional(tag);
-        tag.putString("Image", this.image);
-        tag.putFloat("Height", this.height);
+        if (this.data != null) {
+            tag.put("Idol", this.data.save());
+        }
     }
 
     @Override
     public void load(CompoundTag tag) {
         super.load(tag);
-        this.image = tag.getString("Image");
-        this.height = tag.contains("Height") ? tag.getFloat("Height") : 2.0F;
+        this.data = tag.contains("Idol", 10) ? IdolData.load(tag.getCompound("Idol")) : null;
     }
 
     @Override

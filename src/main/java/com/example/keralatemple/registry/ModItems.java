@@ -1,6 +1,8 @@
 package com.example.keralatemple.registry;
 
 import com.example.keralatemple.KeralaTempleMod;
+import com.example.keralatemple.item.CastIdolItem;
+import com.example.keralatemple.item.ChiselItem;
 import com.example.keralatemple.item.TempleWandItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.common.ForgeSpawnEggItem;
@@ -23,4 +25,14 @@ public class ModItems {
 
     public static final RegistryObject<Item> TEMPLE_WAND = ITEMS.register("temple_wand",
             () -> new TempleWandItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> CHISEL = ITEMS.register("chisel",
+            () -> new ChiselItem(new Item.Properties().stacksTo(1).durability(250)));
+
+    public static final RegistryObject<Item> CAST_IDOL = ITEMS.register("cast_idol",
+            () -> new CastIdolItem(new Item.Properties().stacksTo(1)));
+
+    // Bronze and soot
+    public static final RegistryObject<Item> ACHARI_SPAWN_EGG = ITEMS.register("achari_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.ACHARI, 0xB07A3A, 0x3A2A1E, new Item.Properties()));
 }

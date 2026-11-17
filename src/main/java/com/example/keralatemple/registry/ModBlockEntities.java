@@ -12,5 +12,6 @@ public class ModBlockEntities {
             DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, KeralaTempleMod.MOD_ID);
 
     public static final RegistryObject<BlockEntityType<IdolBlockEntity>> IDOL = BLOCK_ENTITIES.register("idol",
-            () -> BlockEntityType.Builder.of(IdolBlockEntity::new, ModBlocks.IDOL_PEDESTAL.get()).build(null));
+            () -> BlockEntityType.Builder.of(IdolBlockEntity::new, ModBlocks.IDOL_PEDESTAL.get(),
+                    ModBlocks.ANJANA_SHILA.get(), ModBlocks.KRISHNA_SHILA.get()).build(null));
 }
