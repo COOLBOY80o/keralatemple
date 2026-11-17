@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " T ",
+    "TTT"
+  ],
+  "key": {
+    "T": {
+      "item": "keralatemple:temple_granite"
+    }
+  },
+  "result": {
+    "item": "keralatemple:bali_stone",
+    "count": 1
+  }
+}

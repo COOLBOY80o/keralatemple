@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "X  ",
+    "XX ",
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "keralatemple:copper_roof_tiles"
+    }
+  },
+  "result": {
+    "item": "keralatemple:copper_roof_stairs",
+    "count": 4
+  }
+}

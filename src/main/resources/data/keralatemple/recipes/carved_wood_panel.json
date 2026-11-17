@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PP",
+    "PP"
+  ],
+  "key": {
+    "P": {
+      "item": "minecraft:jungle_planks"
+    }
+  },
+  "result": {
+    "item": "keralatemple:carved_wood_panel",
+    "count": 4
+  }
+}

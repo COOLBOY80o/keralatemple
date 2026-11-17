@@ -1,0 +1,23 @@
+{
+  "block.keralatemple.laterite_bricks": "Laterite Bricks",
+  "block.keralatemple.laterite_brick_stairs": "Laterite Brick Stairs",
+  "block.keralatemple.laterite_brick_slab": "Laterite Brick Slab",
+  "block.keralatemple.temple_granite": "Temple Granite",
+  "block.keralatemple.temple_granite_slab": "Temple Granite Slab",
+  "block.keralatemple.copper_roof_tiles": "Copper Roof Tiles",
+  "block.keralatemple.copper_roof_stairs": "Copper Roof Stairs",
+  "block.keralatemple.copper_roof_slab": "Copper Roof Slab",
+  "block.keralatemple.carved_wood_pillar": "Carved Wood Pillar",
+  "block.keralatemple.carved_wood_panel": "Carved Wood Panel",
+  "block.keralatemple.nilavilakku": "Nilavilakku (Oil Lamp)",
+  "creativetab.keralatemple.temple_tab": "Kerala Temple Architecture",
+  "block.keralatemple.pooja_station": "Pooja Station (Sreekovil Mat)",
+  "block.keralatemple.seeveli_waypoint": "Seeveli Waypoint",
+  "entity.keralatemple.priest": "Melshanti (Temple Priest)",
+  "item.keralatemple.priest_spawn_egg": "Melshanti Spawn Egg",
+  "block.keralatemple.bali_stone": "Bali Stone (Balikkal)",
+  "block.keralatemple.idol_pedestal": "Idol Pedestal (Peetham)",
+  "item.keralatemple.temple_wand": "Temple Wand",
+  "entity.keralatemple.keezhshanthi": "Keezhshanthi (Assistant Priest)",
+  "item.keralatemple.keezhshanthi_spawn_egg": "Keezhshanthi Spawn Egg"
+}

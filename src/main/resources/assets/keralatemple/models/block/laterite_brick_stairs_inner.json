@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "keralatemple:block/laterite_bricks",
+    "top": "keralatemple:block/laterite_bricks",
+    "side": "keralatemple:block/laterite_bricks"
+  }
+}

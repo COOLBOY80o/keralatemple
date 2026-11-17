@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " N ",
+    "TTT"
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:gold_nugget"
+    },
+    "T": {
+      "item": "keralatemple:temple_granite"
+    }
+  },
+  "result": {
+    "item": "keralatemple:idol_pedestal",
+    "count": 1
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "keralatemple:laterite_brick_slab",
+    "keralatemple:temple_granite_slab",
+    "keralatemple:copper_roof_slab"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "keralatemple:block/laterite_brick_slab"
+    },
+    "type=top": {
+      "model": "keralatemple:block/laterite_brick_slab_top"
+    },
+    "type=double": {
+      "model": "keralatemple:block/laterite_bricks"
+    }
+  }
+}

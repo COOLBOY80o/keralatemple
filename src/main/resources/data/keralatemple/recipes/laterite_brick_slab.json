@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "XXX"
+  ],
+  "key": {
+    "X": {
+      "item": "keralatemple:laterite_bricks"
+    }
+  },
+  "result": {
+    "item": "keralatemple:laterite_brick_slab",
+    "count": 6
+  }
+}

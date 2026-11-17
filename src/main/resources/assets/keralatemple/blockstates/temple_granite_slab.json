@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "keralatemple:block/temple_granite_slab"
+    },
+    "type=top": {
+      "model": "keralatemple:block/temple_granite_slab_top"
+    },
+    "type=double": {
+      "model": "keralatemple:block/temple_granite"
+    }
+  }
+}

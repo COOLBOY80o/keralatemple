@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "keralatemple:block/carved_wood_pillar_top",
+    "side": "keralatemple:block/carved_wood_pillar"
+  }
+}

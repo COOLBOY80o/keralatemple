@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "keralatemple:block/carved_wood_pillar"
+    },
+    "axis=z": {
+      "model": "keralatemple:block/carved_wood_pillar",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "keralatemple:block/carved_wood_pillar",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

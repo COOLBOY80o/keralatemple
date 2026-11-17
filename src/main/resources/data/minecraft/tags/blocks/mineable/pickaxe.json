@@ -1,0 +1,16 @@
+{
+  "replace": false,
+  "values": [
+    "keralatemple:laterite_bricks",
+    "keralatemple:laterite_brick_stairs",
+    "keralatemple:laterite_brick_slab",
+    "keralatemple:temple_granite",
+    "keralatemple:temple_granite_slab",
+    "keralatemple:copper_roof_tiles",
+    "keralatemple:copper_roof_stairs",
+    "keralatemple:copper_roof_slab",
+    "keralatemple:nilavilakku",
+    "keralatemple:bali_stone",
+    "keralatemple:idol_pedestal"
+  ]
+}

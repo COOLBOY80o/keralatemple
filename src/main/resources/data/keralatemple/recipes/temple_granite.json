@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GG",
+    "GG"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:granite"
+    }
+  },
+  "result": {
+    "item": "keralatemple:temple_granite",
+    "count": 4
+  }
+}

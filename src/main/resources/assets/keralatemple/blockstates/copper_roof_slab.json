@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "keralatemple:block/copper_roof_slab"
+    },
+    "type=top": {
+      "model": "keralatemple:block/copper_roof_slab_top"
+    },
+    "type=double": {
+      "model": "keralatemple:block/copper_roof_tiles"
+    }
+  }
+}

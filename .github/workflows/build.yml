@@ -1,0 +1,29 @@
+name: Build Kerala Temple mod
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Build the mod
+        run: |
+          chmod +x gradlew
+          ./gradlew build --no-daemon
+
+      - name: Publish the jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: keralatemple-mod
+          path: build/libs/*.jar
+          if-no-files-found: error
