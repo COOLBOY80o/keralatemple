@@ -39,6 +39,8 @@ public class Temple {
     /** The sreeveli route the player marked, in walking order. Empty = automatic clockwise route. */
     /** Angavastram choice per role (melshanthi, keezhshanthi, kazhakam, cook): "base,accent,design". */
     public final Map<String, String> vastram = new java.util.HashMap<>();
+    /** How the keezhshanthi takes the idol out for the seeveli: arms, head or none. */
+    public String carry = "head";
     public final List<BlockPos> route = new ArrayList<>();
     public final List<Valiya> valiya = new ArrayList<>();
 
@@ -90,6 +92,7 @@ public class Temple {
             vast.putString(e.getKey(), e.getValue());
         }
         tag.put("Vastram", vast);
+        tag.putString("Carry", carry);
         tag.putLongArray("Bali", baliStones.stream().mapToLong(BlockPos::asLong).toArray());
         tag.putLongArray("Route", route.stream().mapToLong(BlockPos::asLong).toArray());
         ListTag valiyaList = new ListTag();
@@ -125,6 +128,9 @@ public class Temple {
         CompoundTag nived = tag.getCompound("Nivedyam");
         for (String key : nived.getAllKeys()) {
             t.nivedyam.put(key, nived.getString(key));
+        }
+        if (tag.contains("Carry")) {
+            t.carry = tag.getString("Carry");
         }
         CompoundTag vastTag = tag.getCompound("Vastram");
         for (String key : vastTag.getAllKeys()) {

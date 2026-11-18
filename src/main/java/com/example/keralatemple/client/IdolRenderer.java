@@ -80,6 +80,30 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
         poseStack.popPose();
     }
 
+    /** Draws an idol standing on the origin (used for the idol a keezhshanthi carries in the seeveli). */
+    public static void drawMesh(PoseStack poseStack, MultiBufferSource buffers, IdolData shown, float scale, int light) {
+        IdolCache.IdolMesh mesh = IdolCache.get(shown);
+        poseStack.pushPose();
+        poseStack.scale(scale, scale, scale);
+        PoseStack.Pose pose = poseStack.last();
+        Matrix4f matrix = pose.pose();
+        Matrix3f normal = pose.normal();
+        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(mesh.texture()));
+        float[] d = mesh.data();
+        for (int i = 0; i < mesh.vertexCount(); i++) {
+            int o = i * IdolMeshBuilder.STRIDE;
+            int shade = (int) (d[o + 8] * 255.0F);
+            consumer.vertex(matrix, d[o], d[o + 1], d[o + 2])
+                    .color(shade, shade, shade, 255)
+                    .uv(d[o + 6], d[o + 7])
+                    .overlayCoords(OverlayTexture.NO_OVERLAY)
+                    .uv2(light)
+                    .normal(normal, d[o + 3], d[o + 4], d[o + 5])
+                    .endVertex();
+        }
+        poseStack.popPose();
+    }
+
     private static final int GOLD = 0xEBBE3C;
     private static final int DARK_RED = 0x8A1C1C;
     private static final int PINK = 0xD04A8E;

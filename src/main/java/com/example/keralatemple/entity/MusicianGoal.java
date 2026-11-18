@@ -141,16 +141,31 @@ public class MusicianGoal extends Goal {
         }
     }
 
-    /** During a pooja, stand a few steps from the pooja station. */
+    /** During a pooja, stand at the Music Station that made this musician (or near the pooja station). */
     private void gather(ServerLevel level) {
-        BlockPos here = this.musician.blockPosition();
-        BlockPos station = this.musician.findMarkers(ModBlocks.POOJA_STATION.get()).stream()
-                .min(Comparator.comparingDouble(p -> p.distSqr(here))).orElse(null);
-        if (station == null) {
-            return;
+        BlockPos station = null;
+        for (String tag : this.musician.getTags()) {
+            if (tag.startsWith("ktstation:")) {
+                try {
+                    BlockPos p = BlockPos.of(Long.parseLong(tag.substring("ktstation:".length())));
+                    if (level.getBlockState(p).getBlock() instanceof com.example.keralatemple.block.MusicStationBlock) {
+                        station = p;
+                    }
+                } catch (NumberFormatException ignored) {
+                    // not one of ours
+                }
+            }
         }
         int slot = this.musician.getId() % 5 - 2;
-        BlockPos spot = station.offset(slot * 2, 0, 5);
-        NpcNav.goTo(this.musician, spot, 0.5D, 4.0D);
+        if (station == null) {
+            BlockPos here = this.musician.blockPosition();
+            station = this.musician.findMarkers(ModBlocks.POOJA_STATION.get()).stream()
+                    .min(Comparator.comparingDouble(p -> p.distSqr(here))).orElse(null);
+            if (station == null) {
+                return;
+            }
+            station = station.offset(0, 0, 5);
+        }
+        NpcNav.goTo(this.musician, station.offset(slot, 0, this.musician.getId() % 2), 0.5D, 2.5D);
     }
 }

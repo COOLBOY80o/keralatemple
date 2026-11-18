@@ -53,6 +53,7 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.IDOL_PEDESTAL.get());
                         output.accept(ModBlocks.ANJANA_SHILA.get());
                         output.accept(ModBlocks.KRISHNA_SHILA.get());
+                        output.accept(ModBlocks.MUSIC_STATION.get());
                         output.accept(ModItems.CHISEL.get());
                         output.accept(ModItems.TEMPLE_WAND.get());
                         output.accept(ModItems.ACHARI_SPAWN_EGG.get());

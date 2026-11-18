@@ -89,6 +89,7 @@ public class ModCommands {
         root.then(routeNode());
         root.then(vastramNode());
         root.then(brahminNode());
+        root.then(carryNode());
         root.then(wandNode());
         event.getDispatcher().register(root);
     }
@@ -516,6 +517,24 @@ public class ModCommands {
                             nearest.setCustomName(net.minecraft.network.chat.Component.literal(text));
                             nearest.setCustomNameVisible(true);
                             say(ctx, "He is now called " + text + ".");
+                            return 1;
+                        })));
+    }
+
+    /** /keralatemple carry <temple> arms|head|none */
+    private static LiteralArgumentBuilder<CommandSourceStack> carryNode() {
+        SuggestionProvider<CommandSourceStack> modes = (c, b) -> SharedSuggestionProvider.suggest(List.of("arms", "head", "none"), b);
+        return Commands.literal("carry").requires(ModCommands::canEdit)
+                .then(templeArg().then(Commands.argument("mode", StringArgumentType.word()).suggests(modes)
+                        .executes(ctx -> {
+                            Temple t = temple(ctx);
+                            String mode = nameArg(ctx, "mode");
+                            if (!List.of("arms", "head", "none").contains(mode)) {
+                                throw ERROR.create("Choose arms, head or none.");
+                            }
+                            t.carry = mode;
+                            TempleData.get(ctx.getSource().getLevel()).touch();
+                            say(ctx, "In the seeveli of '" + t.name + "' the keezhshanthi will carry the idol: " + mode + ".");
                             return 1;
                         })));
     }

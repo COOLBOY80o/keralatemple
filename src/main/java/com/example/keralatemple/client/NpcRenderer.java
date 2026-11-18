@@ -19,7 +19,20 @@ public class NpcRenderer<T extends Mob> extends HumanoidMobRenderer<T, PlayerMod
     public NpcRenderer(EntityRendererProvider.Context context, String textureName) {
         super(context, new PlayerModel<>(context.bakeLayer(ModelLayers.PLAYER), false), 0.5F);
         this.skin = textureName;
+        this.addLayer(new CarryLayer<>(this));
         this.texture = new ResourceLocation(KeralaTempleMod.MOD_ID, "textures/entity/" + textureName + ".png");
+    }
+
+    @Override
+    public void render(T entity, float yaw, float partialTick, com.mojang.blaze3d.vertex.PoseStack poseStack,
+                       net.minecraft.client.renderer.MultiBufferSource buffers, int light) {
+        boolean carrying = entity instanceof com.example.keralatemple.entity.PriestEntity p && p.carryMode() != 0;
+        net.minecraft.client.model.HumanoidModel.ArmPose pose = carrying
+                ? net.minecraft.client.model.HumanoidModel.ArmPose.CROSSBOW_HOLD
+                : net.minecraft.client.model.HumanoidModel.ArmPose.EMPTY;
+        this.model.rightArmPose = pose;
+        this.model.leftArmPose = pose;
+        super.render(entity, yaw, partialTick, poseStack, buffers, light);
     }
 
     @Override

@@ -45,6 +45,12 @@ public class PriestEntity extends PathfinderMob {
     private static final String[] FIRST = {"Krishnan", "Narayanan", "Vishnu", "Madhavan", "Govindan", "Raman", "Sankaran",
             "Damodaran", "Vasudevan", "Parameswaran", "Subrahmanian", "Neelakantan", "Divakaran", "Hariharan"};
     private static final String[] FAMILY = {"Namboothiri", "Potti", "Embrandiri", "Elayathu", "Muthathu", "Nambudiri"};
+    private static final EntityDataAccessor<Integer> CARRY =
+            SynchedEntityData.defineId(PriestEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<CompoundTag> CARRIED =
+            SynchedEntityData.defineId(PriestEntity.class, EntityDataSerializers.COMPOUND_TAG);
+    private com.example.keralatemple.idol.IdolData carriedIdol;
+    private boolean carriedLoaded;
     public static final int HAIRS = 5;
     public static final int FACIALS = 4;
     public static final int TILAKS = 3;
@@ -64,6 +70,88 @@ public class PriestEntity extends PathfinderMob {
         super.defineSynchedData();
         this.entityData.define(LOOK, 0);
         this.entityData.define(VASTRAM, 0);
+        this.entityData.define(CARRY, 0);
+        this.entityData.define(CARRIED, new CompoundTag());
+    }
+
+    /** 0 not carrying, 1 idol in the arms, 2 idol on the head (on a cushion). */
+    public int carryMode() {
+        return this.entityData.get(CARRY);
+    }
+
+    @javax.annotation.Nullable
+    public com.example.keralatemple.idol.IdolData carriedIdol() {
+        if (!this.carriedLoaded) {
+            CompoundTag tag = this.entityData.get(CARRIED);
+            this.carriedIdol = tag.isEmpty() ? null : com.example.keralatemple.idol.IdolData.load(tag);
+            this.carriedLoaded = true;
+        }
+        return this.carriedIdol;
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
+        super.onSyncedDataUpdated(key);
+        if (CARRIED.equals(key)) {
+            this.carriedLoaded = false;
+        }
+    }
+
+    /** During a seeveli the lowest-numbered keezhshanthi near the temple carries the idol, as the temple chose. */
+    private void updateCarry() {
+        int mode = 0;
+        Temple t = getTemple();
+        if (t != null && this.isAssistant() && !"none".equals(t.carry)) {
+            com.example.keralatemple.ritual.RitualSchedule.Ritual r = com.example.keralatemple.ritual.RitualSchedule.current(
+                    com.example.keralatemple.ritual.RitualSchedule.forTemple(t),
+                    com.example.keralatemple.ritual.KeralaClock.now().toLocalTime());
+            boolean seeveli = r != null && r.kind() == com.example.keralatemple.ritual.RitualSchedule.Kind.SEEVELI;
+            boolean lowest = this.level().getEntitiesOfClass(PriestEntity.class, this.getBoundingBox().inflate(48.0D),
+                    e -> e.isAssistant() && e.getId() < this.getId()).isEmpty();
+            if (seeveli && lowest) {
+                mode = "arms".equals(t.carry) ? 1 : 2;
+            }
+        }
+        if (mode != 0 && this.entityData.get(CARRIED).isEmpty()) {
+            com.example.keralatemple.idol.IdolData found = findTempleIdol();
+            if (found == null) {
+                mode = 0;
+            } else {
+                this.entityData.set(CARRIED, found.save());
+            }
+        }
+        if (mode != getCarryRaw()) {
+            this.entityData.set(CARRY, mode);
+        }
+        if (mode == 0 && !this.entityData.get(CARRIED).isEmpty()) {
+            this.entityData.set(CARRIED, new CompoundTag());
+        }
+    }
+
+    private int getCarryRaw() {
+        return this.entityData.get(CARRY);
+    }
+
+    /** The idol in the shrine (the angi if it wears one). */
+    @javax.annotation.Nullable
+    private com.example.keralatemple.idol.IdolData findTempleIdol() {
+        BlockPos home = getHome();
+        BlockPos best = null;
+        com.example.keralatemple.idol.IdolData data = null;
+        double bestD = Double.MAX_VALUE;
+        for (Block b : new Block[]{com.example.keralatemple.registry.ModBlocks.ANJANA_SHILA.get(),
+                com.example.keralatemple.registry.ModBlocks.KRISHNA_SHILA.get(),
+                com.example.keralatemple.registry.ModBlocks.IDOL_PEDESTAL.get()}) {
+            for (BlockPos p : findMarkers(b)) {
+                if (this.level().getBlockEntity(p) instanceof com.example.keralatemple.blockentity.IdolBlockEntity be
+                        && be.getData() != null && p.distSqr(home) < bestD) {
+                    bestD = p.distSqr(home);
+                    best = p;
+                    data = be.getAngi() != null ? be.getAngi() : be.getData();
+                }
+            }
+        }
+        return best == null ? null : data;
     }
 
     public int getVastram() {
@@ -84,6 +172,9 @@ public class PriestEntity extends PathfinderMob {
     @Override
     public void tick() {
         super.tick();
+        if (!this.level().isClientSide && this.tickCount % 20 == 3) {
+            updateCarry();
+        }
         if (!this.level().isClientSide && this.tickCount % 100 == 7) {
             Temple t = getTemple();
             String role = roleId();
