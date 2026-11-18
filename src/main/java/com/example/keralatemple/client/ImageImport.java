@@ -186,6 +186,8 @@ public final class ImageImport {
             }
         }
 
+        cleanup(filled, w, h);
+
         boolean any = false;
         for (boolean f : filled) {
             if (f) {
@@ -197,6 +199,119 @@ public final class ImageImport {
             Arrays.fill(filled, true);
         }
         return filled;
+    }
+
+    /**
+     * Tidies the cut-out: smooths ragged edges, drops small floating islands (bits of background that survived)
+     * and fills small holes.
+     */
+    private static void cleanup(boolean[] filled, int w, int h) {
+        // 1. One pass of a majority filter rounds corners and removes single stray cells.
+        boolean[] smooth = new boolean[filled.length];
+        for (int j = 0; j < h; j++) {
+            for (int i = 0; i < w; i++) {
+                int n = 0;
+                for (int dj = -1; dj <= 1; dj++) {
+                    for (int di = -1; di <= 1; di++) {
+                        int x = i + di;
+                        int y = j + dj;
+                        if (x >= 0 && y >= 0 && x < w && y < h && filled[y * w + x]) {
+                            n++;
+                        }
+                    }
+                }
+                smooth[j * w + i] = n >= 5;
+            }
+        }
+        boolean anySmooth = false;
+        for (boolean f : smooth) {
+            anySmooth |= f;
+        }
+        if (anySmooth) {
+            System.arraycopy(smooth, 0, filled, 0, filled.length);
+        }
+
+        // 2. Keep the biggest piece and any piece that is at least 5% of it.
+        int[] label = new int[filled.length];
+        java.util.List<Integer> sizes = new java.util.ArrayList<>();
+        int[] queue = new int[filled.length];
+        for (int k = 0; k < filled.length; k++) {
+            if (!filled[k] || label[k] != 0) {
+                continue;
+            }
+            int id = sizes.size() + 1;
+            int head = 0;
+            int tail = 0;
+            queue[tail++] = k;
+            label[k] = id;
+            while (head < tail) {
+                int c = queue[head++];
+                int x = c % w;
+                int y = c / w;
+                for (int dj = -1; dj <= 1; dj++) {
+                    for (int di = -1; di <= 1; di++) {
+                        int nx = x + di;
+                        int ny = y + dj;
+                        if (nx < 0 || ny < 0 || nx >= w || ny >= h) {
+                            continue;
+                        }
+                        int nk = ny * w + nx;
+                        if (filled[nk] && label[nk] == 0) {
+                            label[nk] = id;
+                            queue[tail++] = nk;
+                        }
+                    }
+                }
+            }
+            sizes.add(tail);
+        }
+        int largest = 0;
+        for (int sz : sizes) {
+            largest = Math.max(largest, sz);
+        }
+        for (int k = 0; k < filled.length; k++) {
+            if (filled[k] && sizes.get(label[k] - 1) * 20 < largest) {
+                filled[k] = false;
+            }
+        }
+
+        // 3. Fill empty pockets that do not touch the border and are small (under 2% of the picture).
+        boolean[] seen = new boolean[filled.length];
+        for (int k = 0; k < filled.length; k++) {
+            if (filled[k] || seen[k]) {
+                continue;
+            }
+            int head = 0;
+            int tail = 0;
+            boolean touchesBorder = false;
+            queue[tail++] = k;
+            seen[k] = true;
+            while (head < tail) {
+                int c = queue[head++];
+                int x = c % w;
+                int y = c / w;
+                if (x == 0 || y == 0 || x == w - 1 || y == h - 1) {
+                    touchesBorder = true;
+                }
+                int[] nx = {x + 1, x - 1, x, x};
+                int[] ny = {y, y, y + 1, y - 1};
+                for (int d = 0; d < 4; d++) {
+                    if (nx[d] < 0 || ny[d] < 0 || nx[d] >= w || ny[d] >= h) {
+                        continue;
+                    }
+                    int nk = ny[d] * w + nx[d];
+                    if (!filled[nk] && !seen[nk]) {
+                        seen[nk] = true;
+                        queue[tail++] = nk;
+                    }
+                }
+            }
+            if (!touchesBorder && tail * 50 < filled.length) {
+                for (int q = 0; q < tail; q++) {
+                    filled[queue[q]] = true;
+                }
+            }
+        }
     }
 
     private static int distSq(int a, int b) {

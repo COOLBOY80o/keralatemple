@@ -81,15 +81,33 @@ public final class IdolCache {
         int[] out = new int[n];
         byte[] px = data.rgba;
 
+        // Light and dark of each cell, softened over its neighbours so the photo's noise does not turn into lumps.
+        float[] lum = new float[n];
+        for (int j = 0; j < data.height; j++) {
+            for (int i = 0; i < data.width; i++) {
+                float sum = 0.0F;
+                int count = 0;
+                for (int dj = -1; dj <= 1; dj++) {
+                    for (int di = -1; di <= 1; di++) {
+                        int x = i + di;
+                        int y = j + dj;
+                        if (x >= 0 && y >= 0 && x < data.width && y < data.height
+                                && (px[(y * data.width + x) * 4 + 3] & 255) >= 128) {
+                            sum += luminance(px, y * data.width + x);
+                            count++;
+                        }
+                    }
+                }
+                lum[j * data.width + i] = count == 0 ? 0.5F : sum / count;
+            }
+        }
         float min = 1.0F;
         float max = 0.0F;
         for (int k = 0; k < n; k++) {
-            if ((px[k * 4 + 3] & 255) < 128) {
-                continue;
+            if ((px[k * 4 + 3] & 255) >= 128) {
+                min = Math.min(min, lum[k]);
+                max = Math.max(max, lum[k]);
             }
-            float lum = luminance(px, k);
-            min = Math.min(min, lum);
-            max = Math.max(max, lum);
         }
         float range = max - min;
         IdolMaterial m = data.material;
@@ -103,8 +121,8 @@ public final class IdolCache {
                 out[k] = 0xFF000000 | ((px[k * 4] & 255) << 16) | ((px[k * 4 + 1] & 255) << 8) | (px[k * 4 + 2] & 255);
                 continue;
             }
-            float l = range < 0.05F ? 0.6F : (luminance(px, k) - min) / range;
-            float shade = 0.55F + 0.7F * l;
+            float l = range < 0.05F ? 0.6F : (lum[k] - min) / range;
+            float shade = 0.68F + 0.45F * l;
             int r = clamp((int) (m.r * shade));
             int g = clamp((int) (m.g * shade));
             int b = clamp((int) (m.b * shade));
