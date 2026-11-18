@@ -25,7 +25,7 @@ public class NpcRenderer<T extends Mob> extends HumanoidMobRenderer<T, PlayerMod
     @Override
     public ResourceLocation getTextureLocation(T entity) {
         if (entity instanceof com.example.keralatemple.entity.PriestEntity priest) {
-            return NpcLooks.get(this.skin, priest.getLook(), this.texture);
+            return NpcLooks.get(this.skin, priest.getLook(), priest.getVastram(), this.texture);
         }
         return this.texture;
     }

@@ -40,15 +40,22 @@ public class PriestEntity extends PathfinderMob {
     /** Packed look: hair colour (0-4) + 5 * (facial hair (0-3) + 4 * tilak (0-4)). */
     private static final EntityDataAccessor<Integer> LOOK =
             SynchedEntityData.defineId(PriestEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> VASTRAM =
+            SynchedEntityData.defineId(PriestEntity.class, EntityDataSerializers.INT);
+    private static final String[] FIRST = {"Krishnan", "Narayanan", "Vishnu", "Madhavan", "Govindan", "Raman", "Sankaran",
+            "Damodaran", "Vasudevan", "Parameswaran", "Subrahmanian", "Neelakantan", "Divakaran", "Hariharan"};
+    private static final String[] FAMILY = {"Namboothiri", "Potti", "Embrandiri", "Elayathu", "Muthathu", "Nambudiri"};
     public static final int HAIRS = 5;
     public static final int FACIALS = 4;
-    public static final int TILAKS = 5;
+    public static final int TILAKS = 3;
 
     public PriestEntity(EntityType<? extends PriestEntity> type, Level level) {
         super(type, level);
         this.setPersistenceRequired();
         if (!level.isClientSide) {
             this.entityData.set(LOOK, randomLook());
+            this.setCustomName(Component.literal(FIRST[this.random.nextInt(FIRST.length)] + " "
+                    + FAMILY[this.random.nextInt(FAMILY.length)]));
         }
     }
 
@@ -56,6 +63,39 @@ public class PriestEntity extends PathfinderMob {
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(LOOK, 0);
+        this.entityData.define(VASTRAM, 0);
+    }
+
+    public int getVastram() {
+        return this.entityData.get(VASTRAM);
+    }
+
+    /** The role name used for the angavastram setting of the temple. */
+    public String roleId() {
+        if (this instanceof CookEntity) {
+            return "cook";
+        }
+        if (this instanceof KazhakamEntity) {
+            return "kazhakam";
+        }
+        return this.isAssistant() ? "keezhshanthi" : "melshanthi";
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.level().isClientSide && this.tickCount % 100 == 7) {
+            Temple t = getTemple();
+            String role = roleId();
+            int v = t != null && t.vastram.containsKey(role)
+                    ? com.example.keralatemple.ritual.Vastram.parse(t.vastram.get(role)) : 0;
+            if (v == 0) {
+                v = com.example.keralatemple.ritual.Vastram.defaultFor(role);
+            }
+            if (v != getVastram()) {
+                this.entityData.set(VASTRAM, v);
+            }
+        }
     }
 
     public int getLook() {

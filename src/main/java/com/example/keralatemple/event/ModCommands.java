@@ -87,6 +87,8 @@ public class ModCommands {
         root.then(nivedyamNode());
         root.then(balikkalNode());
         root.then(routeNode());
+        root.then(vastramNode());
+        root.then(brahminNode());
         root.then(wandNode());
         event.getDispatcher().register(root);
     }
@@ -435,6 +437,87 @@ public class ModCommands {
         TempleData.get(ctx.getSource().getLevel()).touch();
         say(ctx, "Removed the nivedyam of " + ritual + ".");
         return 1;
+    }
+
+    // ------------------------------------------------------------------ angavastram and names
+
+    private static final SuggestionProvider<CommandSourceStack> ROLE_IDS = (ctx, builder) ->
+            SharedSuggestionProvider.suggest(com.example.keralatemple.ritual.Vastram.ROLES, builder);
+    private static final SuggestionProvider<CommandSourceStack> COLOUR_IDS = (ctx, builder) ->
+            SharedSuggestionProvider.suggest(com.example.keralatemple.ritual.Vastram.COLOURS, builder);
+    private static final SuggestionProvider<CommandSourceStack> DESIGN_IDS = (ctx, builder) ->
+            SharedSuggestionProvider.suggest(com.example.keralatemple.ritual.Vastram.DESIGNS, builder);
+
+    /** /keralatemple vastram <temple> <role> <colour> <accent> <design>  |  list <temple>  |  reset <temple> <role> */
+    private static LiteralArgumentBuilder<CommandSourceStack> vastramNode() {
+        return Commands.literal("vastram")
+                .then(Commands.literal("list").then(templeArg().executes(ctx -> {
+                    Temple t = temple(ctx);
+                    for (String role : com.example.keralatemple.ritual.Vastram.ROLES) {
+                        String v = t.vastram.get(role);
+                        say(ctx, "  " + role + ": " + (v == null ? "default" : v.replace(",", " / ")));
+                    }
+                    return 1;
+                })))
+                .then(Commands.literal("reset").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("role", StringArgumentType.word()).suggests(ROLE_IDS)
+                                .executes(ctx -> {
+                                    Temple t = temple(ctx);
+                                    t.vastram.remove(nameArg(ctx, "role"));
+                                    TempleData.get(ctx.getSource().getLevel()).touch();
+                                    say(ctx, "Back to the default angavastram.");
+                                    return 1;
+                                }))))
+                .then(Commands.literal("set").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("role", StringArgumentType.word()).suggests(ROLE_IDS)
+                                .then(Commands.argument("colour", StringArgumentType.word()).suggests(COLOUR_IDS)
+                                        .then(Commands.argument("accent", StringArgumentType.word()).suggests(COLOUR_IDS)
+                                                .then(Commands.argument("design", StringArgumentType.word()).suggests(DESIGN_IDS)
+                                                        .executes(ModCommands::vastramSet)))))));
+    }
+
+    private static int vastramSet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Temple t = temple(ctx);
+        String role = nameArg(ctx, "role");
+        String spec = com.example.keralatemple.ritual.Vastram.spec(nameArg(ctx, "colour"), nameArg(ctx, "accent"),
+                nameArg(ctx, "design"));
+        if (!com.example.keralatemple.ritual.Vastram.ROLES.contains(role)
+                || com.example.keralatemple.ritual.Vastram.parse(spec) == 0) {
+            throw ERROR.create("Roles: " + com.example.keralatemple.ritual.Vastram.ROLES + ". Colours: "
+                    + com.example.keralatemple.ritual.Vastram.COLOURS + ". Designs: "
+                    + com.example.keralatemple.ritual.Vastram.DESIGNS);
+        }
+        t.vastram.put(role, spec);
+        TempleData.get(ctx.getSource().getLevel()).touch();
+        say(ctx, "The " + role + " of '" + t.name + "' now wears " + spec.replace(",", " / ") + ". It shows within a few seconds.");
+        return 1;
+    }
+
+    /** /keralatemple brahmin name <text>: names the nearest priest, helper or cook within 6 blocks of you. */
+    private static LiteralArgumentBuilder<CommandSourceStack> brahminNode() {
+        return Commands.literal("brahmin").requires(ModCommands::canEdit)
+                .then(Commands.literal("name").then(Commands.argument("text", StringArgumentType.greedyString())
+                        .executes(ctx -> {
+                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                            com.example.keralatemple.entity.PriestEntity nearest = null;
+                            double best = 36.0D;
+                            for (com.example.keralatemple.entity.PriestEntity p : player.level().getEntitiesOfClass(
+                                    com.example.keralatemple.entity.PriestEntity.class, player.getBoundingBox().inflate(6.0D))) {
+                                double d = p.distanceToSqr(player);
+                                if (d < best) {
+                                    best = d;
+                                    nearest = p;
+                                }
+                            }
+                            if (nearest == null) {
+                                throw ERROR.create("Stand within 6 blocks of the brahmin you want to name.");
+                            }
+                            String text = StringArgumentType.getString(ctx, "text");
+                            nearest.setCustomName(net.minecraft.network.chat.Component.literal(text));
+                            nearest.setCustomNameVisible(true);
+                            say(ctx, "He is now called " + text + ".");
+                            return 1;
+                        })));
     }
 
     // ------------------------------------------------------------------ seeveli route
