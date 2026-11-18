@@ -27,6 +27,10 @@ public class ChiselItem extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
+        net.minecraft.world.level.block.state.BlockState clicked = level.getBlockState(context.getClickedPos());
+        if (clicked.getBlock() instanceof com.example.keralatemple.block.DoorFrameBlock) {
+            return changeFrame(context, clicked);
+        }
         BlockEntity be = level.getBlockEntity(context.getClickedPos());
         if (!(be instanceof IdolBlockEntity idol) || idol.getData() == null) {
             return InteractionResult.PASS;
@@ -42,6 +46,28 @@ public class ChiselItem extends Item {
             if (context.getPlayer() != null) {
                 context.getPlayer().displayClientMessage(net.minecraft.network.chat.Component.literal(
                         "Measurements taken. Show this chisel to the achari to order an angi."), true);
+            }
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
+    }
+
+    /** Door frame: right-click = next material, sneak + right-click = next carving style. */
+    private InteractionResult changeFrame(UseOnContext context, net.minecraft.world.level.block.state.BlockState state) {
+        Level level = context.getLevel();
+        if (!level.isClientSide) {
+            boolean style = context.getPlayer() != null && context.getPlayer().isShiftKeyDown();
+            net.minecraft.world.level.block.state.BlockState next = style
+                    ? state.setValue(com.example.keralatemple.block.DoorFrameBlock.STYLE,
+                    com.example.keralatemple.block.DoorFrameBlock.next(state.getValue(com.example.keralatemple.block.DoorFrameBlock.STYLE)))
+                    : state.setValue(com.example.keralatemple.block.DoorFrameBlock.MATERIAL,
+                    com.example.keralatemple.block.DoorFrameBlock.next(state.getValue(com.example.keralatemple.block.DoorFrameBlock.MATERIAL)));
+            level.setBlock(context.getClickedPos(), next, 3);
+            level.playSound(null, context.getClickedPos(), net.minecraft.sounds.SoundEvents.UI_STONECUTTER_TAKE_RESULT,
+                    net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 1.2F);
+            if (context.getPlayer() != null) {
+                context.getPlayer().displayClientMessage(Component.literal("Door frame: "
+                        + next.getValue(com.example.keralatemple.block.DoorFrameBlock.MATERIAL).label() + ", "
+                        + next.getValue(com.example.keralatemple.block.DoorFrameBlock.STYLE).getSerializedName()), true);
             }
         }
         return InteractionResult.sidedSuccess(level.isClientSide);
@@ -66,6 +92,7 @@ public class ChiselItem extends Item {
         lines.add(Component.literal("Left-click an Anjana Shila or Krishna Shila").withStyle(ChatFormatting.GRAY));
         lines.add(Component.literal("to design and carve an idol.").withStyle(ChatFormatting.GRAY));
         lines.add(Component.literal("Right-click an idol to measure it for an angi.").withStyle(ChatFormatting.GRAY));
+        lines.add(Component.literal("On a door frame: click = material, sneak-click = style.").withStyle(ChatFormatting.GRAY));
         if (stack.getTag() != null && stack.getTag().contains("Mould", 10)) {
             lines.add(Component.literal("Measurements taken").withStyle(ChatFormatting.GOLD));
         }

@@ -3,6 +3,7 @@ package com.example.keralatemple.registry;
 import com.example.keralatemple.KeralaTempleMod;
 import com.example.keralatemple.block.AduppuBlock;
 import com.example.keralatemple.block.BaliStoneBlock;
+import com.example.keralatemple.block.DoorFrameBlock;
 import com.example.keralatemple.block.UruliBlock;
 import com.example.keralatemple.block.IdolBlock;
 import com.example.keralatemple.block.MarkerBlock;
@@ -142,16 +143,10 @@ public class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.WOOL)));
 
-    // --- Door frames: full blocks to build the surround of a temple door (a ring with a sill) ---
+    // --- Door frame: one block whose material and style you change in game with the Chisel ---
     public static final RegistryObject<Block> TEMPLE_DOOR_FRAME = registerBlock("temple_door_frame",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F, 6.0F)
-                    .sound(SoundType.WOOD).ignitedByLava()));
-    public static final RegistryObject<Block> TEMPLE_DOOR_FRAME_GOLD_PLATED = registerBlock("temple_door_frame_gold_plated",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(2.5F, 6.0F)
-                    .sound(SoundType.WOOD)));
-    public static final RegistryObject<Block> TEMPLE_DOOR_FRAME_GOLD = registerBlock("temple_door_frame_gold",
-            () -> new Block(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD).strength(3.0F, 6.0F)
-                    .requiresCorrectToolForDrops().sound(SoundType.METAL)));
+            () -> new DoorFrameBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD).strength(2.5F, 6.0F)
+                    .sound(SoundType.STONE)));
 
     // --- Kitchen: hearth and cooking vessel ---
     public static final RegistryObject<Block> ADUPPU = registerBlock("aduppu",

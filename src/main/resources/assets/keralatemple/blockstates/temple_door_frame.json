@@ -1,7 +1,49 @@
 {
   "variants": {
-    "": {
-      "model": "keralatemple:block/temple_door_frame"
+    "material=wood,style=plain": {
+      "model": "keralatemple:block/frame_wood_plain"
+    },
+    "material=wood,style=carved": {
+      "model": "keralatemple:block/frame_wood_carved"
+    },
+    "material=wood,style=ornate": {
+      "model": "keralatemple:block/frame_wood_ornate"
+    },
+    "material=gold_plated,style=plain": {
+      "model": "keralatemple:block/frame_gold_plated_plain"
+    },
+    "material=gold_plated,style=carved": {
+      "model": "keralatemple:block/frame_gold_plated_carved"
+    },
+    "material=gold_plated,style=ornate": {
+      "model": "keralatemple:block/frame_gold_plated_ornate"
+    },
+    "material=gold,style=plain": {
+      "model": "keralatemple:block/frame_gold_plain"
+    },
+    "material=gold,style=carved": {
+      "model": "keralatemple:block/frame_gold_carved"
+    },
+    "material=gold,style=ornate": {
+      "model": "keralatemple:block/frame_gold_ornate"
+    },
+    "material=granite,style=plain": {
+      "model": "keralatemple:block/frame_granite_plain"
+    },
+    "material=granite,style=carved": {
+      "model": "keralatemple:block/frame_granite_carved"
+    },
+    "material=granite,style=ornate": {
+      "model": "keralatemple:block/frame_granite_ornate"
+    },
+    "material=laterite,style=plain": {
+      "model": "keralatemple:block/frame_laterite_plain"
+    },
+    "material=laterite,style=carved": {
+      "model": "keralatemple:block/frame_laterite_carved"
+    },
+    "material=laterite,style=ornate": {
+      "model": "keralatemple:block/frame_laterite_ornate"
     }
   }
 }

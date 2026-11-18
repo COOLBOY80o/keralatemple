@@ -50,7 +50,5 @@
   "item.keralatemple.cook_spawn_egg": "Cook Spawn Egg",
   "entity.keralatemple.kazhakam": "Kazhakam (Flower Assistant)",
   "entity.keralatemple.cook": "Madapally (Temple Cook)",
-  "block.keralatemple.temple_door_frame": "Temple Door Frame (Wood)",
-  "block.keralatemple.temple_door_frame_gold_plated": "Temple Door Frame (Gold-plated)",
-  "block.keralatemple.temple_door_frame_gold": "Temple Door Frame (Gold)"
+  "block.keralatemple.temple_door_frame": "Temple Door Frame"
 }
