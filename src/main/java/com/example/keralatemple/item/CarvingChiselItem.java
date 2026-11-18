@@ -35,6 +35,8 @@ public class CarvingChiselItem extends Item {
         PRANALA("Make a pranala (drain spout), pointing the way you face"),
         CHANNEL("Make an open drain channel, the way you face"),
         PIPE("Make a round pipe, the way you face"),
+        ELBOW("Make a curved spout that turns down, the way you face"),
+        TUBE("Make a tube with a heavy head (like the gold pranala), the way you face"),
         RESET("Make the block whole again");
 
         public final String label;
@@ -143,6 +145,8 @@ public class CarvingChiselItem extends Item {
             case PRANALA -> be.applyPreset(0, facing);
             case CHANNEL -> be.applyPreset(1, facing);
             case PIPE -> be.applyPreset(2, facing);
+            case ELBOW -> be.applyPreset(3, facing);
+            case TUBE -> be.applyPreset(4, facing);
             case RESET -> be.fill();
         }
         return InteractionResult.CONSUME;

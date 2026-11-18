@@ -66,7 +66,7 @@ public class CarvedBlockEntity extends BlockEntity {
         changed();
     }
 
-    /** Kinds of ready-made shapes: 0 pranala (drain spout), 1 open channel, 2 round pipe. */
+    /** Kinds of ready-made shapes: 0 pranala (trough spout), 1 open channel, 2 round pipe, 3 curved spout, 4 tube with head. */
     public void applyPreset(int kind, Direction facing) {
         java.util.Arrays.fill(layers, 0L);
         for (int lz = 0; lz < N; lz++) {
@@ -100,6 +100,22 @@ public class CarvedBlockEntity extends BlockEntity {
             }
             case 1 -> {
                 return y <= 3 && !(groove && y >= 2);
+            }
+            case 3 -> {
+                // Curved spout: out from the wall along the top, then turning down with a ring at the mouth.
+                boolean arm = z <= 5 && x >= 2 && x <= 5 && y >= 5;
+                boolean leg = z >= 5 && x >= 2 && x <= 5 && y >= 1;
+                boolean ring = z >= 4 && x >= 1 && x <= 6 && y <= 1;
+                boolean bore = x >= 3 && x <= 4 && z >= 5 && z <= 6;
+                boolean channel = groove && y >= 6 && z <= 5;
+                return (arm || leg || ring) && !bore && !channel;
+            }
+            case 4 -> {
+                // Round tube with a heavier decorated head at the open end.
+                double dx = x + 0.5D - 4.0D;
+                double dy = y + 0.5D - 4.0D;
+                double d = Math.sqrt(dx * dx + dy * dy);
+                return z >= 6 ? d >= 1.2D && d <= 4.0D : d >= 1.6D && d <= 3.2D;
             }
             default -> {
                 double dx = x + 0.5D - 4.0D;
