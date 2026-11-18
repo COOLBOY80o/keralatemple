@@ -20,6 +20,13 @@ public final class ClientHooks {
         mc.setScreen(new IdolDesignerScreen(pos, -1, existing));
     }
 
+    public static void openBaliScreen(BlockPos pos) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level != null && mc.level.getBlockEntity(pos) instanceof com.example.keralatemple.blockentity.BaliStoneBlockEntity be) {
+            mc.setScreen(new BaliStoneScreen(pos, be));
+        }
+    }
+
     public static void openAchariScreen(int entityId) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && mc.level.getEntity(entityId) instanceof AchariEntity) {

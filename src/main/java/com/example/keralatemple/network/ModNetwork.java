@@ -19,5 +19,7 @@ public final class ModNetwork {
                 SubmitIdolPacket::encode, SubmitIdolPacket::decode, SubmitIdolPacket::handle);
         CHANNEL.registerMessage(1, SubmitOrderPacket.class,
                 SubmitOrderPacket::encode, SubmitOrderPacket::decode, SubmitOrderPacket::handle);
+        CHANNEL.registerMessage(2, SubmitBaliPacket.class,
+                SubmitBaliPacket::encode, SubmitBaliPacket::decode, SubmitBaliPacket::handle);
     }
 }

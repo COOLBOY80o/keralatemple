@@ -22,4 +22,8 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<com.example.keralatemple.blockentity.WellPulleyBlockEntity>> WELL_PULLEY =
             BLOCK_ENTITIES.register("well_pulley", () -> BlockEntityType.Builder.of(
                     com.example.keralatemple.blockentity.WellPulleyBlockEntity::new, ModBlocks.WELL_PULLEY.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<com.example.keralatemple.blockentity.BaliStoneBlockEntity>> BALI_STONE =
+            BLOCK_ENTITIES.register("bali_stone", () -> BlockEntityType.Builder.of(
+                    com.example.keralatemple.blockentity.BaliStoneBlockEntity::new, ModBlocks.BALI_STONE.get()).build(null));
 }

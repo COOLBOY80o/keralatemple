@@ -8,7 +8,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
@@ -22,7 +24,7 @@ import net.minecraft.util.StringRepresentable;
  * right-click with a gold ingot (gold) or iron ingot (silver); sneak + empty hand takes the plating off and gives the
  * ingot back. Register it for a temple with the Temple Wand so the seeveli stops here.
  */
-public class BaliStoneBlock extends Block {
+public class BaliStoneBlock extends BaseEntityBlock {
     public enum Plating implements StringRepresentable {
         NONE("none"), GOLD("gold"), SILVER("silver");
 
@@ -39,7 +41,6 @@ public class BaliStoneBlock extends Block {
     }
 
     public static final EnumProperty<Plating> PLATING = EnumProperty.create("plating", Plating.class);
-    private static final VoxelShape SHAPE = Block.box(4.8, 0, 4.8, 11.2, 5.4, 11.2);
 
     public BaliStoneBlock(Properties properties) {
         super(properties);
@@ -52,8 +53,22 @@ public class BaliStoneBlock extends Block {
     }
 
     @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return new com.example.keralatemple.blockentity.BaliStoneBlockEntity(pos, state);
+    }
+
+    @Override
+    public net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
+        return net.minecraft.world.level.block.RenderShape.ENTITYBLOCK_ANIMATED;
+    }
+
+    @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return SHAPE;
+        if (level.getBlockEntity(pos) instanceof com.example.keralatemple.blockentity.BaliStoneBlockEntity be) {
+            double half = Math.min(8.0D, be.width() * 8.0D);
+            return Block.box(8.0D - half, 0.0D, 8.0D - half, 8.0D + half, Math.min(16.0D, be.height() * 16.0D), 8.0D + half);
+        }
+        return Block.box(4.8, 0, 4.8, 11.2, 5.4, 11.2);
     }
 
     private static ItemStack ingotFor(Plating p) {
@@ -79,6 +94,16 @@ public class BaliStoneBlock extends Block {
                 if (!player.getAbilities().instabuild) {
                     held.shrink(1);
                 }
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+        if (held.isEmpty() && !player.isShiftKeyDown()) {
+            // Right-click with an empty hand: change the size and shape.
+            if (level.isClientSide) {
+                net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
+                        () -> () -> com.example.keralatemple.client.ClientHooks.openBaliScreen(pos));
+            } else {
+                level.getBlockEntity(pos);   // makes sure older stones get their settings
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
