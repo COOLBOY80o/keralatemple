@@ -183,8 +183,25 @@ public class PriestEntity extends PathfinderMob {
             if (v == 0) {
                 v = com.example.keralatemple.ritual.Vastram.defaultFor(role);
             }
+            // The upper cloth is ritual dress: put on a few minutes before a ritual, taken off after it.
+            java.time.LocalTime now = com.example.keralatemple.ritual.KeralaClock.now().toLocalTime();
+            java.util.List<RitualSchedule.Ritual> all = RitualSchedule.forTemple(t);
+            boolean dressed = RitualSchedule.current(all, now) != null;
+            if (!dressed) {
+                RitualSchedule.Ritual next = RitualSchedule.next(all, now);
+                if (next != null) {
+                    long until = (next.start().toSecondOfDay() - now.toSecondOfDay() + 86400) % 86400;
+                    dressed = until <= 180;
+                }
+            }
+            if (!dressed) {
+                v = 0;
+            }
             if (v != getVastram()) {
                 this.entityData.set(VASTRAM, v);
+                this.level().playSound(null, this.blockPosition(),
+                        net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_LEATHER,
+                        net.minecraft.sounds.SoundSource.NEUTRAL, 0.8F, v == 0 ? 0.8F : 1.1F);
             }
         }
     }
