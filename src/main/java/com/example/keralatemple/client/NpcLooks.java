@@ -62,7 +62,7 @@ public final class NpcLooks {
         for (int y = 20; y <= 31; y++) {
             int front = 20 + Math.round((31 - y) * 7.0F / 11.0F);
             int back = 32 + Math.round((y - 20) * 7.0F / 11.0F);
-            for (int k = -1; k <= 1; k++) {
+            for (int k = 0; k <= 1; k++) {
                 sashPixel(img, front + k, y, k, base, accent, design, 20, 27);
                 sashPixel(img, back + k, y, k, base, accent, design, 32, 39);
             }
@@ -180,9 +180,8 @@ public final class NpcLooks {
             armBands(img, new int[]{23}, new int[]{55}, sandal, -1);
         } else {
             // Three lines of bhasma with a sandal (or kumkum) dot between the eyebrows, and the same on the arms.
-            for (int x = 9; x <= 14; x++) {
+            for (int x = 10; x <= 13; x++) {
                 set(img, x, 8, ash);
-                set(img, x, 9, ash);
                 set(img, x, 10, ash);
             }
             set(img, 11, 9, dot);
@@ -195,7 +194,15 @@ public final class NpcLooks {
             for (int x = 10; x <= 13; x++) {
                 set(img, x, 13, scale(beard, (x + 13) % 2 == 0 ? 1.0F : 0.9F));
             }
-            if (facial >= 2) {
+            if (facial == 2) {
+                // a short beard: the chin and the corners of the mouth
+                for (int x = 10; x <= 13; x++) {
+                    set(img, x, 15, scale(beard, (x + 15) % 2 == 0 ? 1.0F : 0.9F));
+                }
+                set(img, 10, 14, beard);
+                set(img, 13, 14, beard);
+            }
+            if (facial >= 3) {
                 for (int y = 14; y <= 15; y++) {
                     for (int x = 9; x <= 14; x++) {
                         if (y == 14 && (x == 11 || x == 12)) {
@@ -204,8 +211,6 @@ public final class NpcLooks {
                         set(img, x, y, scale(beard, (x + y) % 2 == 0 ? 1.0F : 0.9F));
                     }
                 }
-            }
-            if (facial >= 3) {
                 for (int y = 11; y <= 13; y++) {
                     set(img, 8, y, beard);
                     set(img, 15, y, beard);
