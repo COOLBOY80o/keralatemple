@@ -54,6 +54,9 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.ANJANA_SHILA.get());
                         output.accept(ModBlocks.KRISHNA_SHILA.get());
                         output.accept(ModBlocks.MUSIC_STATION.get());
+                        output.accept(ModItems.TEMPLE_DOOR_SET.get());
+                        output.accept(ModItems.TEMPLE_DOOR_SET_GOLD_PLATED.get());
+                        output.accept(ModItems.TEMPLE_DOOR_SET_GOLD.get());
                         output.accept(ModItems.CHISEL.get());
                         output.accept(ModItems.CARVING_CHISEL.get());
                         output.accept(ModItems.TEMPLE_WAND.get());

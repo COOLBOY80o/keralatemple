@@ -143,6 +143,24 @@ public class ModBlocks {
                     .noOcclusion()
                     .dynamicShape()
                     .sound(SoundType.STONE)));
+    public static final RegistryObject<Block> TEMPLE_LEAF = BLOCKS.register("temple_leaf",
+            () -> new com.example.keralatemple.block.TempleLeafBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(3.0F, 6.0F)
+                    .noOcclusion()
+                    .sound(SoundType.WOOD), () -> ModItems.TEMPLE_DOOR_SET.get()));
+    public static final RegistryObject<Block> TEMPLE_LEAF_GOLD_PLATED = BLOCKS.register("temple_leaf_gold_plated",
+            () -> new com.example.keralatemple.block.TempleLeafBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
+                    .strength(3.0F, 6.0F)
+                    .noOcclusion()
+                    .sound(SoundType.WOOD), () -> ModItems.TEMPLE_DOOR_SET_GOLD_PLATED.get()));
+    public static final RegistryObject<Block> TEMPLE_LEAF_GOLD = BLOCKS.register("temple_leaf_gold",
+            () -> new com.example.keralatemple.block.TempleLeafBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
+                    .strength(3.0F, 6.0F)
+                    .noOcclusion()
+                    .sound(SoundType.METAL), () -> ModItems.TEMPLE_DOOR_SET_GOLD.get()));
     public static final RegistryObject<Block> MUSIC_STATION = registerBlock("music_station",
             () -> new com.example.keralatemple.block.MusicStationBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_ORANGE)

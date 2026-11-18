@@ -36,6 +36,15 @@ public class ModItems {
 
     public static final RegistryObject<Item> CARVING_CHISEL = ITEMS.register("carving_chisel",
             () -> new com.example.keralatemple.item.CarvingChiselItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> TEMPLE_DOOR_SET = ITEMS.register("temple_door_set",
+            () -> new com.example.keralatemple.item.TempleDoorSetItem(() -> ModBlocks.TEMPLE_LEAF.get(),
+                    new Item.Properties()));
+    public static final RegistryObject<Item> TEMPLE_DOOR_SET_GOLD_PLATED = ITEMS.register("temple_door_set_gold_plated",
+            () -> new com.example.keralatemple.item.TempleDoorSetItem(() -> ModBlocks.TEMPLE_LEAF_GOLD_PLATED.get(),
+                    new Item.Properties()));
+    public static final RegistryObject<Item> TEMPLE_DOOR_SET_GOLD = ITEMS.register("temple_door_set_gold",
+            () -> new com.example.keralatemple.item.TempleDoorSetItem(() -> ModBlocks.TEMPLE_LEAF_GOLD.get(),
+                    new Item.Properties()));
     public static final RegistryObject<Item> CHISEL = ITEMS.register("chisel",
             () -> new ChiselItem(new Item.Properties().stacksTo(1).durability(250)));
 

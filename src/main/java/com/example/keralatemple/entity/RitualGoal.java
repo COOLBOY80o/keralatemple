@@ -480,6 +480,10 @@ public class RitualGoal extends Goal {
                 continue;
             }
             BlockState state = level.getBlockState(p);
+            if (state.getBlock() instanceof com.example.keralatemple.block.TempleLeafBlock
+                    && state.getValue(com.example.keralatemple.block.TempleLeafBlock.OPEN) != open) {
+                level.setBlock(p.immutable(), state.setValue(com.example.keralatemple.block.TempleLeafBlock.OPEN, open), 3);
+            }
             if (state.getBlock() instanceof TempleDoorBlock door
                     && state.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER
                     && state.getValue(DoorBlock.OPEN) != open) {

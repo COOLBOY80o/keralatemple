@@ -1,0 +1,40 @@
+{
+ "textures": {
+  "particle": "keralatemple:block/temple_leaf_gold_plated_panel_mid",
+  "t": "keralatemple:block/temple_leaf_gold_plated_panel_mid"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    6
+   ],
+   "to": [
+    3,
+    16,
+    10
+   ],
+   "faces": {
+    "north": {
+     "texture": "#t"
+    },
+    "east": {
+     "texture": "#t"
+    },
+    "south": {
+     "texture": "#t"
+    },
+    "west": {
+     "texture": "#t"
+    },
+    "up": {
+     "texture": "#t"
+    },
+    "down": {
+     "texture": "#t"
+    }
+   }
+  }
+ ]
+}

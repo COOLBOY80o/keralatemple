@@ -1,0 +1,172 @@
+{
+ "variants": {
+  "axis=x,open=false,role=panel,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_bottom"
+  },
+  "axis=x,open=false,role=panel,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_mid"
+  },
+  "axis=x,open=false,role=panel,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_top"
+  },
+  "axis=x,open=false,role=centre,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_centre_bottom"
+  },
+  "axis=x,open=false,role=centre,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_centre_mid"
+  },
+  "axis=x,open=false,role=centre,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_centre_top"
+  },
+  "axis=x,open=false,role=edge_l,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_bottom"
+  },
+  "axis=x,open=false,role=edge_l,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_mid"
+  },
+  "axis=x,open=false,role=edge_l,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_top"
+  },
+  "axis=x,open=false,role=edge_r,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_bottom"
+  },
+  "axis=x,open=false,role=edge_r,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_mid"
+  },
+  "axis=x,open=false,role=edge_r,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_top"
+  },
+  "axis=x,open=true,role=panel,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_empty"
+  },
+  "axis=x,open=true,role=panel,row=mid": {
+   "model": "keralatemple:block/temple_leaf_empty"
+  },
+  "axis=x,open=true,role=panel,row=top": {
+   "model": "keralatemple:block/temple_leaf_empty"
+  },
+  "axis=x,open=true,role=centre,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_empty"
+  },
+  "axis=x,open=true,role=centre,row=mid": {
+   "model": "keralatemple:block/temple_leaf_empty"
+  },
+  "axis=x,open=true,role=centre,row=top": {
+   "model": "keralatemple:block/temple_leaf_empty"
+  },
+  "axis=x,open=true,role=edge_l,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_l"
+  },
+  "axis=x,open=true,role=edge_l,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_l"
+  },
+  "axis=x,open=true,role=edge_l,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_l"
+  },
+  "axis=x,open=true,role=edge_r,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_r"
+  },
+  "axis=x,open=true,role=edge_r,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_r"
+  },
+  "axis=x,open=true,role=edge_r,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_r"
+  },
+  "axis=z,open=false,role=panel,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_bottom",
+   "y": 90
+  },
+  "axis=z,open=false,role=panel,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_mid",
+   "y": 90
+  },
+  "axis=z,open=false,role=panel,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_top",
+   "y": 90
+  },
+  "axis=z,open=false,role=centre,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_centre_bottom",
+   "y": 90
+  },
+  "axis=z,open=false,role=centre,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_centre_mid",
+   "y": 90
+  },
+  "axis=z,open=false,role=centre,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_centre_top",
+   "y": 90
+  },
+  "axis=z,open=false,role=edge_l,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_bottom",
+   "y": 90
+  },
+  "axis=z,open=false,role=edge_l,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_mid",
+   "y": 90
+  },
+  "axis=z,open=false,role=edge_l,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_top",
+   "y": 90
+  },
+  "axis=z,open=false,role=edge_r,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_bottom",
+   "y": 90
+  },
+  "axis=z,open=false,role=edge_r,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_mid",
+   "y": 90
+  },
+  "axis=z,open=false,role=edge_r,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_panel_top",
+   "y": 90
+  },
+  "axis=z,open=true,role=panel,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_empty",
+   "y": 90
+  },
+  "axis=z,open=true,role=panel,row=mid": {
+   "model": "keralatemple:block/temple_leaf_empty",
+   "y": 90
+  },
+  "axis=z,open=true,role=panel,row=top": {
+   "model": "keralatemple:block/temple_leaf_empty",
+   "y": 90
+  },
+  "axis=z,open=true,role=centre,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_empty",
+   "y": 90
+  },
+  "axis=z,open=true,role=centre,row=mid": {
+   "model": "keralatemple:block/temple_leaf_empty",
+   "y": 90
+  },
+  "axis=z,open=true,role=centre,row=top": {
+   "model": "keralatemple:block/temple_leaf_empty",
+   "y": 90
+  },
+  "axis=z,open=true,role=edge_l,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_l",
+   "y": 90
+  },
+  "axis=z,open=true,role=edge_l,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_l",
+   "y": 90
+  },
+  "axis=z,open=true,role=edge_l,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_l",
+   "y": 90
+  },
+  "axis=z,open=true,role=edge_r,row=bottom": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_r",
+   "y": 90
+  },
+  "axis=z,open=true,role=edge_r,row=mid": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_r",
+   "y": 90
+  },
+  "axis=z,open=true,role=edge_r,row=top": {
+   "model": "keralatemple:block/temple_leaf_gold_plated_stack_r",
+   "y": 90
+  }
+ }
+}

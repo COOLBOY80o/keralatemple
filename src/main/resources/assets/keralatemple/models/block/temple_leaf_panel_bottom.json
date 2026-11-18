@@ -1,0 +1,40 @@
+{
+ "textures": {
+  "particle": "keralatemple:block/temple_leaf_panel_bottom",
+  "t": "keralatemple:block/temple_leaf_panel_bottom"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    6
+   ],
+   "to": [
+    16,
+    16,
+    10
+   ],
+   "faces": {
+    "north": {
+     "texture": "#t"
+    },
+    "east": {
+     "texture": "#t"
+    },
+    "south": {
+     "texture": "#t"
+    },
+    "west": {
+     "texture": "#t"
+    },
+    "up": {
+     "texture": "#t"
+    },
+    "down": {
+     "texture": "#t"
+    }
+   }
+  }
+ ]
+}

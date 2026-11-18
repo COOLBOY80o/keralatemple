@@ -59,5 +59,11 @@
   "item.keralatemple.thimila_spawn_egg": "Thimila Player Spawn Egg",
   "block.keralatemple.music_station": "Music Station",
   "block.keralatemple.carved_block": "Carved Block",
-  "item.keralatemple.carving_chisel": "Carving Chisel (Pranala Chisel)"
+  "item.keralatemple.carving_chisel": "Carving Chisel (Pranala Chisel)",
+  "item.keralatemple.temple_door_set": "Temple Door Set",
+  "block.keralatemple.temple_leaf": "Temple Door Set (leaf)",
+  "item.keralatemple.temple_door_set_gold_plated": "Gold-plated Temple Door Set",
+  "block.keralatemple.temple_leaf_gold_plated": "Gold-plated Temple Door Set (leaf)",
+  "item.keralatemple.temple_door_set_gold": "Golden Temple Door Set",
+  "block.keralatemple.temple_leaf_gold": "Golden Temple Door Set (leaf)"
 }

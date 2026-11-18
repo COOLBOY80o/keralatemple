@@ -1,0 +1,19 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "building",
+ "ingredients": [
+  {
+   "item": "keralatemple:temple_door"
+  },
+  {
+   "item": "keralatemple:temple_door"
+  },
+  {
+   "item": "keralatemple:temple_door"
+  }
+ ],
+ "result": {
+  "item": "keralatemple:temple_door_set",
+  "count": 1
+ }
+}
