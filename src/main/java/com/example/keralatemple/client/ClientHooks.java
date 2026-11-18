@@ -23,7 +23,7 @@ public final class ClientHooks {
     public static void openAchariScreen(int entityId) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null && mc.level.getEntity(entityId) instanceof AchariEntity) {
-            mc.setScreen(new IdolDesignerScreen(null, entityId, null));
+            mc.setScreen(new AchariMenuScreen(entityId));
         }
     }
 }

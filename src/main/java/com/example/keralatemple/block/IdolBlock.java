@@ -3,6 +3,9 @@ package com.example.keralatemple.block;
 import com.example.keralatemple.blockentity.IdolBlockEntity;
 import com.example.keralatemple.idol.IdolData;
 import com.example.keralatemple.idol.IdolMaterial;
+import com.example.keralatemple.idol.OrnamentData;
+import com.example.keralatemple.item.AngiItem;
+import com.example.keralatemple.item.OrnamentItem;
 import com.example.keralatemple.item.CastIdolItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -97,20 +100,68 @@ public class IdolBlock extends BaseEntityBlock {
         return new IdolBlockEntity(pos, state);
     }
 
-    /** Pedestal only: right-click with a cast idol to place it; sneak + empty hand takes it back. */
+    /**
+     * Right-click with an ornament or an angi to dress the idol; with a cast idol on a pedestal to place it.
+     * Sneak + empty hand takes things back: the angi first, then ornaments one by one, then (pedestal) the idol.
+     */
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                  InteractionHand hand, BlockHitResult hit) {
-        if (this.kind != Kind.PEETHAM) {
-            return InteractionResult.PASS;
-        }
         BlockEntity be = level.getBlockEntity(pos);
         if (!(be instanceof IdolBlockEntity idol)) {
             return InteractionResult.PASS;
         }
         ItemStack held = player.getItemInHand(hand);
 
-        if (held.getItem() instanceof CastIdolItem) {
+        if (held.getItem() instanceof OrnamentItem) {
+            OrnamentData ornament = OrnamentItem.getData(held);
+            if (ornament == null) {
+                return InteractionResult.PASS;
+            }
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            if (idol.getData() == null) {
+                player.displayClientMessage(Component.literal("There is no idol here to dress yet."), true);
+                return InteractionResult.CONSUME;
+            }
+            OrnamentData replaced = idol.addOrnament(ornament);
+            if (!player.getAbilities().instabuild) {
+                held.shrink(1);
+            }
+            if (replaced != null) {
+                give(player, OrnamentItem.create(replaced));
+            }
+            level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 1.0F, 1.1F);
+            return InteractionResult.CONSUME;
+        }
+
+        if (held.getItem() instanceof AngiItem) {
+            IdolData angi = AngiItem.getData(held);
+            if (angi == null) {
+                return InteractionResult.PASS;
+            }
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            if (idol.getData() == null) {
+                player.displayClientMessage(Component.literal("There is no idol here to cover yet."), true);
+                return InteractionResult.CONSUME;
+            }
+            if (idol.getAngi() != null) {
+                player.displayClientMessage(Component.literal("This idol already wears an angi. "
+                        + "Sneak and right-click with an empty hand to remove it."), true);
+                return InteractionResult.CONSUME;
+            }
+            idol.setAngi(angi);
+            if (!player.getAbilities().instabuild) {
+                held.shrink(1);
+            }
+            level.playSound(null, pos, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 0.6F, 1.4F);
+            return InteractionResult.CONSUME;
+        }
+
+        if (this.kind == Kind.PEETHAM && held.getItem() instanceof CastIdolItem) {
             IdolData data = CastIdolItem.getData(held);
             if (data == null) {
                 return InteractionResult.PASS;
@@ -131,12 +182,20 @@ public class IdolBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
 
-        if (held.isEmpty() && player.isShiftKeyDown() && idol.getData() != null) {
+        if (held.isEmpty() && player.isShiftKeyDown()) {
+            if (idol.getAngi() == null && idol.getOrnaments().isEmpty()
+                    && !(this.kind == Kind.PEETHAM && idol.getData() != null)) {
+                return InteractionResult.PASS;
+            }
             if (!level.isClientSide) {
-                ItemStack out = CastIdolItem.create(idol.getData());
-                idol.setData(null);
-                if (!player.getInventory().add(out)) {
-                    player.drop(out, false);
+                if (idol.getAngi() != null) {
+                    give(player, AngiItem.create(idol.getAngi()));
+                    idol.setAngi(null);
+                } else if (!idol.getOrnaments().isEmpty()) {
+                    give(player, OrnamentItem.create(idol.removeLastOrnament()));
+                } else {
+                    give(player, CastIdolItem.create(idol.getData()));
+                    idol.setData(null);
                 }
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -144,13 +203,27 @@ public class IdolBlock extends BaseEntityBlock {
         return InteractionResult.PASS;
     }
 
-    /** A pedestal that is broken gives its idol back as an item. */
+    private static void give(Player player, ItemStack stack) {
+        if (!player.getInventory().add(stack)) {
+            player.drop(stack, false);
+        }
+    }
+
+    /** Breaking the block gives back the angi and ornaments, and (for a pedestal) the idol. */
     @Override
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
-        if (!state.is(newState.getBlock()) && !level.isClientSide && this.kind == Kind.PEETHAM) {
+        if (!state.is(newState.getBlock()) && !level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof IdolBlockEntity idol && idol.getData() != null) {
-                Block.popResource(level, pos, CastIdolItem.create(idol.getData()));
+            if (be instanceof IdolBlockEntity idol) {
+                if (this.kind == Kind.PEETHAM && idol.getData() != null) {
+                    Block.popResource(level, pos, CastIdolItem.create(idol.getData()));
+                }
+                if (idol.getAngi() != null) {
+                    Block.popResource(level, pos, AngiItem.create(idol.getAngi()));
+                }
+                for (OrnamentData o : idol.getOrnaments()) {
+                    Block.popResource(level, pos, OrnamentItem.create(o));
+                }
             }
         }
         super.onRemove(state, level, pos, newState, moving);

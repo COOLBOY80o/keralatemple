@@ -17,5 +17,7 @@ public final class ModNetwork {
     public static void register() {
         CHANNEL.registerMessage(0, SubmitIdolPacket.class,
                 SubmitIdolPacket::encode, SubmitIdolPacket::decode, SubmitIdolPacket::handle);
+        CHANNEL.registerMessage(1, SubmitOrderPacket.class,
+                SubmitOrderPacket::encode, SubmitOrderPacket::decode, SubmitOrderPacket::handle);
     }
 }

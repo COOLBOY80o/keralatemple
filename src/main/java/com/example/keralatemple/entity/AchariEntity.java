@@ -32,8 +32,10 @@ import java.util.UUID;
  * He then casts it (it takes a little while) and hands you a finished idol to set on an Idol Pedestal.
  */
 public class AchariEntity extends PathfinderMob {
+    /** What he is making: the finished item, and a name for messages. */
     @Nullable
-    private IdolData order;
+    private ItemStack order;
+    private String orderLabel = "";
     @Nullable
     private UUID customer;
     private int castTicks;
@@ -73,21 +75,31 @@ public class AchariEntity extends PathfinderMob {
         return this.order != null;
     }
 
-    /** Takes an order from a player. Returns false if he is already busy. */
+    /** How long a job takes: the config time for a 2-block idol, times a factor. */
+    public static int ticksFor(float factor) {
+        return Math.max(40, (int) (Config.ACHARI_CAST_SECONDS.get() * 20 * factor));
+    }
+
+    /** An idol order: longer for taller idols. */
     public boolean takeOrder(ServerPlayer player, IdolData data) {
+        return takeOrder(player, CastIdolItem.create(data), ticksFor(data.size / 2.0F),
+                String.format(Locale.ROOT, "%.1f block %s idol", data.size, data.material.label));
+    }
+
+    /** Takes any order from a player. Returns false if he is already busy. */
+    public boolean takeOrder(ServerPlayer player, ItemStack product, int ticks, String label) {
         if (this.order != null) {
             int percent = this.castTotal <= 0 ? 0 : 100 - (this.castTicks * 100 / this.castTotal);
-            player.sendSystemMessage(Component.literal("The achari is busy casting another idol (" + percent + "% done)."));
+            player.sendSystemMessage(Component.literal("The achari is busy with another order (" + percent + "% done)."));
             return false;
         }
-        int baseTicks = Config.ACHARI_CAST_SECONDS.get() * 20;
-        this.castTotal = Math.max(40, (int) (baseTicks * data.size / 2.0F));
-        this.castTicks = this.castTotal;
-        this.order = data;
+        this.castTotal = ticks;
+        this.castTicks = ticks;
+        this.order = product;
+        this.orderLabel = label;
         this.customer = player.getUUID();
-        player.sendSystemMessage(Component.literal(String.format(Locale.ROOT,
-                "The achari takes your order: a %.1f block %s idol. It will be ready in about %d seconds.",
-                data.size, data.material.label, this.castTotal / 20)));
+        player.sendSystemMessage(Component.literal("The achari takes your order: " + label
+                + ". It will be ready in about " + (ticks / 20) + " seconds."));
         this.playSound(SoundEvents.ANVIL_USE, 1.0F, 0.8F);
         return true;
     }
@@ -115,7 +127,7 @@ public class AchariEntity extends PathfinderMob {
             ServerPlayer owner = level.getServer().getPlayerList().getPlayer(this.customer);
             if (owner != null && owner.distanceToSqr(this) < 24.0D * 24.0D) {
                 int percent = 100 - (this.castTicks * 100 / this.castTotal);
-                owner.displayClientMessage(Component.literal("Casting your idol... " + percent + "%"), true);
+                owner.displayClientMessage(Component.literal("Working on your " + this.orderLabel + "... " + percent + "%"), true);
             }
         }
         if (this.castTicks <= 0) {
@@ -127,7 +139,7 @@ public class AchariEntity extends PathfinderMob {
         if (this.order == null) {
             return;
         }
-        ItemStack idol = CastIdolItem.create(this.order);
+        ItemStack idol = this.order.copy();
         ServerPlayer owner = this.customer == null ? null : level.getServer().getPlayerList().getPlayer(this.customer);
 
         level.playSound(null, this.blockPosition(), SoundEvents.LAVA_EXTINGUISH, SoundSource.NEUTRAL, 1.0F, 1.0F);
@@ -139,11 +151,12 @@ public class AchariEntity extends PathfinderMob {
             if (!owner.getInventory().add(idol)) {
                 this.spawnAtLocation(idol);
             }
-            owner.sendSystemMessage(Component.literal("Your idol is ready. Right-click an Idol Pedestal with it."));
+            owner.sendSystemMessage(Component.literal("Your " + this.orderLabel + " is ready."));
         } else {
             this.spawnAtLocation(idol);   // the customer is away: it waits at his feet
         }
         this.order = null;
+        this.orderLabel = "";
         this.customer = null;
         this.castTicks = 0;
         this.castTotal = 0;
@@ -153,7 +166,8 @@ public class AchariEntity extends PathfinderMob {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         if (this.order != null) {
-            tag.put("Order", this.order.save());
+            tag.put("Product", this.order.save(new CompoundTag()));
+            tag.putString("Label", this.orderLabel);
             tag.putInt("CastTicks", this.castTicks);
             tag.putInt("CastTotal", this.castTotal);
             if (this.customer != null) {
@@ -165,8 +179,9 @@ public class AchariEntity extends PathfinderMob {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
-        if (tag.contains("Order", 10)) {
-            this.order = IdolData.load(tag.getCompound("Order"));
+        if (tag.contains("Product", 10)) {
+            this.order = ItemStack.of(tag.getCompound("Product"));
+            this.orderLabel = tag.getString("Label");
             this.castTicks = tag.getInt("CastTicks");
             this.castTotal = tag.getInt("CastTotal");
             this.customer = tag.hasUUID("Customer") ? tag.getUUID("Customer") : null;

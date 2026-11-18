@@ -25,5 +25,7 @@
   "item.keralatemple.chisel": "Chisel",
   "item.keralatemple.cast_idol": "Cast Idol",
   "item.keralatemple.achari_spawn_egg": "Achari Spawn Egg",
-  "entity.keralatemple.achari": "Achari"
+  "entity.keralatemple.achari": "Achari",
+  "item.keralatemple.ornament": "Ornament",
+  "item.keralatemple.angi": "Angi"
 }

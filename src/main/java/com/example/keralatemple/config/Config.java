@@ -49,5 +49,9 @@ public class Config {
             .comment("How many seconds the achari takes to cast a 2-block-tall idol (taller idols take longer).")
             .defineInRange("achariCastSeconds", 30, 1, 3600);
 
+    public static final ForgeConfigSpec.BooleanValue ACHARI_NEEDS_MATERIALS = BUILDER
+            .comment("The achari asks for ingots and jewels for crowns, ornaments and angi (creative players pay nothing).")
+            .define("achariNeedsMaterials", true);
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 }

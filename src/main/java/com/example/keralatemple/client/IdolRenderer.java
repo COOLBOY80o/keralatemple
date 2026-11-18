@@ -52,9 +52,12 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
         drawPeetham(poseStack, buffers, data.peetham, y, light, overlay);
         y += data.peethamHeight();
 
-        IdolCache.IdolMesh mesh = IdolCache.get(data);
+        // An angi (metal cover) replaces the stone idol, a touch larger so it hugs it.
+        IdolData shown = be.getAngi() != null ? be.getAngi() : data;
+        IdolCache.IdolMesh mesh = IdolCache.get(shown);
+        float scale = data.size * (be.getAngi() != null ? 1.03F : 1.0F);
         poseStack.translate(0.0D, y, 0.0D);
-        poseStack.scale(data.size, data.size, data.size);
+        poseStack.scale(scale, scale, scale);
         PoseStack.Pose pose = poseStack.last();
         Matrix4f matrix = pose.pose();
         Matrix3f normal = pose.normal();
@@ -71,6 +74,8 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
                     .normal(normal, d[o + 3], d[o + 4], d[o + 5])
                     .endVertex();
         }
+        OrnamentRenderer.draw(poseStack, buffers, be.getOrnaments(), (float) data.width / data.height,
+                data.thickness, light);
         poseStack.popPose();
     }
 

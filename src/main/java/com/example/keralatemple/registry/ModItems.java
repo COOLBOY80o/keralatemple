@@ -1,7 +1,9 @@
 package com.example.keralatemple.registry;
 
 import com.example.keralatemple.KeralaTempleMod;
+import com.example.keralatemple.item.AngiItem;
 import com.example.keralatemple.item.CastIdolItem;
+import com.example.keralatemple.item.OrnamentItem;
 import com.example.keralatemple.item.ChiselItem;
 import com.example.keralatemple.item.TempleWandItem;
 import net.minecraft.world.item.Item;
@@ -35,4 +37,10 @@ public class ModItems {
     // Bronze and soot
     public static final RegistryObject<Item> ACHARI_SPAWN_EGG = ITEMS.register("achari_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.ACHARI, 0xB07A3A, 0x3A2A1E, new Item.Properties()));
+
+    public static final RegistryObject<Item> ORNAMENT = ITEMS.register("ornament",
+            () -> new OrnamentItem(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> ANGI = ITEMS.register("angi",
+            () -> new AngiItem(new Item.Properties().stacksTo(1)));
 }

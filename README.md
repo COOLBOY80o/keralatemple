@@ -91,6 +91,11 @@ Other commands: `/keralatemple status`, `temple list|info|select|delete|center|r
 
 **Metal idols.** Spawn an **Achari** (spawn egg) and **left-click him**. Same window, plus a metal (panchaloha, bronze, silver, gold). He casts it, which takes a while (more for taller idols; `achariCastSeconds` in the config), then hands you a Cast Idol. Right-click an **Idol Pedestal** with it to set it up; sneak with an empty hand to take it back.
 
+**Jewellery and angi.** Talk to the Achari and choose:
+- **Make jewellery:** a *kireedam* (crown), *mala* (necklace), *vala* (armlets) or *odyanam* (waist belt) in gold or silver, with an emerald, ruby or diamond in each of its five settings. Right-click an idol with the finished piece to dress it (a new piece replaces the old one of the same kind). Sneak with an empty hand to take things off, one at a time.
+- **Cast an angi:** right-click an idol with your Chisel to measure it, hold that chisel and order an angi in the metal you want. Right-click the idol with the angi to fit it; it covers the idol like a metal thiruvabharanam. Sneak with an empty hand to remove it.
+- He asks for materials (turn this off with `achariNeedsMaterials` in the config; creative players pay nothing). Gold = gold ingots, silver = iron ingots, bronze and panchaloha = copper ingots; emerald, diamond, and redstone for rubies (Minecraft has no silver or ruby).
+
 **What this really is.** A picture cannot hold the true shape of a statue. The mod makes a rounded relief from the outline (like inflating a sculpture), colours the front, and gives it a darker back and solid sides, up to 64 cells on the long side. It is not a full 3D sculpture, and there is no 3D preview inside the window.
 - Best results: a front-facing picture on a plain background, or a PNG with a transparent background.
 - Breaking a shila loses the idol carved on it. Breaking a pedestal gives the idol back.
