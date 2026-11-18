@@ -41,9 +41,31 @@ public class IdolBlockEntity extends BlockEntity {
         }
     }
 
+    /** Flower codes (see Flower.code) of the garland the idol wears; empty = none. */
+    private byte[] garland = new byte[0];
     @Nullable
     private IdolData angi;
     private final List<OrnamentData> ornaments = new ArrayList<>();
+
+    public byte[] getGarland() {
+        return this.garland;
+    }
+
+    public void setGarland(byte[] garland) {
+        this.garland = garland;
+        sync();
+    }
+
+    /** A visitor adds one flower to the garland (at most 12). Returns false if it is full. */
+    public boolean addFlower(byte code) {
+        if (this.garland.length >= 12) {
+            return false;
+        }
+        byte[] bigger = java.util.Arrays.copyOf(this.garland, this.garland.length + 1);
+        bigger[this.garland.length] = code;
+        setGarland(bigger);
+        return true;
+    }
 
     @Nullable
     public IdolData getAngi() {
@@ -100,6 +122,9 @@ public class IdolBlockEntity extends BlockEntity {
         if (this.angi != null) {
             tag.put("Angi", this.angi.save());
         }
+        if (this.garland.length > 0) {
+            tag.putByteArray("Garland", this.garland);
+        }
         ListTag list = new ListTag();
         for (OrnamentData o : this.ornaments) {
             list.add(o.save());
@@ -112,6 +137,7 @@ public class IdolBlockEntity extends BlockEntity {
         super.load(tag);
         this.data = tag.contains("Idol", 10) ? IdolData.load(tag.getCompound("Idol")) : null;
         this.angi = tag.contains("Angi", 10) ? IdolData.load(tag.getCompound("Angi")) : null;
+        this.garland = tag.getByteArray("Garland");
         this.ornaments.clear();
         ListTag list = tag.getList("Ornaments", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {

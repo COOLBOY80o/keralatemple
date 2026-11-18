@@ -15,6 +15,8 @@ public class ClientEvents {
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(ModEntities.PRIEST.get(), ctx -> new NpcRenderer<>(ctx, "priest"));
         event.registerEntityRenderer(ModEntities.KEEZHSHANTHI.get(), ctx -> new NpcRenderer<>(ctx, "keezhshanthi"));
+        event.registerEntityRenderer(ModEntities.KAZHAKAM.get(), ctx -> new NpcRenderer<>(ctx, "kazhakam"));
+        event.registerEntityRenderer(ModEntities.COOK.get(), ctx -> new NpcRenderer<>(ctx, "cook"));
         event.registerEntityRenderer(ModEntities.ACHARI.get(), ctx -> new NpcRenderer<>(ctx, "achari"));
         event.registerBlockEntityRenderer(ModBlockEntities.IDOL.get(), IdolRenderer::new);
     }

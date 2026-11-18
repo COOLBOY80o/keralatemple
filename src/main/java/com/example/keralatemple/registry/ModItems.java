@@ -43,4 +43,32 @@ public class ModItems {
 
     public static final RegistryObject<Item> ANGI = ITEMS.register("angi",
             () -> new AngiItem(new Item.Properties().stacksTo(1)));
+
+    // --- Flowers and leaves for pooja ---
+    public static final RegistryObject<Item> TULASI = simple("tulasi");
+    public static final RegistryObject<Item> THECHI = simple("thechi");
+    public static final RegistryObject<Item> LOTUS = simple("lotus");
+    public static final RegistryObject<Item> VILWA = simple("vilwa");
+    public static final RegistryObject<Item> CHEMBARATHI = simple("chembarathi");
+    public static final RegistryObject<Item> MULLA = simple("mulla");
+
+    // --- Ingredients ---
+    public static final RegistryObject<Item> RAW_RICE = simple("raw_rice");
+    public static final RegistryObject<Item> NEY = simple("ney");
+    public static final RegistryObject<Item> JAGGERY = simple("jaggery");
+    public static final RegistryObject<Item> COCONUT = simple("coconut");
+    public static final RegistryObject<Item> BANANA = simple("banana");
+
+    public static final RegistryObject<Item> URULI_SPOON = ITEMS.register("uruli_spoon",
+            () -> new Item(new Item.Properties().stacksTo(1)));
+
+    public static final RegistryObject<Item> KAZHAKAM_SPAWN_EGG = ITEMS.register("kazhakam_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.KAZHAKAM, 0xF2E6C8, 0xD9A0C8, new Item.Properties()));
+
+    public static final RegistryObject<Item> COOK_SPAWN_EGG = ITEMS.register("cook_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.COOK, 0xF2E6C8, 0xE08A2E, new Item.Properties()));
+
+    private static RegistryObject<Item> simple(String name) {
+        return ITEMS.register(name, () -> new Item(new Item.Properties()));
+    }
 }

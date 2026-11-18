@@ -274,6 +274,9 @@ public class RitualGoal extends Goal {
         }
         if (kind == RitualSchedule.Kind.POOJA) {
             effectTick(level, pos);
+            if (this.arrivedTicks >= 100) {
+                offerNivedyam(level, pos);
+            }
         }
         if (kind != RitualSchedule.Kind.CLOSE && this.arrivedTicks % 80 == 1) {
             play(level, pos, SoundEvents.BELL_BLOCK, 1.2F, 1.1F);
@@ -354,6 +357,31 @@ public class RitualGoal extends Goal {
                 }
             }
             default -> { }
+        }
+    }
+
+    /** When the cook has finished this ritual's nivedyam, the melshanthi offers it. */
+    private void offerNivedyam(ServerLevel level, BlockPos pos) {
+        Temple temple = this.priest.getTemple();
+        if (temple == null || temple.cookStage != 3) {
+            return;
+        }
+        String key = KeralaClock.now().toLocalDate() + "/" + this.active.id();
+        com.example.keralatemple.ritual.Nivedyam food =
+                com.example.keralatemple.ritual.Nivedyam.byId(temple.nivedyam.getOrDefault(this.active.id(), ""));
+        if (food == null || !key.equals(temple.cookKey)) {
+            return;
+        }
+        temple.cookStage = 4;
+        this.priest.swing(InteractionHand.MAIN_HAND);
+        level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(food.showItem())),
+                pos.getX() + 0.5D, pos.getY() + 1.4D, pos.getZ() + 0.5D, 24, 0.3D, 0.2D, 0.3D, 0.05D);
+        play(level, pos, SoundEvents.NOTE_BLOCK_BELL.value(), 1.2F, 0.9F);
+        // The empty vessel goes back to its place.
+        for (BlockPos u : this.priest.findMarkers(ModBlocks.URULI.get())) {
+            net.minecraft.world.level.block.state.BlockState s = level.getBlockState(u);
+            level.setBlock(u, s.setValue(com.example.keralatemple.block.UruliBlock.CONTENT,
+                    com.example.keralatemple.block.UruliBlock.Content.EMPTY), 3);
         }
     }
 

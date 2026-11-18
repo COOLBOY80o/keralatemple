@@ -114,6 +114,20 @@ Rituals are programmed per temple, on the real Kerala 24-hour clock. **Nothing i
 - **Temple doors** (wood, gold-plated, gold): you can open them by hand, and the melshanthi opens every door of the temple at nada thurakkal and closes them at nada adakkal.
 - The default schedule changed, so existing worlds use a new config entry (`ritualScheduleV2`). Temples with their own schedule keep it.
 
+## Flowers and cooking (round 2)
+
+**Flowers.** Six temple flowers: tulasi, thechi, lotus, vilwa, chembarathi, mulla. Craft them from vanilla plants (fern, red tulip, pink tulip, oak leaves, poppy, lily of the valley give 2 each).
+- Spawn a **Kazhakam** (flower assistant). Before each pooja he takes the temple's chosen flowers from chests or barrels within 8 blocks of the Pooja Station and hangs a garland on the idols near it; at nada adakkal the garlands come down.
+- You choose what each temple uses: `/keralatemple flowers list|add|remove <temple> <flower>`.
+- You can step in yourself: right-click an idol with a flower to add it to the garland, sneak with an empty hand to clear it.
+- Set `flowersNeedStock` to false in the config for free flowers.
+
+**Cooking.** Build a kitchen: an **Aduppu** (hearth, 8 bricks in a ring) with an **Uruli** (5 copper ingots) on top, and put a chest or barrel with the ingredients within 8 blocks of the uruli. Spawn a **Madapally** (cook). He holds the **Uruli Spoon**.
+- Choose the food per ritual: `/keralatemple nivedyam set <temple> <ritual> <food>`. Foods: `ney_payasam`, `malar`, `thrimadhuram`, `kadum_payasam`; `nivedyam list <temple>` shows what each needs. The cook starts `cookMinutes` (20 by default) before the ritual: fills the uruli with water and lights the fire, boils, adds the ingredients from the chest, stirs, and when the ritual begins the melshanthi offers it.
+- Ingredients: raw rice (1 wheat gives 2), ney (a milk bucket gives 4), jaggery (3 sugar cane give 2), coconut (2 cocoa beans), banana (2 melon slices), and honey bottles for thrimadhuram. Vanilla has no coconut, banana or ghee, so these are crafted stand-ins.
+- If the chest lacks something the cook shows an angry cloud and waits; `/keralatemple status` says what is missing. Turn off `cookNeedsIngredients` in the config for free cooking.
+- You can use the kitchen too: pour water into the uruli with a bucket, stir with the spoon, light the aduppu with flint and steel (sneak with an empty hand empties or puts out).
+
 ## Layout
 
     src/main/java/com/example/keralatemple/

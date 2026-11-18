@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "content=empty": {
+      "model": "keralatemple:block/uruli_empty"
+    },
+    "content=water": {
+      "model": "keralatemple:block/uruli_water"
+    },
+    "content=cooking": {
+      "model": "keralatemple:block/uruli_cooking"
+    },
+    "content=done": {
+      "model": "keralatemple:block/uruli_done"
+    }
+  }
+}

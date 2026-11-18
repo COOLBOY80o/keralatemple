@@ -77,6 +77,26 @@ public final class OrnamentRenderer {
         }
     }
 
+    /** A garland of the offered flowers, hanging lower than the necklace. */
+    public static void drawGarland(PoseStack ps, MultiBufferSource buffers, byte[] garland, float thickness, int light) {
+        if (garland.length == 0) {
+            return;
+        }
+        VertexConsumer vc = buffers.getBuffer(RenderType.entityCutoutNoCull(WHITE));
+        float zf = -0.14F * thickness - 0.02F;
+        int beads = 15;
+        for (int k = 0; k < beads; k++) {
+            float t = (k - (beads - 1) / 2.0F) / ((beads - 1) / 2.0F);
+            float x = t * 0.13F;
+            float y = 0.70F - 0.10F * (1.0F - t * t);
+            var f = com.example.keralatemple.ritual.Flower.byCode(garland[k % garland.length]);
+            int colour = f == null ? 0xFFFFFF : f.colour;
+            box(vc, ps, x, y, zf, 0.014F, 0.014F, 0.014F, colour, light);
+        }
+        var f = com.example.keralatemple.ritual.Flower.byCode(garland[0]);
+        box(vc, ps, 0.0F, 0.56F, zf, 0.02F, 0.03F, 0.02F, f == null ? 0xFFFFFF : f.colour, light);
+    }
+
     public static int metalColour(IdolMaterial m) {
         return (m.r << 16) | (m.g << 8) | m.b;
     }

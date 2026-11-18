@@ -31,6 +31,20 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.POOJA_STATION.get());
                         output.accept(ModBlocks.SEEVELI_WAYPOINT.get());
                         output.accept(ModBlocks.KUDAM_STATION.get());
+                        output.accept(ModBlocks.ADUPPU.get());
+                        output.accept(ModBlocks.URULI.get());
+                        output.accept(ModItems.URULI_SPOON.get());
+                        output.accept(ModItems.TULASI.get());
+                        output.accept(ModItems.THECHI.get());
+                        output.accept(ModItems.LOTUS.get());
+                        output.accept(ModItems.VILWA.get());
+                        output.accept(ModItems.CHEMBARATHI.get());
+                        output.accept(ModItems.MULLA.get());
+                        output.accept(ModItems.RAW_RICE.get());
+                        output.accept(ModItems.NEY.get());
+                        output.accept(ModItems.JAGGERY.get());
+                        output.accept(ModItems.COCONUT.get());
+                        output.accept(ModItems.BANANA.get());
                         output.accept(ModBlocks.TEMPLE_DOOR.get());
                         output.accept(ModBlocks.TEMPLE_DOOR_GOLD_PLATED.get());
                         output.accept(ModBlocks.TEMPLE_DOOR_GOLD.get());
@@ -43,6 +57,8 @@ public class ModCreativeTabs {
                         output.accept(ModItems.ACHARI_SPAWN_EGG.get());
                         output.accept(ModItems.PRIEST_SPAWN_EGG.get());
                         output.accept(ModItems.KEEZHSHANTHI_SPAWN_EGG.get());
+                        output.accept(ModItems.KAZHAKAM_SPAWN_EGG.get());
+                        output.accept(ModItems.COOK_SPAWN_EGG.get());
                     })
                     .build());
 }

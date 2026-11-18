@@ -1,7 +1,9 @@
 package com.example.keralatemple.registry;
 
 import com.example.keralatemple.KeralaTempleMod;
+import com.example.keralatemple.block.AduppuBlock;
 import com.example.keralatemple.block.BaliStoneBlock;
+import com.example.keralatemple.block.UruliBlock;
 import com.example.keralatemple.block.IdolBlock;
 import com.example.keralatemple.block.MarkerBlock;
 import com.example.keralatemple.block.NilavilakkuBlock;
@@ -139,6 +141,21 @@ public class ModBlocks {
                     .strength(0.3F)
                     .noOcclusion()
                     .sound(SoundType.WOOL)));
+
+    // --- Kitchen: hearth and cooking vessel ---
+    public static final RegistryObject<Block> ADUPPU = registerBlock("aduppu",
+            () -> new AduppuBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.TERRACOTTA_RED)
+                    .strength(2.0F, 6.0F)
+                    .requiresCorrectToolForDrops()
+                    .lightLevel(state -> state.getValue(AduppuBlock.LIT) ? 13 : 0)
+                    .sound(SoundType.STONE)));
+    public static final RegistryObject<Block> URULI = registerBlock("uruli",
+            () -> new UruliBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.GOLD)
+                    .strength(1.5F, 4.0F)
+                    .noOcclusion()
+                    .sound(SoundType.COPPER)));
 
     // --- Temple doors ---
     public static final RegistryObject<Block> TEMPLE_DOOR = registerDoor("temple_door", MapColor.WOOD, SoundType.WOOD);

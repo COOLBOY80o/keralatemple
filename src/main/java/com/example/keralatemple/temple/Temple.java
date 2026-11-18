@@ -6,7 +6,13 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
 
+import com.example.keralatemple.ritual.Flower;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.List;
 
 /** One temple: where it is, its own ritual schedule, and its bali stones. */
@@ -20,6 +26,15 @@ public class Temple {
     /** Ayirakudam progress (not saved): pots delivered in the current ritual, and which ritual that was. */
     public int kudams = 0;
     public String kudamKey = "";
+    /** Flowers this temple offers (ids from Flower). */
+    public final Set<String> flowers = new LinkedHashSet<>();
+    /** Ritual id -> nivedyam id: what the cook makes for which ritual. */
+    public final Map<String, String> nivedyam = new LinkedHashMap<>();
+    /** Progress of today's cooking and garland (not saved). */
+    public String cookKey = "";
+    public int cookStage = 0;
+    public String cookMissing = "";
+    public String garlandKey = "";
     public final List<BlockPos> baliStones = new ArrayList<>();
     public final List<Valiya> valiya = new ArrayList<>();
 
@@ -33,6 +48,9 @@ public class Temple {
     public Temple(String name, BlockPos center) {
         this.name = name;
         this.center = center;
+        for (Flower f : Flower.values()) {
+            this.flowers.add(f.id);
+        }
     }
 
     public double horizontalDistSq(BlockPos pos) {
@@ -53,6 +71,16 @@ public class Temple {
             }
             tag.put("Schedule", list);
         }
+        ListTag flowerList = new ListTag();
+        for (String f : flowers) {
+            flowerList.add(StringTag.valueOf(f));
+        }
+        tag.put("Flowers", flowerList);
+        CompoundTag nived = new CompoundTag();
+        for (Map.Entry<String, String> e : nivedyam.entrySet()) {
+            nived.putString(e.getKey(), e.getValue());
+        }
+        tag.put("Nivedyam", nived);
         tag.putLongArray("Bali", baliStones.stream().mapToLong(BlockPos::asLong).toArray());
         ListTag valiyaList = new ListTag();
         for (Valiya v : valiya) {
@@ -76,6 +104,17 @@ public class Temple {
                 list.add(raw.getString(i));
             }
             t.schedule = list;
+        }
+        if (tag.contains("Flowers", Tag.TAG_LIST)) {
+            t.flowers.clear();
+            ListTag fl = tag.getList("Flowers", Tag.TAG_STRING);
+            for (int i = 0; i < fl.size(); i++) {
+                t.flowers.add(fl.getString(i));
+            }
+        }
+        CompoundTag nived = tag.getCompound("Nivedyam");
+        for (String key : nived.getAllKeys()) {
+            t.nivedyam.put(key, nived.getString(key));
         }
         for (long l : tag.getLongArray("Bali")) {
             t.baliStones.add(BlockPos.of(l));

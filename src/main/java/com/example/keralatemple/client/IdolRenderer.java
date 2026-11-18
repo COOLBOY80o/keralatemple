@@ -74,6 +74,7 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
                     .normal(normal, d[o + 3], d[o + 4], d[o + 5])
                     .endVertex();
         }
+        OrnamentRenderer.drawGarland(poseStack, buffers, be.getGarland(), data.thickness, light);
         OrnamentRenderer.draw(poseStack, buffers, be.getOrnaments(), (float) data.width / data.height,
                 data.thickness, light);
         poseStack.popPose();

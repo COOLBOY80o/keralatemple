@@ -3,7 +3,9 @@ package com.example.keralatemple.event;
 import com.example.keralatemple.KeralaTempleMod;
 import com.example.keralatemple.config.Config;
 import com.example.keralatemple.item.TempleWandItem;
+import com.example.keralatemple.ritual.Flower;
 import com.example.keralatemple.ritual.KeralaClock;
+import com.example.keralatemple.ritual.Nivedyam;
 import com.example.keralatemple.ritual.RitualSchedule;
 import com.example.keralatemple.temple.Temple;
 import com.example.keralatemple.temple.TempleData;
@@ -50,6 +52,8 @@ import java.util.regex.Pattern;
  *   status
  *   temple   create | delete | list | info | select | center | radius
  *   schedule list | set | sunset | remove | reset
+ *   flowers  list | add | remove
+ *   nivedyam list | set | clear
  *   balikkal list | remove | clearstones | save | place
  *   wand     mode
  */
@@ -66,6 +70,10 @@ public class ModCommands {
             SharedSuggestionProvider.suggest(TempleData.get(ctx.getSource().getLevel()).names(), builder);
     private static final SuggestionProvider<CommandSourceStack> RITUAL_IDS = (ctx, builder) ->
             SharedSuggestionProvider.suggest(RitualSchedule.ids(), builder);
+    private static final SuggestionProvider<CommandSourceStack> FLOWER_IDS = (ctx, builder) ->
+            SharedSuggestionProvider.suggest(Arrays.stream(Flower.values()).map(f -> f.id).toList(), builder);
+    private static final SuggestionProvider<CommandSourceStack> FOOD_IDS = (ctx, builder) ->
+            SharedSuggestionProvider.suggest(Arrays.stream(Nivedyam.values()).map(n -> n.id).toList(), builder);
     private static final SuggestionProvider<CommandSourceStack> WAND_MODES = (ctx, builder) ->
             SharedSuggestionProvider.suggest(Arrays.stream(TempleWandItem.Mode.values()).map(m -> m.id).toList(), builder);
 
@@ -75,6 +83,8 @@ public class ModCommands {
         root.then(Commands.literal("status").executes(ModCommands::status));
         root.then(templeNode());
         root.then(scheduleNode());
+        root.then(flowersNode());
+        root.then(nivedyamNode());
         root.then(balikkalNode());
         root.then(wandNode());
         event.getDispatcher().register(root);
@@ -128,6 +138,15 @@ public class ModCommands {
         say(ctx, "Now: " + (current == null ? "no ritual in progress" : current.displayName()));
         if (temple != null && temple.kudamKey.length() > 0) {
             say(ctx, "Ayirakudam: " + temple.kudams + " / 1000 pots");
+        }
+        if (temple != null) {
+            for (var e : temple.nivedyam.entrySet()) {
+                Nivedyam n = Nivedyam.byId(e.getValue());
+                say(ctx, "Nivedyam: " + e.getKey() + " -> " + (n == null ? e.getValue() : n.label));
+            }
+            if (!temple.cookMissing.isEmpty()) {
+                say(ctx, "The cook is waiting: " + temple.cookMissing);
+            }
         }
         say(ctx, "Next: " + (next == null ? "none scheduled" : next.displayName() + " at " + next.start().format(HM)));
         return 1;
@@ -324,6 +343,96 @@ public class ModCommands {
         t.schedule = null;
         TempleData.get(ctx.getSource().getLevel()).touch();
         say(ctx, "'" + t.name + "' now uses the default schedule again.");
+        return 1;
+    }
+
+    // ------------------------------------------------------------------ flowers and nivedyam
+
+    private static LiteralArgumentBuilder<CommandSourceStack> flowersNode() {
+        return Commands.literal("flowers")
+                .then(Commands.literal("list").then(templeArg().executes(ModCommands::flowersList)))
+                .then(Commands.literal("add").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("flower", StringArgumentType.word()).suggests(FLOWER_IDS)
+                                .executes(ctx -> flowersChange(ctx, true)))))
+                .then(Commands.literal("remove").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("flower", StringArgumentType.word()).suggests(FLOWER_IDS)
+                                .executes(ctx -> flowersChange(ctx, false)))));
+    }
+
+    private static int flowersList(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Temple t = temple(ctx);
+        say(ctx, "Flowers used by '" + t.name + "': " + (t.flowers.isEmpty() ? "none" : String.join(", ", t.flowers)));
+        say(ctx, "All flowers: " + String.join(", ", Arrays.stream(Flower.values()).map(f -> f.id).toList()));
+        return t.flowers.size();
+    }
+
+    private static int flowersChange(CommandContext<CommandSourceStack> ctx, boolean add) throws CommandSyntaxException {
+        Temple t = temple(ctx);
+        String id = StringArgumentType.getString(ctx, "flower").toLowerCase(Locale.ROOT);
+        if (Flower.byId(id) == null) {
+            throw ERROR.create("Unknown flower '" + id + "'. Press Tab to see the choices.");
+        }
+        if (add) {
+            t.flowers.add(id);
+        } else {
+            t.flowers.remove(id);
+        }
+        TempleData.get(ctx.getSource().getLevel()).touch();
+        say(ctx, "'" + t.name + "' now uses: " + (t.flowers.isEmpty() ? "no flowers" : String.join(", ", t.flowers)));
+        return 1;
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> nivedyamNode() {
+        return Commands.literal("nivedyam")
+                .then(Commands.literal("list").then(templeArg().executes(ModCommands::nivedyamList)))
+                .then(Commands.literal("set").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("ritual", StringArgumentType.word()).suggests(RITUAL_IDS)
+                                .then(Commands.argument("food", StringArgumentType.word()).suggests(FOOD_IDS)
+                                        .executes(ModCommands::nivedyamSet)))))
+                .then(Commands.literal("clear").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("ritual", StringArgumentType.word()).suggests(RITUAL_IDS)
+                                .executes(ModCommands::nivedyamClear))));
+    }
+
+    private static int nivedyamList(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Temple t = temple(ctx);
+        if (t.nivedyam.isEmpty()) {
+            say(ctx, "'" + t.name + "' has no nivedyam set. Use /keralatemple nivedyam set <temple> <ritual> <food>.");
+        }
+        for (var e : t.nivedyam.entrySet()) {
+            Nivedyam n = Nivedyam.byId(e.getValue());
+            say(ctx, e.getKey() + " -> " + (n == null ? e.getValue() : n.label));
+        }
+        for (Nivedyam n : Nivedyam.values()) {
+            say(ctx, n.id + " needs " + com.example.keralatemple.idol.AchariCosts.describe(n.ingredients()));
+        }
+        return t.nivedyam.size();
+    }
+
+    private static int nivedyamSet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Temple t = temple(ctx);
+        String ritual = ritualArg(ctx);
+        String food = StringArgumentType.getString(ctx, "food").toLowerCase(Locale.ROOT);
+        Nivedyam n = Nivedyam.byId(food);
+        if (n == null) {
+            throw ERROR.create("Unknown nivedyam '" + food + "'. Press Tab to see the choices.");
+        }
+        t.nivedyam.put(ritual, n.id);
+        TempleData.get(ctx.getSource().getLevel()).touch();
+        say(ctx, "'" + t.name + "': the cook will make " + n.label + " for " + ritual + " about "
+                + Config.COOK_MINUTES.get() + " minutes before it starts. Put " + com.example.keralatemple.idol.AchariCosts
+                .describe(n.ingredients()) + " in a chest near the uruli.");
+        return 1;
+    }
+
+    private static int nivedyamClear(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Temple t = temple(ctx);
+        String ritual = ritualArg(ctx);
+        if (t.nivedyam.remove(ritual) == null) {
+            throw ERROR.create(ritual + " has no nivedyam in '" + t.name + "'.");
+        }
+        TempleData.get(ctx.getSource().getLevel()).touch();
+        say(ctx, "Removed the nivedyam of " + ritual + ".");
         return 1;
     }
 

@@ -53,5 +53,17 @@ public class Config {
             .comment("The achari asks for ingots and jewels for crowns, ornaments and angi (creative players pay nothing).")
             .define("achariNeedsMaterials", true);
 
+    public static final ForgeConfigSpec.IntValue COOK_MINUTES = BUILDER
+            .comment("How many real minutes before a ritual the cook starts making its nivedyam.")
+            .defineInRange("cookMinutes", 20, 1, 120);
+
+    public static final ForgeConfigSpec.BooleanValue COOK_NEEDS_INGREDIENTS = BUILDER
+            .comment("The cook takes the ingredients from chests and barrels near the uruli. Turn off for free cooking.")
+            .define("cookNeedsIngredients", true);
+
+    public static final ForgeConfigSpec.BooleanValue FLOWERS_NEED_STOCK = BUILDER
+            .comment("The kazhakam takes flowers from chests and barrels near the pooja station. Turn off for free flowers.")
+            .define("flowersNeedStock", true);
+
     public static final ForgeConfigSpec SPEC = BUILDER.build();
 }

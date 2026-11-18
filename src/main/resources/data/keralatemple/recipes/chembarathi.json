@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:poppy"
+    }
+  ],
+  "result": {
+    "item": "keralatemple:chembarathi",
+    "count": 2
+  }
+}

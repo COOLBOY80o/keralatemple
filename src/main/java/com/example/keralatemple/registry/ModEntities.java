@@ -2,6 +2,8 @@ package com.example.keralatemple.registry;
 
 import com.example.keralatemple.KeralaTempleMod;
 import com.example.keralatemple.entity.AchariEntity;
+import com.example.keralatemple.entity.CookEntity;
+import com.example.keralatemple.entity.KazhakamEntity;
 import com.example.keralatemple.entity.KeezhshanthiEntity;
 import com.example.keralatemple.entity.PriestEntity;
 import net.minecraft.resources.ResourceLocation;
@@ -32,4 +34,16 @@ public class ModEntities {
                     .sized(0.5F, 1.6F)
                     .clientTrackingRange(10)
                     .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "achari").toString()));
+
+    public static final RegistryObject<EntityType<KazhakamEntity>> KAZHAKAM = ENTITY_TYPES.register("kazhakam",
+            () -> EntityType.Builder.of(KazhakamEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(10)
+                    .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "kazhakam").toString()));
+
+    public static final RegistryObject<EntityType<CookEntity>> COOK = ENTITY_TYPES.register("cook",
+            () -> EntityType.Builder.of(CookEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(10)
+                    .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "cook").toString()));
 }

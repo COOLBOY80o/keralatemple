@@ -6,6 +6,7 @@ import com.example.keralatemple.idol.IdolMaterial;
 import com.example.keralatemple.idol.OrnamentData;
 import com.example.keralatemple.item.AngiItem;
 import com.example.keralatemple.item.OrnamentItem;
+import com.example.keralatemple.ritual.Flower;
 import com.example.keralatemple.item.CastIdolItem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -113,6 +114,27 @@ public class IdolBlock extends BaseEntityBlock {
         }
         ItemStack held = player.getItemInHand(hand);
 
+        Flower flower = Flower.byItem(held.getItem());
+        if (flower != null) {
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            if (idol.getData() == null) {
+                player.displayClientMessage(Component.literal("There is no idol here to offer flowers to yet."), true);
+                return InteractionResult.CONSUME;
+            }
+            if (!idol.addFlower(flower.code())) {
+                player.displayClientMessage(Component.literal("The garland is full. Sneak and right-click with an "
+                        + "empty hand to clear it."), true);
+                return InteractionResult.CONSUME;
+            }
+            if (!player.getAbilities().instabuild) {
+                held.shrink(1);
+            }
+            level.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.7F, 1.5F);
+            return InteractionResult.CONSUME;
+        }
+
         if (held.getItem() instanceof OrnamentItem) {
             OrnamentData ornament = OrnamentItem.getData(held);
             if (ornament == null) {
@@ -183,12 +205,14 @@ public class IdolBlock extends BaseEntityBlock {
         }
 
         if (held.isEmpty() && player.isShiftKeyDown()) {
-            if (idol.getAngi() == null && idol.getOrnaments().isEmpty()
+            if (idol.getGarland().length == 0 && idol.getAngi() == null && idol.getOrnaments().isEmpty()
                     && !(this.kind == Kind.PEETHAM && idol.getData() != null)) {
                 return InteractionResult.PASS;
             }
             if (!level.isClientSide) {
-                if (idol.getAngi() != null) {
+                if (idol.getGarland().length > 0) {
+                    idol.setGarland(new byte[0]);   // the flowers are taken down (they do not come back)
+                } else if (idol.getAngi() != null) {
                     give(player, AngiItem.create(idol.getAngi()));
                     idol.setAngi(null);
                 } else if (!idol.getOrnaments().isEmpty()) {
