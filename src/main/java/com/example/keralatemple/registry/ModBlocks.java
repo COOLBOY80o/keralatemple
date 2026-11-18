@@ -161,6 +161,12 @@ public class ModBlocks {
                     .strength(3.0F, 6.0F)
                     .noOcclusion()
                     .sound(SoundType.METAL), () -> ModItems.TEMPLE_DOOR_SET_GOLD.get()));
+    public static final RegistryObject<Block> WELL_PULLEY = registerBlock("well_pulley",
+            () -> new com.example.keralatemple.block.WellPulleyBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.WOOD)
+                    .strength(1.5F)
+                    .noOcclusion()
+                    .sound(SoundType.WOOD)));
     public static final RegistryObject<Block> MUSIC_STATION = registerBlock("music_station",
             () -> new com.example.keralatemple.block.MusicStationBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_ORANGE)

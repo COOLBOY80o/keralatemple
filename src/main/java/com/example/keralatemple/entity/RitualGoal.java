@@ -60,6 +60,7 @@ public class RitualGoal extends Goal {
     private int arrivedTicks;
     private int stuckTicks;
     private BlockPos kudamSpot;
+    private BlockPos wellSpot;
     private boolean carrying;
     private int pickTicks;
     private int lastKudams;
@@ -147,7 +148,13 @@ public class RitualGoal extends Goal {
         if (found == null && temple != null) {
             found = temple.center.above();   // no mat placed: use the marked temple centre
         }
-        this.kudamSpot = this.priest.findMarkers(ModBlocks.KUDAM_STATION.get()).stream()
+        java.util.List<BlockPos> sources = new java.util.ArrayList<>(this.priest.findMarkers(ModBlocks.WELL_PULLEY.get()));
+        if (temple != null) {
+            sources.addAll(temple.wells);
+        }
+        this.wellSpot = sources.stream().min(Comparator.comparingDouble(p -> p.distSqr(here))).orElse(null);
+        this.kudamSpot = this.wellSpot != null ? this.wellSpot
+                : this.priest.findMarkers(ModBlocks.KUDAM_STATION.get()).stream()
                 .min(Comparator.comparingDouble(p -> p.distSqr(here)))
                 .orElse(null);
         this.station = found;
@@ -447,11 +454,25 @@ public class RitualGoal extends Goal {
         }
         if (!this.carrying) {
             BlockPos source = this.kudamSpot != null ? this.kudamSpot : this.helperSpot;
-            if (source == null || !goTo(source, 0.6D, 2.0D, true)) {
+            if (source == null || !goTo(source, 0.6D, this.wellSpot != null ? 3.0D : 2.0D, true)) {
                 return;
             }
-            // Without a Kudam Station the pot is filled slowly where he stands.
-            if (this.kudamSpot == null && ++this.pickTicks < 100) {
+            if (this.wellSpot != null) {
+                // Draw the water with the pulley: the bucket goes down and comes back up.
+                if (this.pickTicks == 0) {
+                    for (BlockPos q : BlockPos.betweenClosed(source.offset(-3, -2, -3), source.offset(3, 2, 3))) {
+                        if (level.getBlockState(q).getBlock() instanceof com.example.keralatemple.block.WellPulleyBlock) {
+                            com.example.keralatemple.block.WellPulleyBlock.draw(level, q.immutable());
+                            break;
+                        }
+                    }
+                }
+                if (++this.pickTicks < 70) {
+                    this.priest.getLookControl().setLookAt(source.getX() + 0.5D, source.getY() + 0.5D, source.getZ() + 0.5D);
+                    return;
+                }
+            } else if (this.kudamSpot == null && ++this.pickTicks < 100) {
+                // Without a well or Kudam Station the pot is filled slowly where he stands.
                 return;
             }
             this.pickTicks = 0;

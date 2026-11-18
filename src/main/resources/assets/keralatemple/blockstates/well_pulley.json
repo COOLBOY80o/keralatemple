@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "keralatemple:block/well_pulley"
+  },
+  "facing=south": {
+   "model": "keralatemple:block/well_pulley",
+   "y": 180
+  },
+  "facing=east": {
+   "model": "keralatemple:block/well_pulley",
+   "y": 90
+  },
+  "facing=west": {
+   "model": "keralatemple:block/well_pulley",
+   "y": 270
+  }
+ }
+}

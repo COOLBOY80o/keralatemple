@@ -41,6 +41,8 @@ public class Temple {
     public final Map<String, String> vastram = new java.util.HashMap<>();
     /** How the keezhshanthi takes the idol out for the seeveli: arms, head or none. */
     public String carry = "head";
+    /** Places the player marked as wells (the ayirakudam water is drawn here). */
+    public final List<BlockPos> wells = new ArrayList<>();
     public final List<BlockPos> route = new ArrayList<>();
     public final List<Valiya> valiya = new ArrayList<>();
 
@@ -93,6 +95,7 @@ public class Temple {
         }
         tag.put("Vastram", vast);
         tag.putString("Carry", carry);
+        tag.putLongArray("Wells", wells.stream().mapToLong(BlockPos::asLong).toArray());
         tag.putLongArray("Bali", baliStones.stream().mapToLong(BlockPos::asLong).toArray());
         tag.putLongArray("Route", route.stream().mapToLong(BlockPos::asLong).toArray());
         ListTag valiyaList = new ListTag();
@@ -128,6 +131,9 @@ public class Temple {
         CompoundTag nived = tag.getCompound("Nivedyam");
         for (String key : nived.getAllKeys()) {
             t.nivedyam.put(key, nived.getString(key));
+        }
+        for (long l : tag.getLongArray("Wells")) {
+            t.wells.add(BlockPos.of(l));
         }
         if (tag.contains("Carry")) {
             t.carry = tag.getString("Carry");

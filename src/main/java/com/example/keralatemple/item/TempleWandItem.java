@@ -35,7 +35,8 @@ public class TempleWandItem extends Item {
         TEMPLE_CENTER("temple_center", "Temple centre"),
         BALI_STONE("bali_stone", "Bali stone"),
         VALIYA_BALIKKAL("valiya_balikkal", "Valiya balikkal"),
-        SEEVELI_ROUTE("seeveli_route", "Seeveli route");
+        SEEVELI_ROUTE("seeveli_route", "Seeveli route"),
+        WELL("well", "Well");
 
         public final String id;
         public final String label;
@@ -149,6 +150,7 @@ public class TempleWandItem extends Item {
             case BALI_STONE -> useBaliStone(sp, data, tag, pos);
             case VALIYA_BALIKKAL -> useValiya(sp, data, tag, pos);
             case SEEVELI_ROUTE -> useRoute(sp, data, tag, pos);
+            case WELL -> useWell(sp, data, tag, pos);
         }
         return InteractionResult.CONSUME;
     }
@@ -182,6 +184,22 @@ public class TempleWandItem extends Item {
             t.center = pos;
             data.touch();
             tell(sp, "Moved the centre of '" + t.name + "' to " + pos.toShortString() + ".");
+        }
+    }
+
+    private static void useWell(ServerPlayer sp, TempleData data, CompoundTag tag, BlockPos pos) {
+        Temple t = selected(data, tag, pos);
+        if (t == null) {
+            tell(sp, "No temple selected. Mark a temple first (Temple centre mode).");
+            return;
+        }
+        if (t.wells.remove(pos)) {
+            data.touch();
+            tell(sp, "Removed that well from '" + t.name + "'.");
+        } else {
+            t.wells.add(pos);
+            data.touch();
+            tell(sp, "Well marked for '" + t.name + "'. Place a Well Pulley over it so the keezhshanthi can draw the water. Click again to remove.");
         }
     }
 

@@ -23,5 +23,6 @@ public class ClientEvents {
         event.registerEntityRenderer(ModEntities.ACHARI.get(), ctx -> new NpcRenderer<>(ctx, "achari"));
         event.registerBlockEntityRenderer(ModBlockEntities.IDOL.get(), IdolRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.CARVED.get(), CarvedRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.WELL_PULLEY.get(), WellPulleyRenderer::new);
     }
 }

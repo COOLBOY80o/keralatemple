@@ -18,4 +18,8 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<com.example.keralatemple.blockentity.CarvedBlockEntity>> CARVED =
             BLOCK_ENTITIES.register("carved", () -> BlockEntityType.Builder.of(
                     com.example.keralatemple.blockentity.CarvedBlockEntity::new, ModBlocks.CARVED_BLOCK.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<com.example.keralatemple.blockentity.WellPulleyBlockEntity>> WELL_PULLEY =
+            BLOCK_ENTITIES.register("well_pulley", () -> BlockEntityType.Builder.of(
+                    com.example.keralatemple.blockentity.WellPulleyBlockEntity::new, ModBlocks.WELL_PULLEY.get()).build(null));
 }

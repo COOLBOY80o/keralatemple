@@ -1,0 +1,24 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "building",
+ "pattern": [
+  "PPP",
+  "S S",
+  "SNS"
+ ],
+ "key": {
+  "P": {
+   "item": "minecraft:oak_planks"
+  },
+  "S": {
+   "item": "minecraft:stick"
+  },
+  "N": {
+   "item": "minecraft:string"
+  }
+ },
+ "result": {
+  "item": "keralatemple:well_pulley",
+  "count": 1
+ }
+}
