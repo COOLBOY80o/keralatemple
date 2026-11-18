@@ -9,6 +9,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.PathfinderMob;
@@ -34,9 +37,37 @@ public class PriestEntity extends PathfinderMob {
     private Temple cachedTemple;
     private long lastTempleLookup = -1000;
 
+    /** Packed look: hair colour (0-4) + 5 * (facial hair (0-3) + 4 * tilak (0-4)). */
+    private static final EntityDataAccessor<Integer> LOOK =
+            SynchedEntityData.defineId(PriestEntity.class, EntityDataSerializers.INT);
+    public static final int HAIRS = 5;
+    public static final int FACIALS = 4;
+    public static final int TILAKS = 5;
+
     public PriestEntity(EntityType<? extends PriestEntity> type, Level level) {
         super(type, level);
         this.setPersistenceRequired();
+        if (!level.isClientSide) {
+            this.entityData.set(LOOK, randomLook());
+        }
+    }
+
+    @Override
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(LOOK, 0);
+    }
+
+    public int getLook() {
+        return this.entityData.get(LOOK);
+    }
+
+    private int randomLook() {
+        int roll = this.random.nextInt(100);
+        int hair = roll < 55 ? 0 : roll < 75 ? 1 : roll < 88 ? 2 : roll < 96 ? 3 : 4;
+        int facial = this.random.nextInt(FACIALS);
+        int tilak = this.random.nextInt(TILAKS);
+        return hair + HAIRS * (facial + FACIALS * tilak);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
@@ -130,6 +161,7 @@ public class PriestEntity extends PathfinderMob {
     @Override
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
+        tag.putInt("Look", getLook());
         if (this.homePos != null) {
             tag.putInt("HomeX", this.homePos.getX());
             tag.putInt("HomeY", this.homePos.getY());
@@ -140,6 +172,9 @@ public class PriestEntity extends PathfinderMob {
     @Override
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
+        if (tag.contains("Look")) {
+            this.entityData.set(LOOK, tag.getInt("Look"));
+        }
         if (tag.contains("HomeX")) {
             this.homePos = new BlockPos(tag.getInt("HomeX"), tag.getInt("HomeY"), tag.getInt("HomeZ"));
             this.restrictTo(this.homePos, HOME_RADIUS);
