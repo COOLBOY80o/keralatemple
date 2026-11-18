@@ -78,6 +78,7 @@ public final class RitualSchedule {
         define("EXTRA_POOJA_1", "Extra Pooja 1", Kind.POOJA);
         define("EXTRA_POOJA_2", "Extra Pooja 2", Kind.POOJA);
         define("EXTRA_POOJA_3", "Extra Pooja 3", Kind.POOJA);
+        define("SREEBALI", "Sreebali (bali offering)", Kind.SEEVELI);
         define("EXTRA_SEEVELI", "Extra Seeveli", Kind.SEEVELI);
     }
 

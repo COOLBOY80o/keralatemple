@@ -36,6 +36,8 @@ public class Temple {
     public String cookMissing = "";
     public String garlandKey = "";
     public final List<BlockPos> baliStones = new ArrayList<>();
+    /** The sreeveli route the player marked, in walking order. Empty = automatic clockwise route. */
+    public final List<BlockPos> route = new ArrayList<>();
     public final List<Valiya> valiya = new ArrayList<>();
 
     /** A custom valiya balikkal: the player-built region that holds it. */
@@ -82,6 +84,7 @@ public class Temple {
         }
         tag.put("Nivedyam", nived);
         tag.putLongArray("Bali", baliStones.stream().mapToLong(BlockPos::asLong).toArray());
+        tag.putLongArray("Route", route.stream().mapToLong(BlockPos::asLong).toArray());
         ListTag valiyaList = new ListTag();
         for (Valiya v : valiya) {
             CompoundTag vt = new CompoundTag();
@@ -118,6 +121,9 @@ public class Temple {
         }
         for (long l : tag.getLongArray("Bali")) {
             t.baliStones.add(BlockPos.of(l));
+        }
+        for (long l : tag.getLongArray("Route")) {
+            t.route.add(BlockPos.of(l));
         }
         ListTag valiyaList = tag.getList("Valiya", Tag.TAG_COMPOUND);
         for (int i = 0; i < valiyaList.size(); i++) {

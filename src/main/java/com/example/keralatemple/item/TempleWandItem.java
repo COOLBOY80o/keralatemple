@@ -34,7 +34,8 @@ public class TempleWandItem extends Item {
     public enum Mode {
         TEMPLE_CENTER("temple_center", "Temple centre"),
         BALI_STONE("bali_stone", "Bali stone"),
-        VALIYA_BALIKKAL("valiya_balikkal", "Valiya balikkal");
+        VALIYA_BALIKKAL("valiya_balikkal", "Valiya balikkal"),
+        SEEVELI_ROUTE("seeveli_route", "Seeveli route");
 
         public final String id;
         public final String label;
@@ -147,6 +148,7 @@ public class TempleWandItem extends Item {
             case TEMPLE_CENTER -> useCenter(sp, data, tag, pos);
             case BALI_STONE -> useBaliStone(sp, data, tag, pos);
             case VALIYA_BALIKKAL -> useValiya(sp, data, tag, pos);
+            case SEEVELI_ROUTE -> useRoute(sp, data, tag, pos);
         }
         return InteractionResult.CONSUME;
     }
@@ -180,6 +182,23 @@ public class TempleWandItem extends Item {
             t.center = pos;
             data.touch();
             tell(sp, "Moved the centre of '" + t.name + "' to " + pos.toShortString() + ".");
+        }
+    }
+
+    private static void useRoute(ServerPlayer sp, TempleData data, CompoundTag tag, BlockPos pos) {
+        Temple t = selected(data, tag, pos);
+        if (t == null) {
+            tell(sp, "No temple selected. Mark a temple first (Temple centre mode).");
+            return;
+        }
+        if (t.route.remove(pos)) {
+            data.touch();
+            tell(sp, "Removed that stop from the seeveli route of '" + t.name + "' (" + t.route.size() + " left).");
+        } else {
+            t.route.add(pos);
+            data.touch();
+            tell(sp, "Seeveli route stop " + t.route.size() + " added. Click the stops in the order the priest should walk; "
+                    + "click a stop again to remove it. The route repeats for three circuits.");
         }
     }
 

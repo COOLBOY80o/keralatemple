@@ -176,6 +176,19 @@ public class RitualGoal extends Goal {
 
     private void buildRoute(BlockPos here, Temple temple) {
         List<Stop> stops = new ArrayList<>();
+        if (temple != null && !temple.route.isEmpty()) {
+            // The player's own route: walk it in the order it was marked, for every circuit.
+            for (BlockPos p : temple.route) {
+                stops.add(new Stop(p, temple.baliStones.contains(p) ? StopType.BALI_STONE : StopType.WAYPOINT, null, null));
+            }
+            List<Stop> own = new ArrayList<>();
+            for (int lap = 0; lap < LAPS; lap++) {
+                own.addAll(stops);
+            }
+            this.route = own;
+            this.routeIndex = 0;
+            return;
+        }
         if (temple != null) {
             for (BlockPos p : temple.baliStones) {
                 stops.add(new Stop(p, StopType.BALI_STONE, null, null));
@@ -363,7 +376,7 @@ public class RitualGoal extends Goal {
     /** When the cook has finished this ritual's nivedyam, the melshanthi offers it. */
     private void offerNivedyam(ServerLevel level, BlockPos pos) {
         Temple temple = this.priest.getTemple();
-        if (temple == null || temple.cookStage != 3) {
+        if (temple == null || (temple.cookStage != 3 && temple.cookStage != 5)) {
             return;
         }
         String key = KeralaClock.now().toLocalDate() + "/" + this.active.id();
@@ -372,15 +385,42 @@ public class RitualGoal extends Goal {
         if (food == null || !key.equals(temple.cookKey)) {
             return;
         }
+        // An uruli with no hearth under it, standing in front of the god, is the offering pot.
+        BlockPos offering = null;
+        double best = Double.MAX_VALUE;
+        java.util.List<BlockPos> kitchen = new java.util.ArrayList<>();
+        for (BlockPos u : this.priest.findMarkers(ModBlocks.URULI.get())) {
+            if (level.getBlockState(u.below()).getBlock() instanceof com.example.keralatemple.block.AduppuBlock) {
+                kitchen.add(u);
+            } else {
+                double d = u.distSqr(pos);
+                if (d < best) {
+                    best = d;
+                    offering = u;
+                }
+            }
+        }
+        if (temple.cookStage == 3 && offering != null) {
+            // The cook carries the food from the kitchen pot to the pot in front of the god.
+            for (BlockPos u : kitchen) {
+                level.setBlock(u, level.getBlockState(u).setValue(com.example.keralatemple.block.UruliBlock.CONTENT,
+                        com.example.keralatemple.block.UruliBlock.Content.EMPTY), 3);
+            }
+            level.setBlock(offering, level.getBlockState(offering).setValue(
+                    com.example.keralatemple.block.UruliBlock.CONTENT,
+                    com.example.keralatemple.block.UruliBlock.Content.DONE), 3);
+            temple.cookStage = 5;
+            play(level, offering, SoundEvents.PLAYER_LEVELUP, 0.5F, 1.6F);
+            return;
+        }
         temple.cookStage = 4;
         this.priest.swing(InteractionHand.MAIN_HAND);
         level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(food.showItem())),
                 pos.getX() + 0.5D, pos.getY() + 1.4D, pos.getZ() + 0.5D, 24, 0.3D, 0.2D, 0.3D, 0.05D);
         play(level, pos, SoundEvents.NOTE_BLOCK_BELL.value(), 1.2F, 0.9F);
-        // The empty vessel goes back to its place.
+        // Afterwards every pot is emptied again.
         for (BlockPos u : this.priest.findMarkers(ModBlocks.URULI.get())) {
-            net.minecraft.world.level.block.state.BlockState s = level.getBlockState(u);
-            level.setBlock(u, s.setValue(com.example.keralatemple.block.UruliBlock.CONTENT,
+            level.setBlock(u, level.getBlockState(u).setValue(com.example.keralatemple.block.UruliBlock.CONTENT,
                     com.example.keralatemple.block.UruliBlock.Content.EMPTY), 3);
         }
     }

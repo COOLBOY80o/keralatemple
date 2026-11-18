@@ -1,7 +1,13 @@
 {
-  "variants": {
-    "": {
-      "model": "keralatemple:block/bali_stone"
-    }
+ "variants": {
+  "plating=none": {
+   "model": "keralatemple:block/bali_stone"
+  },
+  "plating=gold": {
+   "model": "keralatemple:block/bali_stone_gold"
+  },
+  "plating=silver": {
+   "model": "keralatemple:block/bali_stone_silver"
   }
+ }
 }

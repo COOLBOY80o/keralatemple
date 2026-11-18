@@ -86,6 +86,7 @@ public class ModCommands {
         root.then(flowersNode());
         root.then(nivedyamNode());
         root.then(balikkalNode());
+        root.then(routeNode());
         root.then(wandNode());
         event.getDispatcher().register(root);
     }
@@ -434,6 +435,29 @@ public class ModCommands {
         TempleData.get(ctx.getSource().getLevel()).touch();
         say(ctx, "Removed the nivedyam of " + ritual + ".");
         return 1;
+    }
+
+    // ------------------------------------------------------------------ seeveli route
+
+    private static LiteralArgumentBuilder<CommandSourceStack> routeNode() {
+        return Commands.literal("route")
+                .then(Commands.literal("list").then(templeArg().executes(ctx -> {
+                    Temple t = temple(ctx);
+                    say(ctx, "'" + t.name + "' seeveli route: " + (t.route.isEmpty() ? "automatic (clockwise)" : t.route.size() + " stop(s)"));
+                    int i = 1;
+                    for (BlockPos p : t.route) {
+                        say(ctx, "  " + (i++) + ". " + p.toShortString());
+                    }
+                    return t.route.size();
+                })))
+                .then(Commands.literal("clear").requires(ModCommands::canEdit).then(templeArg().executes(ctx -> {
+                    Temple t = temple(ctx);
+                    int n = t.route.size();
+                    t.route.clear();
+                    TempleData.get(ctx.getSource().getLevel()).touch();
+                    say(ctx, "Cleared the seeveli route of '" + t.name + "'; the priest walks the automatic route again.");
+                    return n;
+                })));
     }
 
     // ------------------------------------------------------------------ balikkal
