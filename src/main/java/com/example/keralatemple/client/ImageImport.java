@@ -23,11 +23,12 @@ public final class ImageImport {
     private static final long MAX_FILE_BYTES = 40L * 1024 * 1024;
 
     /** argb: alpha is either 0 (empty) or 255 (filled). */
-    public record Result(int width, int height, int[] argb) {}
+    public record Result(int width, int height, int[] argb, int[] original) {}
 
     private ImageImport() {}
 
-    public static Result load(Path file, boolean removeBackground) throws IOException {
+    /** @param cutMode 0 keep the whole picture, 1 normal cut-out, 2 generous cut-out (keeps more of the picture) */
+    public static Result load(Path file, int cutMode) throws IOException {
         if (Files.size(file) > MAX_FILE_BYTES) {
             throw new IOException("that file is too big (over 40 MB)");
         }
@@ -43,11 +44,15 @@ public final class ImageImport {
         int h = Math.max(4, Math.min(MAX_RES, Math.round(sh * scale)));
 
         int[] argb = downsample(image, sw, sh, w, h);
-        boolean[] filled = computeFilled(argb, w, h, removeBackground);
+        int[] original = new int[argb.length];
+        for (int k = 0; k < original.length; k++) {
+            original[k] = 0xFF000000 | (argb[k] & 0xFFFFFF);
+        }
+        boolean[] filled = computeFilled(argb, w, h, cutMode);
         for (int k = 0; k < argb.length; k++) {
             argb[k] = filled[k] ? (0xFF000000 | (argb[k] & 0xFFFFFF)) : 0;
         }
-        return new Result(w, h, argb);
+        return new Result(w, h, argb, original);
     }
 
     /** Box-filters the photo down to w x h. */
@@ -89,7 +94,7 @@ public final class ImageImport {
     }
 
     /** true = part of the idol. */
-    private static boolean[] computeFilled(int[] argb, int w, int h, boolean removeBackground) {
+    private static boolean[] computeFilled(int[] argb, int w, int h, int cutMode) {
         int total = w * h;
         boolean[] filled = new boolean[total];
 
@@ -104,80 +109,14 @@ public final class ImageImport {
             for (int k = 0; k < total; k++) {
                 filled[k] = (argb[k] >>> 24) >= 128;
             }
-        } else if (!removeBackground) {
+        } else if (cutMode == 0) {
             Arrays.fill(filled, true);
         } else {
-            long br = 0;
-            long bg = 0;
-            long bb = 0;
-            int bn = 0;
-            for (int i = 0; i < w; i++) {
-                for (int j : new int[]{0, h - 1}) {
-                    int p = argb[j * w + i];
-                    br += (p >> 16) & 255;
-                    bg += (p >> 8) & 255;
-                    bb += p & 255;
-                    bn++;
-                }
-            }
-            for (int j = 1; j < h - 1; j++) {
-                for (int i : new int[]{0, w - 1}) {
-                    int p = argb[j * w + i];
-                    br += (p >> 16) & 255;
-                    bg += (p >> 8) & 255;
-                    bb += p & 255;
-                    bn++;
-                }
-            }
-            int avg = ((int) (br / bn) << 16) | ((int) (bg / bn) << 8) | (int) (bb / bn);
-
-            boolean[] background = new boolean[total];
-            int[] queue = new int[total];
-            int head = 0;
-            int tail = 0;
-            for (int i = 0; i < w; i++) {
-                for (int j : new int[]{0, h - 1}) {
-                    int k = j * w + i;
-                    if (!background[k] && distSq(argb[k], avg) < 120 * 120) {
-                        background[k] = true;
-                        queue[tail++] = k;
-                    }
-                }
-            }
-            for (int j = 0; j < h; j++) {
-                for (int i : new int[]{0, w - 1}) {
-                    int k = j * w + i;
-                    if (!background[k] && distSq(argb[k], avg) < 120 * 120) {
-                        background[k] = true;
-                        queue[tail++] = k;
-                    }
-                }
-            }
-            int[] dx = {1, -1, 0, 0};
-            int[] dy = {0, 0, 1, -1};
-            while (head < tail) {
-                int k = queue[head++];
-                int x = k % w;
-                int y = k / w;
-                for (int d = 0; d < 4; d++) {
-                    int nx = x + dx[d];
-                    int ny = y + dy[d];
-                    if (nx < 0 || ny < 0 || nx >= w || ny >= h) {
-                        continue;
-                    }
-                    int nk = ny * w + nx;
-                    // Joins the background if it is close to the cell it spreads from (so soft gradients work)
-                    // and not wildly different from the border colour.
-                    if (!background[nk] && distSq(argb[nk], argb[k]) < 30 * 30 && distSq(argb[nk], avg) < 120 * 120) {
-                        background[nk] = true;
-                        queue[tail++] = nk;
-                    }
-                }
-            }
+            boolean[] grab = grabCut(argb, w, h, cutMode == 2 ? 1.7F : 1.0F);
+            System.arraycopy(grab, 0, filled, 0, total);
             int inside = 0;
-            for (int k = 0; k < total; k++) {
-                filled[k] = !background[k];
-                if (filled[k]) {
+            for (boolean f : filled) {
+                if (f) {
                     inside++;
                 }
             }
@@ -199,6 +138,138 @@ public final class ImageImport {
             Arrays.fill(filled, true);
         }
         return filled;
+    }
+
+    /**
+     * Separates the subject from the background by learning two colour palettes: the border of the photo is the
+     * background, the middle is the (rough) subject. Every cell is then given to the palette it matches better, the
+     * palettes are re-learnt from the result and the process repeats. Gaps are closed so the idol stays in one piece.
+     */
+    private static boolean[] grabCut(int[] argb, int w, int h, float bias) {
+        int total = w * h;
+        int[] bin = new int[total];
+        for (int k = 0; k < total; k++) {
+            int p = argb[k];
+            bin[k] = (((p >> 21) & 7) << 6) | (((p >> 13) & 7) << 3) | ((p >> 5) & 7);
+        }
+        int band = Math.max(2, Math.min(w, h) / 12);
+        boolean[] border = new boolean[total];
+        boolean[] fg = new boolean[total];
+        for (int j = 0; j < h; j++) {
+            for (int i = 0; i < w; i++) {
+                int k = j * w + i;
+                border[k] = i < band || j < band || i >= w - band || j >= h - band;
+                double dx = (i + 0.5D) / w - 0.5D;
+                double dy = (j + 0.5D) / h - 0.5D;
+                fg[k] = !border[k] && (dx * dx) / (0.30D * 0.30D) + (dy * dy) / (0.40D * 0.40D) <= 1.0D;
+            }
+        }
+        for (int iter = 0; iter < 6; iter++) {
+            float[] fh = new float[512];
+            float[] bh = new float[512];
+            float nf = 1;
+            float nb = 1;
+            for (int k = 0; k < total; k++) {
+                if (fg[k]) {
+                    fh[bin[k]] += 1;
+                    nf += 1;
+                } else if (border[k] || iter > 0) {
+                    bh[bin[k]] += 1;
+                    nb += 1;
+                }
+            }
+            // Smooth the palettes a little so near colours count too.
+            float[] fs = blurBins(fh);
+            float[] bs = blurBins(bh);
+            boolean[] next = new boolean[total];
+            for (int k = 0; k < total; k++) {
+                if (border[k]) {
+                    next[k] = false;
+                    continue;
+                }
+                float pf = (fs[bin[k]] + 0.02F) / nf;
+                float pb = (bs[bin[k]] + 0.02F) / nb;
+                next[k] = pf * bias > pb;
+            }
+            // Majority vote over the neighbours keeps the regions solid.
+            boolean[] vote = new boolean[total];
+            for (int j = 0; j < h; j++) {
+                for (int i = 0; i < w; i++) {
+                    int c = 0;
+                    for (int dj = -1; dj <= 1; dj++) {
+                        for (int di = -1; di <= 1; di++) {
+                            int x = i + di;
+                            int y = j + dj;
+                            if (x >= 0 && y >= 0 && x < w && y < h && next[y * w + x]) {
+                                c++;
+                            }
+                        }
+                    }
+                    vote[j * w + i] = !border[j * w + i] && c >= 5;
+                }
+            }
+            fg = vote;
+        }
+        return close(fg, w, h, 2);
+    }
+
+    private static float[] blurBins(float[] h) {
+        float[] out = new float[512];
+        for (int r = 0; r < 8; r++) {
+            for (int g = 0; g < 8; g++) {
+                for (int b = 0; b < 8; b++) {
+                    float sum = 0;
+                    for (int dr = -1; dr <= 1; dr++) {
+                        for (int dg = -1; dg <= 1; dg++) {
+                            for (int db = -1; db <= 1; db++) {
+                                int rr = r + dr;
+                                int gg = g + dg;
+                                int bb = b + db;
+                                if (rr >= 0 && gg >= 0 && bb >= 0 && rr < 8 && gg < 8 && bb < 8) {
+                                    float wgt = (dr == 0 && dg == 0 && db == 0) ? 1.0F : 0.25F;
+                                    sum += h[(rr << 6) | (gg << 3) | bb] * wgt;
+                                }
+                            }
+                        }
+                    }
+                    out[(r << 6) | (g << 3) | b] = sum;
+                }
+            }
+        }
+        return out;
+    }
+
+    /** Grows the shape by n cells then shrinks it by n cells: narrow gaps (a neck, a thin arm) fill up. */
+    private static boolean[] close(boolean[] in, int w, int h, int n) {
+        boolean[] cur = in;
+        for (int pass = 0; pass < n; pass++) {
+            cur = morph(cur, w, h, true);
+        }
+        for (int pass = 0; pass < n; pass++) {
+            cur = morph(cur, w, h, false);
+        }
+        return cur;
+    }
+
+    private static boolean[] morph(boolean[] in, int w, int h, boolean grow) {
+        boolean[] out = new boolean[in.length];
+        for (int j = 0; j < h; j++) {
+            for (int i = 0; i < w; i++) {
+                boolean any = false;
+                boolean all = true;
+                for (int dj = -1; dj <= 1; dj++) {
+                    for (int di = -1; di <= 1; di++) {
+                        int x = i + di;
+                        int y = j + dj;
+                        boolean v = x >= 0 && y >= 0 && x < w && y < h && in[y * w + x];
+                        any |= v;
+                        all &= v;
+                    }
+                }
+                out[j * w + i] = grow ? any : all;
+            }
+        }
+        return out;
     }
 
     /**

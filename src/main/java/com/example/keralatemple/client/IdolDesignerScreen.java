@@ -32,7 +32,7 @@ public class IdolDesignerScreen extends Screen {
             0xFFD700, 0xF2E6C8, 0xE8B890, 0xB5651D, 0x8B0000, 0xE02020, 0xFF7F00, 0xFFE000,
             0x1E5A2E, 0x3CB44B, 0x1E90FF, 0x00008B, 0x6A0DAD, 0xFF69B4, 0x00CED1, 0xDEB887};
 
-    private enum Tool {PEN, ERASE, FILL}
+    private enum Tool {PEN, ERASE, FILL, RESTORE}
 
     @Nullable
     private final BlockPos blockPos;
@@ -46,7 +46,10 @@ public class IdolDesignerScreen extends Screen {
     private int colour = 0xC8962E;
     private boolean mirror = true;
     private boolean importTab = false;
-    private boolean removeBackground = true;
+    private int brush = 1;
+    @Nullable
+    private int[] original;   // the imported picture with nothing cut away
+    private int cutMode = 1;   // 0 keep everything, 1 normal cut-out, 2 generous (keeps more)
     private boolean originalColours = false;
     private float size = 2.0F;
     private float thickness = 1.0F;
@@ -64,6 +67,7 @@ public class IdolDesignerScreen extends Screen {
     private Button fillBtn;
     private Button clearBtn;
     private Button mirrorBtn;
+    private Button brushBtn;
     private Button bgBtn;
     private Button peethamBtn;
     private Button colourBtn;
@@ -114,19 +118,22 @@ public class IdolDesignerScreen extends Screen {
                 .bounds(rx + 74, t + 20, 70, 20).build());
 
         penBtn = addRenderableWidget(Button.builder(Component.literal("Pen"), b -> tool = Tool.PEN)
-                .bounds(rx, t + 44, 34, 20).build());
+                .bounds(rx, t + 44, 30, 20).build());
         eraseBtn = addRenderableWidget(Button.builder(Component.literal("Erase"), b -> tool = Tool.ERASE)
-                .bounds(rx + 36, t + 44, 34, 20).build());
+                .bounds(rx + 32, t + 44, 36, 20).build());
         fillBtn = addRenderableWidget(Button.builder(Component.literal("Fill"), b -> tool = Tool.FILL)
-                .bounds(rx + 72, t + 44, 34, 20).build());
-        clearBtn = addRenderableWidget(Button.builder(Component.literal("Clear"), b -> {
-            java.util.Arrays.fill(pixels, 0);
-        }).bounds(rx + 108, t + 44, 36, 20).build());
+                .bounds(rx + 70, t + 44, 28, 20).build());
+        clearBtn = addRenderableWidget(Button.builder(Component.literal("Restore"), b -> tool = Tool.RESTORE)
+                .bounds(rx + 100, t + 44, 44, 20).build());
 
         mirrorBtn = addRenderableWidget(Button.builder(Component.empty(), b -> mirror = !mirror)
-                .bounds(rx, t + 68, 144, 20).build());
+                .bounds(rx, t + 68, 92, 20).build());
+        brushBtn = addRenderableWidget(Button.builder(Component.empty(), b -> {
+            brush = brush == 1 ? 3 : brush == 3 ? 5 : 1;
+            refreshLabels();
+        }).bounds(rx + 94, t + 68, 50, 20).build());
         bgBtn = addRenderableWidget(Button.builder(Component.empty(), b -> {
-            removeBackground = !removeBackground;
+            cutMode = (cutMode + 1) % 3;
             if (lastDropped != null) {
                 importFile(lastDropped);
             }
@@ -171,9 +178,11 @@ public class IdolDesignerScreen extends Screen {
         fillBtn.visible = d;
         clearBtn.visible = d;
         mirrorBtn.visible = d;
+        brushBtn.visible = d;
+        brushBtn.setMessage(Component.literal("Brush " + brush));
         bgBtn.visible = !d;
-        mirrorBtn.setMessage(Component.literal("Mirror left/right: " + (mirror ? "on" : "off")));
-        bgBtn.setMessage(Component.literal("Remove background: " + (removeBackground ? "yes" : "no")));
+        mirrorBtn.setMessage(Component.literal("Mirror: " + (mirror ? "on" : "off")));
+        bgBtn.setMessage(Component.literal("Cut-out: " + (cutMode == 0 ? "none (whole picture)" : cutMode == 1 ? "normal" : "generous (keeps more)")));
         peethamBtn.setMessage(Component.literal("Peetham: " + peethamName()));
         colourBtn.setMessage(Component.literal(originalColours ? "Own colours" : "Material"));
         metalBtn.setMessage(Component.literal("Metal: " + IdolMaterial.METALS.get(metalIndex).label));
@@ -201,10 +210,11 @@ public class IdolDesignerScreen extends Screen {
     private void importFile(Path file) {
         lastDropped = file;
         try {
-            ImageImport.Result r = ImageImport.load(file, removeBackground);
+            ImageImport.Result r = ImageImport.load(file, cutMode);
             gw = r.width();
             gh = r.height();
             pixels = r.argb();
+            original = r.original();
             status = "Loaded " + file.getFileName() + " (" + gw + "x" + gh + ")";
         } catch (Exception e) {
             status = "Could not read that file: " + e.getMessage();
@@ -264,16 +274,34 @@ public class IdolDesignerScreen extends Screen {
         if (x < 0 || y < 0 || x >= gw || y >= gh) {
             return false;
         }
+        boolean restore = tool == Tool.RESTORE && !rightButton;
+        if (restore && original == null) {
+            status = "Nothing to restore: import a picture first.";
+            return true;
+        }
         int value = (tool == Tool.ERASE || rightButton) ? 0 : (0xFF000000 | colour);
         if (tool == Tool.FILL && !rightButton) {
             flood(x, y, value);
         } else {
-            pixels[y * gw + x] = value;
-            if (mirror) {
-                pixels[y * gw + (gw - 1 - x)] = value;
+            int r = brush / 2;
+            for (int dy = -r; dy <= r; dy++) {
+                for (int dx = -r; dx <= r; dx++) {
+                    stamp(x + dx, y + dy, value, restore);
+                    if (mirror) {
+                        stamp(gw - 1 - (x + dx), y + dy, value, restore);
+                    }
+                }
             }
         }
         return true;
+    }
+
+    private void stamp(int x, int y, int value, boolean restore) {
+        if (x < 0 || y < 0 || x >= gw || y >= gh) {
+            return;
+        }
+        pixels[y * gw + x] = restore && original != null && original.length == pixels.length
+                ? original[y * gw + x] : value;
     }
 
     private void flood(int sx, int sy, int value) {
