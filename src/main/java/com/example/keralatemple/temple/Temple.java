@@ -17,6 +17,9 @@ public class Temple {
     public int radius = 24;
     /** Entries as "ID=HH:mm/minutes". Null means "use the default schedule from the config". */
     public List<String> schedule = null;
+    /** Ayirakudam progress (not saved): pots delivered in the current ritual, and which ritual that was. */
+    public int kudams = 0;
+    public String kudamKey = "";
     public final List<BlockPos> baliStones = new ArrayList<>();
     public final List<Valiya> valiya = new ArrayList<>();
 

@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "keralatemple:carved_wood_pillar",
-    "keralatemple:carved_wood_panel"
+    "keralatemple:carved_wood_panel",
+    "keralatemple:temple_door",
+    "keralatemple:temple_door_gold_plated"
   ]
 }

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top_left_open",
+  "textures": {
+    "bottom": "keralatemple:block/temple_door_gold_plated_bottom",
+    "top": "keralatemple:block/temple_door_gold_plated_top"
+  }
+}

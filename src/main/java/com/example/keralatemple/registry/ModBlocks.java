@@ -5,7 +5,10 @@ import com.example.keralatemple.block.BaliStoneBlock;
 import com.example.keralatemple.block.IdolBlock;
 import com.example.keralatemple.block.MarkerBlock;
 import com.example.keralatemple.block.NilavilakkuBlock;
+import com.example.keralatemple.block.TempleDoorBlock;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.DoubleHighBlockItem;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -128,6 +131,31 @@ public class ModBlocks {
                     .requiresCorrectToolForDrops()
                     .noOcclusion()
                     .sound(SoundType.DEEPSLATE)));
+
+    // --- Kudam Station: where the keezhshanthis fill the pots for ayirakudam ---
+    public static final RegistryObject<Block> KUDAM_STATION = registerBlock("kudam_station",
+            () -> new MarkerBlock(BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.COLOR_BLUE)
+                    .strength(0.3F)
+                    .noOcclusion()
+                    .sound(SoundType.WOOL)));
+
+    // --- Temple doors ---
+    public static final RegistryObject<Block> TEMPLE_DOOR = registerDoor("temple_door", MapColor.WOOD, SoundType.WOOD);
+    public static final RegistryObject<Block> TEMPLE_DOOR_GOLD_PLATED =
+            registerDoor("temple_door_gold_plated", MapColor.GOLD, SoundType.WOOD);
+    public static final RegistryObject<Block> TEMPLE_DOOR_GOLD = registerDoor("temple_door_gold", MapColor.GOLD, SoundType.METAL);
+
+    private static RegistryObject<Block> registerDoor(String name, MapColor colour, SoundType sound) {
+        RegistryObject<Block> registered = BLOCKS.register(name, () -> new TempleDoorBlock(BlockBehaviour.Properties.of()
+                .mapColor(colour)
+                .strength(3.0F, 6.0F)
+                .sound(sound)
+                .noOcclusion()
+                .pushReaction(PushReaction.DESTROY)));
+        ModItems.ITEMS.register(name, () -> new DoubleHighBlockItem(registered.get(), new Item.Properties()));
+        return registered;
+    }
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> registered = BLOCKS.register(name, block);

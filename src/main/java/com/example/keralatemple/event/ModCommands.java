@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
  * /keralatemple ...
  *   status
  *   temple   create | delete | list | info | select | center | radius
- *   schedule list | set | remove | reset
+ *   schedule list | set | sunset | remove | reset
  *   balikkal list | remove | clearstones | save | place
  *   wand     mode
  */
@@ -126,6 +126,9 @@ public class ModCommands {
         say(ctx, "Kerala time: " + now.format(HMS) + " (" + KeralaClock.zone() + ")");
         say(ctx, "Temple: " + (temple == null ? "none here (using the default schedule)" : temple.name));
         say(ctx, "Now: " + (current == null ? "no ritual in progress" : current.displayName()));
+        if (temple != null && temple.kudamKey.length() > 0) {
+            say(ctx, "Ayirakudam: " + temple.kudams + " / 1000 pots");
+        }
         say(ctx, "Next: " + (next == null ? "none scheduled" : next.displayName() + " at " + next.start().format(HM)));
         return 1;
     }
@@ -239,6 +242,11 @@ public class ModCommands {
                                         .then(Commands.argument("minute", IntegerArgumentType.integer(0, 59))
                                                 .then(Commands.argument("duration", IntegerArgumentType.integer(1, 1440))
                                                         .executes(ModCommands::scheduleSet)))))))
+                .then(Commands.literal("sunset").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("ritual", StringArgumentType.word()).suggests(RITUAL_IDS)
+                                .then(Commands.argument("offset", IntegerArgumentType.integer(-180, 180))
+                                        .then(Commands.argument("duration", IntegerArgumentType.integer(1, 1440))
+                                                .executes(ModCommands::scheduleSunset))))))
                 .then(Commands.literal("remove").requires(ModCommands::canEdit)
                         .then(templeArg().then(Commands.argument("ritual", StringArgumentType.word()).suggests(RITUAL_IDS)
                                 .executes(ModCommands::scheduleRemove))))
@@ -278,6 +286,22 @@ public class ModCommands {
         TempleData.get(ctx.getSource().getLevel()).touch();
         say(ctx, "'" + t.name + "': " + id + " now starts at " + String.format("%02d:%02d", hour, minute)
                 + " for " + duration + " minutes.");
+        return 1;
+    }
+
+    private static int scheduleSunset(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
+        Temple t = temple(ctx);
+        String id = ritualArg(ctx);
+        int offset = IntegerArgumentType.getInteger(ctx, "offset");
+        int duration = IntegerArgumentType.getInteger(ctx, "duration");
+        List<String> entries = RitualSchedule.stringsFor(t);
+        entries.removeIf(e -> e.toUpperCase(Locale.ROOT).startsWith(id + "="));
+        entries.add(RitualSchedule.formatSunset(id, offset, duration));
+        t.schedule = entries;
+        TempleData.get(ctx.getSource().getLevel()).touch();
+        say(ctx, "'" + t.name + "': " + id + " now follows sunset" + (offset == 0 ? "" : (offset > 0 ? " +" : " ") + offset + " min")
+                + " for " + duration + " minutes. Sunset today is about "
+                + RitualSchedule.sunset(KeralaClock.now().toLocalDate()).format(HM) + ".");
         return 1;
     }
 

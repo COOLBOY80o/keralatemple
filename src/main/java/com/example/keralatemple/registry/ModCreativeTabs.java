@@ -30,6 +30,10 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.NILAVILAKKU.get());
                         output.accept(ModBlocks.POOJA_STATION.get());
                         output.accept(ModBlocks.SEEVELI_WAYPOINT.get());
+                        output.accept(ModBlocks.KUDAM_STATION.get());
+                        output.accept(ModBlocks.TEMPLE_DOOR.get());
+                        output.accept(ModBlocks.TEMPLE_DOOR_GOLD_PLATED.get());
+                        output.accept(ModBlocks.TEMPLE_DOOR_GOLD.get());
                         output.accept(ModBlocks.BALI_STONE.get());
                         output.accept(ModBlocks.IDOL_PEDESTAL.get());
                         output.accept(ModBlocks.ANJANA_SHILA.get());

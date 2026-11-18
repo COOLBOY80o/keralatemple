@@ -1,5 +1,7 @@
 package com.example.keralatemple.entity;
 
+import com.example.keralatemple.block.TempleDoorBlock;
+import com.example.keralatemple.config.Config;
 import com.example.keralatemple.registry.ModBlocks;
 import com.example.keralatemple.ritual.KeralaClock;
 import com.example.keralatemple.ritual.RitualSchedule;
@@ -17,6 +19,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,6 +59,10 @@ public class RitualGoal extends Goal {
     private int startDelay;
     private int arrivedTicks;
     private int stuckTicks;
+    private BlockPos kudamSpot;
+    private boolean carrying;
+    private int pickTicks;
+    private int lastKudams;
 
     public RitualGoal(PriestEntity priest) {
         this.priest = priest;
@@ -138,6 +147,9 @@ public class RitualGoal extends Goal {
         if (found == null && temple != null) {
             found = temple.center.above();   // no mat placed: use the marked temple centre
         }
+        this.kudamSpot = this.priest.findMarkers(ModBlocks.KUDAM_STATION.get()).stream()
+                .min(Comparator.comparingDouble(p -> p.distSqr(here)))
+                .orElse(null);
         this.station = found;
         this.helperSpot = this.station == null ? null : findHelperSpot(level, this.station);
 
@@ -223,6 +235,11 @@ public class RitualGoal extends Goal {
     // ------------------------------------------------------------------ behaviours
 
     private void stationTick(ServerLevel level) {
+        if (this.active.effect() == RitualSchedule.Effect.AYIRAKUDAM && this.priest.isAssistant()
+                && this.station != null) {
+            kudamCarry(level);
+            return;
+        }
         BlockPos spot = this.priest.isAssistant() && this.helperSpot != null ? this.helperSpot : this.station;
         if (spot == null) {
             return;
@@ -249,9 +266,14 @@ public class RitualGoal extends Goal {
         if (this.arrivedTicks == 1) {
             if (kind == RitualSchedule.Kind.OPEN) {
                 play(level, pos, SoundEvents.WOODEN_DOOR_OPEN, 1.0F, 0.8F);
+                toggleDoors(level, true);
             } else if (kind == RitualSchedule.Kind.CLOSE) {
                 play(level, pos, SoundEvents.WOODEN_DOOR_CLOSE, 1.0F, 0.8F);
+                toggleDoors(level, false);
             }
+        }
+        if (kind == RitualSchedule.Kind.POOJA) {
+            effectTick(level, pos);
         }
         if (kind != RitualSchedule.Kind.CLOSE && this.arrivedTicks % 80 == 1) {
             play(level, pos, SoundEvents.BELL_BLOCK, 1.2F, 1.1F);
@@ -262,6 +284,139 @@ public class RitualGoal extends Goal {
         if (kind != RitualSchedule.Kind.CLOSE && this.arrivedTicks % 10 == 0) {
             level.sendParticles(ParticleTypes.CAMPFIRE_COSY_SMOKE,
                     pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, 1, 0.05D, 0.05D, 0.05D, 0.005D);
+        }
+    }
+
+    /** What the melshanthi visibly does during each kind of pooja. */
+    private void effectTick(ServerLevel level, BlockPos pos) {
+        double x = pos.getX() + 0.5D;
+        double y = pos.getY() + 1.8D;
+        double z = pos.getZ() + 0.5D;
+        int t = this.arrivedTicks;
+        switch (this.active.effect()) {
+            case NIRMALYA -> {
+                if (t % 60 == 5) {
+                    level.sendParticles(ParticleTypes.END_ROD, x, y - 0.4D, z, 6, 0.3D, 0.2D, 0.3D, 0.01D);
+                    play(level, pos, SoundEvents.NOTE_BLOCK_BELL.value(), 1.0F, 1.0F);
+                }
+            }
+            case VAKACHARTHU -> {
+                if (t % 8 == 0) {
+                    level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.YELLOW_DYE)),
+                            x, y - 0.3D, z, 3, 0.2D, 0.1D, 0.2D, 0.02D);
+                }
+            }
+            case SHANKHA -> {
+                if (t % 100 == 10) {
+                    play(level, pos, SoundEvents.NOTE_BLOCK_FLUTE.value(), 1.6F, 0.5F);
+                }
+                if (t % 6 == 0) {
+                    level.sendParticles(ParticleTypes.SPLASH, x, y - 0.2D, z, 5, 0.25D, 0.1D, 0.25D, 0.05D);
+                }
+            }
+            case JALADHARA -> {
+                if (t % 3 == 0) {
+                    level.sendParticles(ParticleTypes.FALLING_WATER, x, y, z, 4, 0.15D, 0.05D, 0.15D, 0.0D);
+                    level.sendParticles(ParticleTypes.SPLASH, x, y - 0.8D, z, 3, 0.2D, 0.05D, 0.2D, 0.05D);
+                }
+                if (t % 40 == 0) {
+                    play(level, pos, SoundEvents.WATER_AMBIENT, 0.8F, 1.0F);
+                }
+            }
+            case KSHEERADHARA -> {
+                if (t % 3 == 0) {
+                    level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.WHITE_DYE)),
+                            x, y, z, 4, 0.12D, 0.05D, 0.12D, 0.02D);
+                }
+                if (t % 40 == 0) {
+                    play(level, pos, SoundEvents.BUCKET_EMPTY, 0.6F, 1.4F);
+                }
+            }
+            case DEEPARADHANA -> {
+                if (t % 4 == 0) {
+                    double a = t * 0.25D;
+                    level.sendParticles(ParticleTypes.FLAME, x + Math.cos(a) * 0.35D, y - 0.5D, z + Math.sin(a) * 0.35D,
+                            1, 0.0D, 0.0D, 0.0D, 0.0D);
+                }
+                if (t % 50 == 0) {
+                    play(level, pos, SoundEvents.NOTE_BLOCK_BELL.value(), 1.0F, 1.4F);
+                }
+            }
+            case AYIRAKUDAM -> {
+                Temple temple = this.priest.getTemple();
+                if (temple != null) {
+                    ensureKudamKey(temple);
+                    if (temple.kudams > this.lastKudams) {
+                        this.lastKudams = temple.kudams;
+                        level.sendParticles(ParticleTypes.SPLASH, x, y - 0.5D, z, 10, 0.3D, 0.1D, 0.3D, 0.05D);
+                        play(level, pos, SoundEvents.BUCKET_EMPTY, 0.7F, 1.2F);
+                    }
+                }
+            }
+            default -> { }
+        }
+    }
+
+    /** Each ayirakudam starts counting from zero. */
+    private void ensureKudamKey(Temple temple) {
+        String key = KeralaClock.now().toLocalDate() + "/" + this.active.start();
+        if (!key.equals(temple.kudamKey)) {
+            temple.kudamKey = key;
+            temple.kudams = 0;
+            this.lastKudams = 0;
+        }
+    }
+
+    /** A keezhshanthi fetches a pot of water and carries it to the melshanthi, again and again, up to 1000. */
+    private void kudamCarry(ServerLevel level) {
+        Temple temple = this.priest.getTemple();
+        if (temple != null) {
+            ensureKudamKey(temple);
+            if (temple.kudams >= 1000) {
+                this.priest.getNavigation().stop();
+                return;
+            }
+        }
+        if (!this.carrying) {
+            BlockPos source = this.kudamSpot != null ? this.kudamSpot : this.helperSpot;
+            if (source == null || !goTo(source, 0.6D, 2.0D, true)) {
+                return;
+            }
+            // Without a Kudam Station the pot is filled slowly where he stands.
+            if (this.kudamSpot == null && ++this.pickTicks < 100) {
+                return;
+            }
+            this.pickTicks = 0;
+            this.carrying = true;
+            play(level, source, SoundEvents.BUCKET_FILL, 0.8F, 1.1F);
+            return;
+        }
+        if (!goTo(this.station, 0.6D, 2.0D, true)) {
+            return;
+        }
+        this.carrying = false;
+        if (temple != null && temple.kudams < 1000) {
+            temple.kudams++;
+        }
+        level.sendParticles(ParticleTypes.SPLASH, this.station.getX() + 0.5D, this.station.getY() + 1.0D,
+                this.station.getZ() + 0.5D, 6, 0.3D, 0.1D, 0.3D, 0.05D);
+    }
+
+    /** The priest opens or closes every temple door of this temple. */
+    private void toggleDoors(ServerLevel level, boolean open) {
+        Temple temple = this.priest.getTemple();
+        BlockPos centre = temple != null ? temple.center : this.priest.getHome();
+        int r = temple != null ? Math.min(temple.radius, 64) : Config.MARKER_SEARCH_RADIUS.get();
+        for (BlockPos p : BlockPos.betweenClosed(centre.offset(-r, -6, -r), centre.offset(r, 6, r))) {
+            if (!level.isLoaded(p)) {
+                continue;
+            }
+            BlockState state = level.getBlockState(p);
+            if (state.getBlock() instanceof TempleDoorBlock door
+                    && state.getValue(DoorBlock.HALF) == DoubleBlockHalf.LOWER
+                    && state.getValue(DoorBlock.OPEN) != open) {
+                door.setOpen(this.priest, level, state, p.immutable(), open);
+            }
         }
     }
 
