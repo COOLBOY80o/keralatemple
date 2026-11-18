@@ -12,7 +12,7 @@ public final class Vastram {
     public static final List<String> COLOURS = List.of("white", "cream", "saffron", "red", "maroon", "green", "blue", "gold");
     public static final int[] RGB = {0xE8E4DC, 0xD8C9A0, 0xE08A1E, 0xB01818, 0x6A1420, 0x2E7D32, 0x2A4FA0, 0xE6B93C};
     public static final List<String> DESIGNS = List.of("plain", "border", "stripes", "checks");
-    public static final List<String> ROLES = List.of("melshanthi", "keezhshanthi", "kazhakam", "cook");
+    public static final List<String> ROLES = List.of("melshanthi", "keezhshanthi", "kazhakam", "cook", "musician");
 
     private Vastram() {}
 
@@ -57,6 +57,7 @@ public final class Vastram {
             case "melshanthi" -> pack(0, 7, 1);
             case "keezhshanthi" -> pack(0, 3, 1);
             case "kazhakam" -> pack(1, 5, 2);
+            case "musician" -> pack(2, 7, 2);
             default -> pack(0, 6, 3);
         };
     }

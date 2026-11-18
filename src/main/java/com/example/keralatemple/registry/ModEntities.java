@@ -6,6 +6,9 @@ import com.example.keralatemple.entity.CookEntity;
 import com.example.keralatemple.entity.KazhakamEntity;
 import com.example.keralatemple.entity.KeezhshanthiEntity;
 import com.example.keralatemple.entity.PriestEntity;
+import com.example.keralatemple.entity.ChendaEntity;
+import com.example.keralatemple.entity.ChengilaEntity;
+import com.example.keralatemple.entity.ThimilaEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -46,4 +49,22 @@ public class ModEntities {
                     .sized(0.6F, 1.95F)
                     .clientTrackingRange(10)
                     .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "cook").toString()));
+
+    public static final RegistryObject<EntityType<ChendaEntity>> CHENDA = ENTITY_TYPES.register("chenda",
+            () -> EntityType.Builder.of(ChendaEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(10)
+                    .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "chenda").toString()));
+
+    public static final RegistryObject<EntityType<ChengilaEntity>> CHENGILA = ENTITY_TYPES.register("chengila",
+            () -> EntityType.Builder.of(ChengilaEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(10)
+                    .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "chengila").toString()));
+
+    public static final RegistryObject<EntityType<ThimilaEntity>> THIMILA = ENTITY_TYPES.register("thimila",
+            () -> EntityType.Builder.of(ThimilaEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.95F)
+                    .clientTrackingRange(10)
+                    .build(new ResourceLocation(KeralaTempleMod.MOD_ID, "thimila").toString()));
 }

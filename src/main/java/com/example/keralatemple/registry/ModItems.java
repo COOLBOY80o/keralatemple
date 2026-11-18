@@ -22,6 +22,12 @@ public class ModItems {
             () -> new ForgeSpawnEggItem(ModEntities.PRIEST, 0xF2E6C8, 0xC8962E, new Item.Properties()));
 
     // Cream and green (the green kara of his mundu)
+    public static final RegistryObject<Item> CHENDA_SPAWN_EGG = ITEMS.register("chenda_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.CHENDA, 0xC8A060, 0x703818, new Item.Properties()));
+    public static final RegistryObject<Item> CHENGILA_SPAWN_EGG = ITEMS.register("chengila_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.CHENGILA, 0xE6B93C, 0x703818, new Item.Properties()));
+    public static final RegistryObject<Item> THIMILA_SPAWN_EGG = ITEMS.register("thimila_spawn_egg",
+            () -> new ForgeSpawnEggItem(ModEntities.THIMILA, 0xB07840, 0x203060, new Item.Properties()));
     public static final RegistryObject<Item> KEEZHSHANTHI_SPAWN_EGG = ITEMS.register("keezhshanthi_spawn_egg",
             () -> new ForgeSpawnEggItem(ModEntities.KEEZHSHANTHI, 0xF2E6C8, 0x3C8C50, new Item.Properties()));
 

@@ -50,5 +50,11 @@
   "item.keralatemple.cook_spawn_egg": "Cook Spawn Egg",
   "entity.keralatemple.kazhakam": "Kazhakam (Flower Assistant)",
   "entity.keralatemple.cook": "Madapally (Temple Cook)",
-  "block.keralatemple.temple_door_frame": "Temple Door Frame"
+  "block.keralatemple.temple_door_frame": "Temple Door Frame",
+  "entity.keralatemple.chenda": "Chenda Player",
+  "item.keralatemple.chenda_spawn_egg": "Chenda Player Spawn Egg",
+  "entity.keralatemple.chengila": "Chengila Player",
+  "item.keralatemple.chengila_spawn_egg": "Chengila Player Spawn Egg",
+  "entity.keralatemple.thimila": "Thimila Player",
+  "item.keralatemple.thimila_spawn_egg": "Thimila Player Spawn Egg"
 }

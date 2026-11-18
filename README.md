@@ -149,3 +149,16 @@ Rituals are programmed per temple, on the real Kerala 24-hour clock. **Nothing i
 - Abhishekam dravyas (milk, ghee, honey, curd, rose water, tender coconut water, sandal paste, panchagavyam, ...) and the abhishekam ritual
 - Kalasam and kalasha pooja
 - The priest dressing the idols (vastram, garlands, chandanam, ornaments)
+
+## Round 3a: musicians, offering pot, seeveli route, looks
+
+- **Musicians** (spawn eggs: Chenda Player, Thimila Player, Chengila Player). While any ritual is on they play near the
+  pooja station (slow and soft). During a seeveli they trail the melshanthi: slow at first, then medium, then fast, and
+  stop just before the end. They keep time from the game clock so they stay together; more musicians sound fuller.
+  The sounds are made in game from note-block sounds (no recorded audio). They hold stand-in items for now.
+- **Offering pot**: an uruli with no aduppu beneath it, near the pooja station, receives the cooked food; the melshanthi offers it.
+- **Seeveli route**: Temple Wand "Seeveli route" mode, `/keralatemple route list|clear <temple>`; schedule `SREEBALI` for the bali offering.
+- **Bali stone**: right-click gold ingot / iron ingot for gold / silver plating; sneak + empty hand removes it.
+- **Brahmin looks**: random hair colour, facial hair, Kerala tilak (sandal line, or bhasma + sandal/kumkum dot, also on the arms),
+  random Malayali names (`/keralatemple brahmin name <text>`), and an angavastram per role
+  (`/keralatemple vastram set <temple> <role> <colour> <accent> <design>`).

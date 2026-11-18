@@ -60,6 +60,9 @@ public class ModCreativeTabs {
                         output.accept(ModItems.KEEZHSHANTHI_SPAWN_EGG.get());
                         output.accept(ModItems.KAZHAKAM_SPAWN_EGG.get());
                         output.accept(ModItems.COOK_SPAWN_EGG.get());
+                        output.accept(ModItems.CHENDA_SPAWN_EGG.get());
+                        output.accept(ModItems.CHENGILA_SPAWN_EGG.get());
+                        output.accept(ModItems.THIMILA_SPAWN_EGG.get());
                     })
                     .build());
 }

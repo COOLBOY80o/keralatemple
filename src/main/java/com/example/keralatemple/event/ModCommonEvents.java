@@ -17,5 +17,8 @@ public class ModCommonEvents {
         event.put(ModEntities.KAZHAKAM.get(), PriestEntity.createAttributes().build());
         event.put(ModEntities.COOK.get(), PriestEntity.createAttributes().build());
         event.put(ModEntities.KEEZHSHANTHI.get(), PriestEntity.createAttributes().build());
+        event.put(ModEntities.CHENDA.get(), PriestEntity.createAttributes().build());
+        event.put(ModEntities.CHENGILA.get(), PriestEntity.createAttributes().build());
+        event.put(ModEntities.THIMILA.get(), PriestEntity.createAttributes().build());
     }
 }
