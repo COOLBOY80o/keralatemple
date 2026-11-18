@@ -39,7 +39,7 @@ public class BaliStoneBlock extends Block {
     }
 
     public static final EnumProperty<Plating> PLATING = EnumProperty.create("plating", Plating.class);
-    private static final VoxelShape SHAPE = Block.box(2, 0, 2, 14, 9, 14);
+    private static final VoxelShape SHAPE = Block.box(4.8, 0, 4.8, 11.2, 5.4, 11.2);
 
     public BaliStoneBlock(Properties properties) {
         super(properties);
