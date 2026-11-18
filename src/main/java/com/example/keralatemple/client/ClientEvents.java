@@ -22,5 +22,6 @@ public class ClientEvents {
         event.registerEntityRenderer(ModEntities.COOK.get(), ctx -> new NpcRenderer<>(ctx, "cook"));
         event.registerEntityRenderer(ModEntities.ACHARI.get(), ctx -> new NpcRenderer<>(ctx, "achari"));
         event.registerBlockEntityRenderer(ModBlockEntities.IDOL.get(), IdolRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.CARVED.get(), CarvedRenderer::new);
     }
 }

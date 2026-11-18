@@ -14,4 +14,8 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<IdolBlockEntity>> IDOL = BLOCK_ENTITIES.register("idol",
             () -> BlockEntityType.Builder.of(IdolBlockEntity::new, ModBlocks.IDOL_PEDESTAL.get(),
                     ModBlocks.ANJANA_SHILA.get(), ModBlocks.KRISHNA_SHILA.get()).build(null));
+
+    public static final RegistryObject<BlockEntityType<com.example.keralatemple.blockentity.CarvedBlockEntity>> CARVED =
+            BLOCK_ENTITIES.register("carved", () -> BlockEntityType.Builder.of(
+                    com.example.keralatemple.blockentity.CarvedBlockEntity::new, ModBlocks.CARVED_BLOCK.get()).build(null));
 }

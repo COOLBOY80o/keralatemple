@@ -57,5 +57,7 @@
   "item.keralatemple.chengila_spawn_egg": "Chengila Player Spawn Egg",
   "entity.keralatemple.thimila": "Thimila Player",
   "item.keralatemple.thimila_spawn_egg": "Thimila Player Spawn Egg",
-  "block.keralatemple.music_station": "Music Station"
+  "block.keralatemple.music_station": "Music Station",
+  "block.keralatemple.carved_block": "Carved Block",
+  "item.keralatemple.carving_chisel": "Carving Chisel (Pranala Chisel)"
 }
