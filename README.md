@@ -112,6 +112,7 @@ Rituals are programmed per temple, on the real Kerala 24-hour clock. **Nothing i
 - Rituals: nada thurakkal, **nirmalya darshanam**, **vakacharthu**, **shankha abhishekam**, **jaladhara**, **ksheeradhara**, **ayirakudam**, abhishekam, ushah pooja, ethirtha pooja, pantheeradi pooja, ucha pooja, athazha pooja, deeparadhana, seeveli, nada adakkal, plus spare slots. The melshanthi shows each one differently (sandal paste, shankh, falling water, milk, lamps).
 - **Ayirakudam:** place a **Kudam Station** (blue mat) beside water, and one or more Keezhshanthis. They fetch pots and carry them to the melshanthi again and again. `/keralatemple status` shows the count out of 1000. Set a long duration for it; more keezhshanthis finish faster. Without a station they fill pots slowly where they stand.
 - **Temple doors** (wood, gold-plated, gold; place two side by side for a double door with a central strip of five bosses): you can open them by hand, and the melshanthi opens every door of the temple at nada thurakkal and closes them at nada adakkal.
+- **Door frames:** build the surround from Temple Door Frame blocks (wood, gold-plated, gold): a ring one block thick with a sill, a 3 wide by 4 tall ring leaves a 1 by 2 opening for one door (use 4 wide for a double door).
 - The default schedule changed, so existing worlds use a new config entry (`ritualScheduleV2`). Temples with their own schedule keep it.
 
 ## Flowers and cooking (round 2)

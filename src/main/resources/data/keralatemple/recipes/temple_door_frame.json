@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "P",
+    "P"
+  ],
+  "key": {
+    "P": {
+      "item": "keralatemple:carved_wood_pillar"
+    }
+  },
+  "result": {
+    "item": "keralatemple:temple_door_frame",
+    "count": 4
+  }
+}

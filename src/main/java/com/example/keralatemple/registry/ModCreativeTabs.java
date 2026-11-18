@@ -48,6 +48,9 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.TEMPLE_DOOR.get());
                         output.accept(ModBlocks.TEMPLE_DOOR_GOLD_PLATED.get());
                         output.accept(ModBlocks.TEMPLE_DOOR_GOLD.get());
+                        output.accept(ModBlocks.TEMPLE_DOOR_FRAME.get());
+                        output.accept(ModBlocks.TEMPLE_DOOR_FRAME_GOLD_PLATED.get());
+                        output.accept(ModBlocks.TEMPLE_DOOR_FRAME_GOLD.get());
                         output.accept(ModBlocks.BALI_STONE.get());
                         output.accept(ModBlocks.IDOL_PEDESTAL.get());
                         output.accept(ModBlocks.ANJANA_SHILA.get());
