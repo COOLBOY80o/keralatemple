@@ -19,6 +19,8 @@ public final class IdolData {
     public static final float MIN_THICKNESS = 0.4F;
     public static final float MAX_THICKNESS = 2.0F;
     public static final int PEETHAM_STYLES = 4;
+    public static final float MIN_PEETHAM_SIZE = 0.5F;
+    public static final float MAX_PEETHAM_SIZE = 3.0F;
     private static final float[] PEETHAM_HEIGHTS = {0.0F, 0.15F, 0.30F, 0.40F};
 
     public final int width;
@@ -29,12 +31,20 @@ public final class IdolData {
     public final float size;
     public final float thickness;
     public final int peetham;
+    /** Scales the peetham's width and height together. */
+    public final float peethamSize;
     /** true = show the picture's own colours; false = show the material (carved stone or cast metal). */
     public final boolean originalColours;
     public final IdolMaterial material;
 
     public IdolData(int width, int height, byte[] rgba, float size, float thickness, int peetham,
                     boolean originalColours, IdolMaterial material) {
+        this(width, height, rgba, size, thickness, peetham, 1.0F, originalColours, material);
+    }
+
+    public IdolData(int width, int height, byte[] rgba, float size, float thickness, int peetham,
+                    float peethamSize, boolean originalColours, IdolMaterial material) {
+        this.peethamSize = peethamSize;
         this.width = width;
         this.height = height;
         this.rgba = rgba;
@@ -46,11 +56,11 @@ public final class IdolData {
     }
 
     public IdolData withMaterial(IdolMaterial newMaterial) {
-        return new IdolData(width, height, rgba, size, thickness, peetham, originalColours, newMaterial);
+        return new IdolData(width, height, rgba, size, thickness, peetham, peethamSize, originalColours, newMaterial);
     }
 
     public float peethamHeight() {
-        return PEETHAM_HEIGHTS[Math.max(0, Math.min(PEETHAM_STYLES - 1, peetham))];
+        return PEETHAM_HEIGHTS[Math.max(0, Math.min(PEETHAM_STYLES - 1, peetham))] * peethamSize;
     }
 
     /** Checks everything, because this also arrives from clients over the network. */
@@ -62,6 +72,9 @@ public final class IdolData {
             return false;
         }
         if (!(size >= MIN_SIZE && size <= MAX_SIZE) || !(thickness >= MIN_THICKNESS && thickness <= MAX_THICKNESS)) {
+            return false;
+        }
+        if (!(peethamSize >= MIN_PEETHAM_SIZE && peethamSize <= MAX_PEETHAM_SIZE)) {
             return false;
         }
         if (peetham < 0 || peetham >= PEETHAM_STYLES || material == null) {
@@ -96,6 +109,7 @@ public final class IdolData {
         tag.putFloat("Size", size);
         tag.putFloat("Thickness", thickness);
         tag.putInt("Peetham", peetham);
+        tag.putFloat("PeethamSize", peethamSize);
         tag.putBoolean("Original", originalColours);
         tag.putInt("Material", material.ordinal());
         return tag;
@@ -106,6 +120,7 @@ public final class IdolData {
     public static IdolData load(CompoundTag tag) {
         IdolData data = new IdolData(tag.getInt("W"), tag.getInt("H"), tag.getByteArray("Rgba"),
                 tag.getFloat("Size"), tag.getFloat("Thickness"), tag.getInt("Peetham"),
+                tag.contains("PeethamSize") ? tag.getFloat("PeethamSize") : 1.0F,
                 tag.getBoolean("Original"), IdolMaterial.byId(tag.getInt("Material")));
         return data.isValid() ? data : null;
     }
@@ -119,6 +134,7 @@ public final class IdolData {
         buf.writeFloat(size);
         buf.writeFloat(thickness);
         buf.writeVarInt(peetham);
+        buf.writeFloat(peethamSize);
         buf.writeBoolean(originalColours);
         buf.writeVarInt(material.ordinal());
     }
@@ -130,8 +146,9 @@ public final class IdolData {
         float size = buf.readFloat();
         float thickness = buf.readFloat();
         int peetham = buf.readVarInt();
+        float peethamSize = buf.readFloat();
         boolean original = buf.readBoolean();
         IdolMaterial material = IdolMaterial.byId(buf.readVarInt());
-        return new IdolData(w, h, rgba, size, thickness, peetham, original, material);
+        return new IdolData(w, h, rgba, size, thickness, peetham, peethamSize, original, material);
     }
 }

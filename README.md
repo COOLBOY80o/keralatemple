@@ -86,7 +86,7 @@ Other commands: `/keralatemple status`, `temple list|info|select|delete|center|r
 **Stone idols.** Place an **Anjana Shila** or **Krishna Shila** (craft from 4 polished blackstone / 4 polished deepslate), then **left-click it with the Chisel** (iron ingot over a stick). A designer window opens:
 - **Design** tab: draw the idol's front view (pen, erase, fill, mirror, 24 colours).
 - **Import** tab: drag a PNG or JPG from your computer onto the window; the game removes a plain background and shrinks it.
-- Set the **height** (0.5 to 6 blocks) and **thickness**, pick the **peetham** (none, simple, lotus, tiered) and whether to keep the picture's own colours or carve it in the stone.
+- Set the **height** (0.5 to 6 blocks) and **thickness**, pick the **peetham** (none, simple granite, padma lotus with pink and purple petals, tiered gold) and its **size** (0.5x to 3x, width and height together) and whether to keep the picture's own colours or carve it in the stone.
 - Press **Carve idol**. The idol appears standing on the stone.
 
 **Metal idols.** Spawn an **Achari** (spawn egg) and **left-click him**. Same window, plus a metal (panchaloha, bronze, silver, gold). He casts it, which takes a while (more for taller idols; `achariCastSeconds` in the config), then hands you a Cast Idol. Right-click an **Idol Pedestal** with it to set it up; sneak with an empty hand to take it back.

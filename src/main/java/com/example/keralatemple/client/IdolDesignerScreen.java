@@ -25,7 +25,7 @@ import java.util.List;
 @OnlyIn(Dist.CLIENT)
 public class IdolDesignerScreen extends Screen {
     private static final int PANEL_W = 360;
-    private static final int PANEL_H = 262;
+    private static final int PANEL_H = 286;
     private static final int CANVAS = 192;
     private static final int[] PALETTE = {
             0x000000, 0x3B3B3B, 0x7F7F7F, 0xBFBFBF, 0xFFFFFF, 0x5A3A1E, 0x8B5A2B, 0xC8962E,
@@ -51,6 +51,7 @@ public class IdolDesignerScreen extends Screen {
     private float size = 2.0F;
     private float thickness = 1.0F;
     private int peetham = 1;
+    private float peethamSize = 1.0F;
     private int metalIndex = 0;
     private String status = "";
     @Nullable
@@ -88,6 +89,7 @@ public class IdolDesignerScreen extends Screen {
             size = existing.size;
             thickness = existing.thickness;
             peetham = existing.peetham;
+            peethamSize = existing.peethamSize;
             originalColours = existing.originalColours;
         }
     }
@@ -130,24 +132,27 @@ public class IdolDesignerScreen extends Screen {
             }
         }).bounds(rx, t + 44, 144, 20).build());
 
-        addRenderableWidget(new SimpleSlider(rx, t + 146, 144, "Height", IdolData.MIN_SIZE, IdolData.MAX_SIZE, size,
+        addRenderableWidget(new SimpleSlider(rx, t + 142, 144, "Height", IdolData.MIN_SIZE, IdolData.MAX_SIZE, size,
                 v -> size = v, " blocks"));
-        addRenderableWidget(new SimpleSlider(rx, t + 168, 144, "Thickness", IdolData.MIN_THICKNESS,
+        addRenderableWidget(new SimpleSlider(rx, t + 163, 144, "Thickness", IdolData.MIN_THICKNESS,
                 IdolData.MAX_THICKNESS, thickness, v -> thickness = v, "x"));
 
+        addRenderableWidget(new SimpleSlider(rx, t + 184, 144, "Peetham size", IdolData.MIN_PEETHAM_SIZE,
+                IdolData.MAX_PEETHAM_SIZE, peethamSize, v -> peethamSize = v, "x"));
+
         peethamBtn = addRenderableWidget(Button.builder(Component.empty(),
-                b -> peetham = (peetham + 1) % IdolData.PEETHAM_STYLES).bounds(rx, t + 190, 70, 20).build());
+                b -> peetham = (peetham + 1) % IdolData.PEETHAM_STYLES).bounds(rx, t + 206, 70, 20).build());
         colourBtn = addRenderableWidget(Button.builder(Component.empty(), b -> originalColours = !originalColours)
-                .bounds(rx + 74, t + 190, 70, 20).build());
+                .bounds(rx + 74, t + 206, 70, 20).build());
         metalBtn = addRenderableWidget(Button.builder(Component.empty(),
                         b -> metalIndex = (metalIndex + 1) % IdolMaterial.METALS.size())
-                .bounds(rx, t + 212, 144, 20).build());
+                .bounds(rx, t + 228, 144, 20).build());
         metalBtn.visible = achari;
 
         addRenderableWidget(Button.builder(Component.literal(achari ? "Cast idol" : "Carve idol"), b -> submit())
-                .bounds(rx, t + 236, 70, 20).build());
+                .bounds(rx, t + 258, 70, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Cancel"), b -> onClose())
-                .bounds(rx + 74, t + 236, 70, 20).build());
+                .bounds(rx + 74, t + 258, 70, 20).build());
 
         refreshLabels();
     }
@@ -321,7 +326,7 @@ public class IdolDesignerScreen extends Screen {
             return;
         }
         IdolMaterial material = achari ? IdolMaterial.METALS.get(metalIndex) : IdolMaterial.ANJANA_SHILA;
-        IdolData data = new IdolData(gw, gh, rgba, size, thickness, peetham, originalColours, material);
+        IdolData data = new IdolData(gw, gh, rgba, size, thickness, peetham, peethamSize, originalColours, material);
         if (achari) {
             ModNetwork.CHANNEL.sendToServer(SubmitIdolPacket.forEntity(entityId, data));
         } else {
@@ -367,7 +372,7 @@ public class IdolDesignerScreen extends Screen {
                 g.fill(x, y, x + 16, y + 14, PALETTE[i] == colour ? 0xFFFFFFFF : 0xFF000000);
                 g.fill(x + 1, y + 1, x + 15, y + 13, 0xFF000000 | PALETTE[i]);
             }
-            g.drawString(this.font, "Tool: " + tool.name().toLowerCase() + "  (right-click erases)", rx, t + 142 - 10 + 0, 0xBBBBBB, false);
+            g.drawString(this.font, "Tool: " + tool.name().toLowerCase() + "  (right-click erases)", l + 8, t + 20 + CANVAS + 16, 0xBBBBBB, false);
         } else {
             g.drawString(this.font, "Drag a picture (PNG/JPG) from your", l + 208, t + 72, 0xDDDDDD, false);
             g.drawString(this.font, "computer onto this window.", l + 208, t + 84, 0xDDDDDD, false);

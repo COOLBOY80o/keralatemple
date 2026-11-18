@@ -49,7 +49,7 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - facing.toYRot()));
 
         float y = block.kind().baseTop;
-        drawPeetham(poseStack, buffers, data.peetham, y, light, overlay);
+        drawPeetham(poseStack, buffers, data.peetham, data.peethamSize, y, light, overlay);
         y += data.peethamHeight();
 
         // An angi (metal cover) replaces the stone idol, a touch larger so it hugs it.
@@ -79,30 +79,53 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
         poseStack.popPose();
     }
 
-    /** The stand under the idol: 0 none, 1 simple, 2 padma (lotus), 3 tiered. Total heights match IdolData. */
-    private static void drawPeetham(PoseStack ps, MultiBufferSource buffers, int style, float y, int light, int overlay) {
+    private static final int GOLD = 0xEBBE3C;
+    private static final int DARK_RED = 0x8A1C1C;
+    private static final int PINK = 0xD04A8E;
+    private static final int PURPLE = 0x7E3AA8;
+
+    /**
+     * The stand under the idol: 0 none, 1 simple granite, 2 padma (gold base with pink and purple lotus petals),
+     * 3 tiered gold with red bands. Every width and height is multiplied by the peetham size.
+     */
+    private static void drawPeetham(PoseStack ps, MultiBufferSource buffers, int style, float s, float y,
+                                    int light, int overlay) {
         if (style <= 0) {
             return;
         }
-        VertexConsumer vc = buffers.getBuffer(RenderType.entityCutoutNoCull(GRANITE));
-        switch (style) {
-            case 1 -> box(vc, ps, 0.40F, y, y + 0.15F, light, overlay);
-            case 2 -> {
-                box(vc, ps, 0.45F, y, y + 0.10F, light, overlay);
-                // Two squares, one turned 45 degrees, make an eight-petalled lotus.
-                box(vc, ps, 0.30F, y + 0.10F, y + 0.22F, light, overlay);
-                ps.pushPose();
-                ps.mulPose(Axis.YP.rotationDegrees(45.0F));
-                box(vc, ps, 0.30F, y + 0.10F, y + 0.22F, light, overlay);
-                ps.popPose();
-                box(vc, ps, 0.22F, y + 0.22F, y + 0.30F, light, overlay);
-            }
-            default -> {
-                box(vc, ps, 0.48F, y, y + 0.12F, light, overlay);
-                box(vc, ps, 0.40F, y + 0.12F, y + 0.24F, light, overlay);
-                box(vc, ps, 0.32F, y + 0.24F, y + 0.36F, light, overlay);
-                box(vc, ps, 0.36F, y + 0.36F, y + 0.40F, light, overlay);
-            }
+        if (style == 1) {
+            VertexConsumer granite = buffers.getBuffer(RenderType.entityCutoutNoCull(GRANITE));
+            box(granite, ps, 0.40F * s, y, y + 0.15F * s, light, overlay);
+            return;
+        }
+        VertexConsumer vc = OrnamentRenderer.white(buffers);
+        if (style == 2) {
+            layer(vc, ps, 0.46F * s, y, y + 0.06F * s, GOLD, false, light);
+            layer(vc, ps, 0.38F * s, y + 0.06F * s, y + 0.10F * s, GOLD, false, light);
+            layer(vc, ps, 0.30F * s, y + 0.10F * s, y + 0.18F * s, PINK, true, light);
+            layer(vc, ps, 0.24F * s, y + 0.18F * s, y + 0.24F * s, PURPLE, true, light);
+            layer(vc, ps, 0.26F * s, y + 0.24F * s, y + 0.30F * s, GOLD, false, light);
+        } else {
+            layer(vc, ps, 0.48F * s, y, y + 0.10F * s, GOLD, false, light);
+            layer(vc, ps, 0.44F * s, y + 0.10F * s, y + 0.13F * s, DARK_RED, false, light);
+            layer(vc, ps, 0.40F * s, y + 0.13F * s, y + 0.23F * s, GOLD, false, light);
+            layer(vc, ps, 0.36F * s, y + 0.23F * s, y + 0.26F * s, DARK_RED, false, light);
+            layer(vc, ps, 0.32F * s, y + 0.26F * s, y + 0.36F * s, GOLD, false, light);
+            layer(vc, ps, 0.36F * s, y + 0.36F * s, y + 0.40F * s, GOLD, false, light);
+        }
+    }
+
+    /** One coloured square layer. With "petals" a second square turned 45 degrees makes an eight-point lotus. */
+    private static void layer(VertexConsumer vc, PoseStack ps, float hw, float y0, float y1, int rgb,
+                              boolean petals, int light) {
+        float cy = (y0 + y1) / 2.0F;
+        float hy = (y1 - y0) / 2.0F;
+        OrnamentRenderer.box(vc, ps, 0.0F, cy, 0.0F, hw, hy, hw, rgb, light);
+        if (petals) {
+            ps.pushPose();
+            ps.mulPose(Axis.YP.rotationDegrees(45.0F));
+            OrnamentRenderer.box(vc, ps, 0.0F, cy, 0.0F, hw, hy, hw, rgb, light);
+            ps.popPose();
         }
     }
 

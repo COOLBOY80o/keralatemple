@@ -87,7 +87,11 @@ public final class OrnamentRenderer {
         }
     }
 
-    private static void box(VertexConsumer vc, PoseStack ps, float cx, float cy, float cz,
+    public static VertexConsumer white(MultiBufferSource buffers) {
+        return buffers.getBuffer(RenderType.entityCutoutNoCull(WHITE));
+    }
+
+    public static void box(VertexConsumer vc, PoseStack ps, float cx, float cy, float cz,
                             float hx, float hy, float hz, int rgb, int light) {
         PoseStack.Pose pose = ps.last();
         Matrix4f m = pose.pose();
