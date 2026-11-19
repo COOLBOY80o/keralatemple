@@ -141,7 +141,11 @@ public class IdolBlock extends BaseEntityBlock {
                 player.displayClientMessage(Component.literal("There is no idol here to pour over yet."), true);
             } else {
                 com.example.keralatemple.ritual.Liquid liquid = com.example.keralatemple.item.KalasamItem.liquid(held);
-                idol.startPour(liquid, 160);
+                boolean conch = held.getItem() instanceof com.example.keralatemple.item.ShankhamItem;
+                idol.startPour(liquid, 160, conch ? 1 : 0);
+                if (conch) {
+                    level.playSound(null, pos, SoundEvents.NOTE_BLOCK_FLUTE.value(), SoundSource.BLOCKS, 1.4F, 0.5F);
+                }
                 level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 0.8F, 1.1F);
             }
             return InteractionResult.CONSUME;

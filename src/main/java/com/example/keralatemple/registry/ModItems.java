@@ -36,6 +36,8 @@ public class ModItems {
 
     public static final RegistryObject<Item> KALASAM = ITEMS.register("abhishekam_kalasam",
             () -> new com.example.keralatemple.item.KalasamItem(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> SHANKHAM = ITEMS.register("shankham",
+            () -> new com.example.keralatemple.item.ShankhamItem(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> ASTHABANDHAM = ITEMS.register("asthabandham",
             () -> new com.example.keralatemple.item.AsthabandhamItem(new Item.Properties()));
     public static final RegistryObject<Item> CARVING_CHISEL = ITEMS.register("carving_chisel",

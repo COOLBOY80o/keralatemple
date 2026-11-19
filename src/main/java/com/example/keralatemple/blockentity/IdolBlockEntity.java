@@ -47,11 +47,21 @@ public class IdolBlockEntity extends BlockEntity {
     private IdolData angi;
     private boolean fixed;
     private int pourLiquid = -1;
+    private int pourSource;   // 0 a kalasam above the idol, 1 a shankham (conch)
     private long pourStart;
     private long pourUntil;
 
     /** Starts pouring a liquid over the idol, or keeps the same liquid going longer. */
     public void startPour(com.example.keralatemple.ritual.Liquid liquid, int ticks) {
+        startPour(liquid, ticks, 0);
+    }
+
+    public int pourSource() {
+        return this.pourSource;
+    }
+
+    public void startPour(com.example.keralatemple.ritual.Liquid liquid, int ticks, int source) {
+        this.pourSource = source;
         if (this.level == null) {
             return;
         }
@@ -182,6 +192,7 @@ public class IdolBlockEntity extends BlockEntity {
         tag.put("Ornaments", list);
         tag.putBoolean("Fixed", this.fixed);
         tag.putInt("PourLiquid", this.pourLiquid);
+        tag.putInt("PourSource", this.pourSource);
         tag.putLong("PourStart", this.pourStart);
         tag.putLong("PourUntil", this.pourUntil);
     }
@@ -194,6 +205,7 @@ public class IdolBlockEntity extends BlockEntity {
         this.garland = tag.getByteArray("Garland");
         this.fixed = tag.getBoolean("Fixed");
         this.pourLiquid = tag.contains("PourLiquid") ? tag.getInt("PourLiquid") : -1;
+        this.pourSource = tag.getInt("PourSource");
         this.pourStart = tag.getLong("PourStart");
         this.pourUntil = tag.getLong("PourUntil");
         this.ornaments.clear();

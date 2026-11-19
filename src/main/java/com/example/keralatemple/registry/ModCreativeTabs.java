@@ -62,6 +62,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.ASTHABANDHAM.get());
                         for (com.example.keralatemple.ritual.Liquid liquid : com.example.keralatemple.ritual.Liquid.values()) {
                             output.accept(com.example.keralatemple.item.KalasamItem.of(liquid, ModItems.KALASAM.get()));
+                            output.accept(com.example.keralatemple.item.KalasamItem.of(liquid, ModItems.SHANKHAM.get()));
                         }
                         output.accept(ModItems.TEMPLE_WAND.get());
                         output.accept(ModItems.ACHARI_SPAWN_EGG.get());

@@ -342,7 +342,7 @@ public class RitualGoal extends Goal {
                     play(level, pos, SoundEvents.NOTE_BLOCK_FLUTE.value(), 1.6F, 0.5F);
                 }
                 if (t % 100 == 12) {
-                    pour(level, com.example.keralatemple.ritual.Liquid.WATER, 70);
+                    pour(level, com.example.keralatemple.ritual.Liquid.WATER, 70, 1);
                 }
                 if (t % 6 == 0) {
                     level.sendParticles(ParticleTypes.SPLASH, x, y - 0.2D, z, 5, 0.25D, 0.1D, 0.25D, 0.05D);
@@ -400,9 +400,13 @@ public class RitualGoal extends Goal {
 
     /** Pours a liquid over the temple's idol. */
     private void pour(ServerLevel level, com.example.keralatemple.ritual.Liquid liquid, int ticks) {
+        pour(level, liquid, ticks, 0);
+    }
+
+    private void pour(ServerLevel level, com.example.keralatemple.ritual.Liquid liquid, int ticks, int source) {
         BlockPos idolPos = this.priest.findTempleIdolPos();
         if (idolPos != null && level.getBlockEntity(idolPos) instanceof com.example.keralatemple.blockentity.IdolBlockEntity idol) {
-            idol.startPour(liquid, ticks);
+            idol.startPour(liquid, ticks, source);
         }
     }
 

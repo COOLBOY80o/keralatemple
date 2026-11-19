@@ -77,7 +77,19 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
         IdolData shown = be.getAngi() != null ? be.getAngi() : data;
         IdolCache.IdolMesh mesh = IdolCache.get(shown);
         float scale = data.size * (be.getAngi() != null ? 1.03F : 1.0F);
-        if (running) {
+        if (running && be.pourSource() == 1) {
+            // a shankham held above and in front of the idol, its liquid falling in a thin stream
+            VertexConsumer white = OrnamentRenderer.white(buffers);
+            float top = y + scale;
+            OrnamentRenderer.box(white, poseStack, 0.0F, top + 0.35F, 0.0F, 0.02F, 0.35F, 0.02F, liquid.rgb, light);
+            poseStack.pushPose();
+            poseStack.translate(0.0D, top + 0.72D, -0.06D);
+            poseStack.mulPose(Axis.XP.rotationDegrees(-70.0F));
+            OrnamentRenderer.box(white, poseStack, 0.0F, 0.0F, 0.0F, 0.07F, 0.07F, 0.12F, 0xF3EAD7, light);
+            OrnamentRenderer.box(white, poseStack, 0.0F, 0.0F, 0.16F, 0.045F, 0.045F, 0.05F, 0xE5B9A8, light);
+            OrnamentRenderer.box(white, poseStack, 0.0F, 0.0F, -0.13F, 0.04F, 0.04F, 0.03F, liquid.rgb, light);
+            poseStack.popPose();
+        } else if (running) {
             // the stream falling onto the idol's head from the vessel above
             OrnamentRenderer.box(OrnamentRenderer.white(buffers), poseStack, 0.0F, y + scale + 0.5F, 0.0F, 0.035F, 0.5F,
                     0.035F, liquid.rgb, light);
