@@ -153,10 +153,7 @@ public class RitualGoal extends Goal {
             sources.addAll(temple.wells);
         }
         this.wellSpot = sources.stream().min(Comparator.comparingDouble(p -> p.distSqr(here))).orElse(null);
-        this.kudamSpot = this.wellSpot != null ? this.wellSpot
-                : this.priest.findMarkers(ModBlocks.KUDAM_STATION.get()).stream()
-                .min(Comparator.comparingDouble(p -> p.distSqr(here)))
-                .orElse(null);
+        this.kudamSpot = this.wellSpot;
         this.station = found;
         this.helperSpot = this.station == null ? null : findHelperSpot(level, this.station);
 
@@ -472,7 +469,7 @@ public class RitualGoal extends Goal {
                     return;
                 }
             } else if (this.kudamSpot == null && ++this.pickTicks < 100) {
-                // Without a well or Kudam Station the pot is filled slowly where he stands.
+                // Without a well the pot is filled slowly where he stands.
                 return;
             }
             this.pickTicks = 0;

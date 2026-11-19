@@ -30,7 +30,6 @@ public class ModCreativeTabs {
                         output.accept(ModBlocks.NILAVILAKKU.get());
                         output.accept(ModBlocks.POOJA_STATION.get());
                         output.accept(ModBlocks.SEEVELI_WAYPOINT.get());
-                        output.accept(ModBlocks.KUDAM_STATION.get());
                         output.accept(ModBlocks.ADUPPU.get());
                         output.accept(ModBlocks.URULI.get());
                         output.accept(ModItems.URULI_SPOON.get());

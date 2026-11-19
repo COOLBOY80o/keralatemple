@@ -135,7 +135,6 @@ public class ModBlocks {
                     .noOcclusion()
                     .sound(SoundType.DEEPSLATE)));
 
-    // --- Kudam Station: where the keezhshanthis fill the pots for ayirakudam ---
     public static final RegistryObject<Block> CARVED_BLOCK = BLOCKS.register("carved_block",
             () -> new com.example.keralatemple.block.CarvedBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.STONE)
@@ -170,12 +169,6 @@ public class ModBlocks {
     public static final RegistryObject<Block> MUSIC_STATION = registerBlock("music_station",
             () -> new com.example.keralatemple.block.MusicStationBlock(BlockBehaviour.Properties.of()
                     .mapColor(MapColor.COLOR_ORANGE)
-                    .strength(0.3F)
-                    .noOcclusion()
-                    .sound(SoundType.WOOL)));
-    public static final RegistryObject<Block> KUDAM_STATION = registerBlock("kudam_station",
-            () -> new MarkerBlock(BlockBehaviour.Properties.of()
-                    .mapColor(MapColor.COLOR_BLUE)
                     .strength(0.3F)
                     .noOcclusion()
                     .sound(SoundType.WOOL)));
