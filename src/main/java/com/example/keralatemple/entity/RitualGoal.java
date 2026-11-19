@@ -85,6 +85,9 @@ public class RitualGoal extends Goal {
     @Override
     public void stop() {
         this.priest.getNavigation().stop();
+        if (this.priest.getMainHandItem().getItem() instanceof com.example.keralatemple.item.KalasamItem) {
+            this.priest.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, net.minecraft.world.item.ItemStack.EMPTY);
+        }
     }
 
     /** Re-reads the schedule at most once per second. */
@@ -404,6 +407,12 @@ public class RitualGoal extends Goal {
     }
 
     private void pour(ServerLevel level, com.example.keralatemple.ritual.Liquid liquid, int ticks, int source) {
+        // the melshanthi holds the vessel while he pours: a shankham or a kalasam, with the liquid in it
+        this.priest.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
+                com.example.keralatemple.item.KalasamItem.of(liquid, source == 1
+                        ? com.example.keralatemple.registry.ModItems.SHANKHAM.get()
+                        : com.example.keralatemple.registry.ModItems.KALASAM.get()));
+        this.priest.setDropChance(net.minecraft.world.entity.EquipmentSlot.MAINHAND, 0.0F);
         BlockPos idolPos = this.priest.findTempleIdolPos();
         if (idolPos != null && level.getBlockEntity(idolPos) instanceof com.example.keralatemple.blockentity.IdolBlockEntity idol) {
             idol.startPour(liquid, ticks, source);
