@@ -69,6 +69,157 @@ public final class ImageImport {
         return new Result(w, h, argb, original);
     }
 
+    /**
+     * Finds where the main subject is: detail and colour that differ from the picture's edges, weighted toward the
+     * centre. Returns the crop rectangle as fractions {x0, y0, x1, y1}, or the whole picture when nothing stands out.
+     */
+    public static float[] autoCrop(Path file) {
+        float[] whole = {0.0F, 0.0F, 1.0F, 1.0F};
+        try {
+            if (Files.size(file) > MAX_FILE_BYTES) {
+                return whole;
+            }
+            BufferedImage image = ImageIO.read(file.toFile());
+            if (image == null) {
+                return whole;
+            }
+            int sw = image.getWidth();
+            int sh = image.getHeight();
+            float scale = 96.0F / Math.max(sw, sh);
+            int w = Math.max(8, Math.round(sw * scale));
+            int h = Math.max(8, Math.round(sh * scale));
+            int[] px = downsample(image, sw, sh, w, h);
+            float[] lum = new float[w * h];
+            for (int k = 0; k < lum.length; k++) {
+                int p = px[k];
+                lum[k] = 0.3F * ((p >> 16) & 255) + 0.59F * ((p >> 8) & 255) + 0.11F * (p & 255);
+            }
+            // colour of the picture's edge band
+            long er = 0, eg = 0, eb = 0;
+            int en = 0;
+            int band = Math.max(2, Math.min(w, h) / 12);
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    if (x < band || y < band || x >= w - band || y >= h - band) {
+                        int p = px[y * w + x];
+                        er += (p >> 16) & 255;
+                        eg += (p >> 8) & 255;
+                        eb += p & 255;
+                        en++;
+                    }
+                }
+            }
+            float mr = (float) er / en, mg = (float) eg / en, mb = (float) eb / en;
+            float[] sal = new float[w * h];
+            float maxG = 1.0F, maxD = 1.0F;
+            float[] grad = new float[w * h];
+            float[] dist = new float[w * h];
+            for (int y = 1; y < h - 1; y++) {
+                for (int x = 1; x < w - 1; x++) {
+                    float gx = lum[y * w + x + 1] - lum[y * w + x - 1];
+                    float gy = lum[(y + 1) * w + x] - lum[(y - 1) * w + x];
+                    grad[y * w + x] = (float) Math.sqrt(gx * gx + gy * gy);
+                    maxG = Math.max(maxG, grad[y * w + x]);
+                }
+            }
+            for (int k = 0; k < dist.length; k++) {
+                int p = px[k];
+                float dr = ((p >> 16) & 255) - mr, dg = ((p >> 8) & 255) - mg, db = (p & 255) - mb;
+                dist[k] = (float) Math.sqrt(dr * dr + dg * dg + db * db);
+                maxD = Math.max(maxD, dist[k]);
+            }
+            for (int k = 0; k < sal.length; k++) {
+                sal[k] = 0.7F * grad[k] / maxG + 0.3F * dist[k] / maxD;
+            }
+            sal = boxBlur(sal, w, h, 3);
+            float best = 0.0F;
+            int bx = w / 2, by = h / 2;
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    float nx = (x - w / 2.0F) / w, ny = (y - h / 2.0F) / h;
+                    float weight = (float) Math.exp(-(nx * nx + ny * ny) / (2 * 0.22F * 0.22F));
+                    sal[y * w + x] *= weight;
+                    if (sal[y * w + x] > best) {
+                        best = sal[y * w + x];
+                        bx = x;
+                        by = y;
+                    }
+                }
+            }
+            if (best <= 0.0F) {
+                return whole;
+            }
+            boolean[] on = new boolean[w * h];
+            for (int k = 0; k < on.length; k++) {
+                on[k] = sal[k] >= best * 0.55F;
+            }
+            // the blob around the strongest spot
+            boolean[] seen = new boolean[w * h];
+            java.util.ArrayDeque<Integer> q = new java.util.ArrayDeque<>();
+            q.add(by * w + bx);
+            seen[by * w + bx] = true;
+            int minX = bx, maxX = bx, minY = by, maxY = by;
+            while (!q.isEmpty()) {
+                int c = q.poll();
+                int cx = c % w, cy = c / w;
+                minX = Math.min(minX, cx);
+                maxX = Math.max(maxX, cx);
+                minY = Math.min(minY, cy);
+                maxY = Math.max(maxY, cy);
+                int[] nb = {c - 1, c + 1, c - w, c + w};
+                for (int n : nb) {
+                    if (n >= 0 && n < on.length && !seen[n] && on[n] && !(n == c - 1 && cx == 0) && !(n == c + 1 && cx == w - 1)) {
+                        seen[n] = true;
+                        q.add(n);
+                    }
+                }
+            }
+            float padX = 0.07F * w, padY = 0.07F * h;
+            float x0 = Math.max(0, minX - padX) / w, x1 = Math.min(w, maxX + 1 + padX) / w;
+            float y0 = Math.max(0, minY - padY) / h, y1 = Math.min(h, maxY + 1 + padY) / h;
+            if ((x1 - x0) * (y1 - y0) > 0.85F || (x1 - x0) < 0.15F || (y1 - y0) < 0.15F) {
+                return whole;   // nothing clearly stands out, or it is already the whole picture
+            }
+            return new float[]{x0, y0, x1, y1};
+        } catch (Exception e) {
+            return whole;
+        }
+    }
+
+    private static float[] boxBlur(float[] in, int w, int h, int r) {
+        float[] tmp = new float[in.length];
+        float[] out = new float[in.length];
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                float sum = 0;
+                int n = 0;
+                for (int d = -r; d <= r; d++) {
+                    int xx = x + d;
+                    if (xx >= 0 && xx < w) {
+                        sum += in[y * w + xx];
+                        n++;
+                    }
+                }
+                tmp[y * w + x] = sum / n;
+            }
+        }
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                float sum = 0;
+                int n = 0;
+                for (int d = -r; d <= r; d++) {
+                    int yy = y + d;
+                    if (yy >= 0 && yy < h) {
+                        sum += tmp[yy * w + x];
+                        n++;
+                    }
+                }
+                out[y * w + x] = sum / n;
+            }
+        }
+        return out;
+    }
+
     /** Box-filters the photo down to w x h. */
     private static int[] downsample(BufferedImage src, int sw, int sh, int w, int h) {
         int[] out = new int[w * h];

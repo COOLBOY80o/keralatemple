@@ -51,6 +51,8 @@ public class IdolDesignerScreen extends Screen {
     private int[] original;   // the imported picture with nothing cut away
     private float[] crop = {0.0F, 0.0F, 1.0F, 1.0F};   // the part of the dropped picture in use
     private double dragX0 = -1, dragY0 = -1, dragX1 = -1, dragY1 = -1;
+    private boolean autoCrop = true;
+    private Button autoBtn;
     private int cutMode = 1;   // 0 keep everything, 1 normal cut-out, 2 generous (keeps more)
     private boolean originalColours = false;
     private float size = 2.0F;
@@ -141,6 +143,15 @@ public class IdolDesignerScreen extends Screen {
             }
         }).bounds(rx, t + 44, 144, 20).build());
 
+        autoBtn = addRenderableWidget(Button.builder(Component.empty(), b -> {
+            autoCrop = !autoCrop;
+            crop = autoCrop && lastDropped != null ? ImageImport.autoCrop(lastDropped) : new float[]{0.0F, 0.0F, 1.0F, 1.0F};
+            if (lastDropped != null) {
+                importFile(lastDropped);
+            }
+            refreshLabels();
+        }).bounds(rx, t + 68, 144, 20).build());
+
         addRenderableWidget(new SimpleSlider(rx, t + 142, 144, "Height", IdolData.MIN_SIZE, IdolData.MAX_SIZE, size,
                 v -> size = v, " blocks"));
         addRenderableWidget(new SimpleSlider(rx, t + 163, 144, "Thickness", IdolData.MIN_THICKNESS,
@@ -183,6 +194,8 @@ public class IdolDesignerScreen extends Screen {
         brushBtn.visible = d;
         brushBtn.setMessage(Component.literal("Brush " + brush));
         bgBtn.visible = !d;
+        autoBtn.visible = !d;
+        autoBtn.setMessage(Component.literal("Auto-crop: " + (autoCrop ? "on" : "off")));
         mirrorBtn.setMessage(Component.literal("Mirror: " + (mirror ? "on" : "off")));
         bgBtn.setMessage(Component.literal("Cut-out: " + (cutMode == 0 ? "none (whole picture)" : cutMode == 1 ? "normal" : "generous (keeps more)")));
         peethamBtn.setMessage(Component.literal("Peetham: " + peethamName()));
@@ -212,7 +225,7 @@ public class IdolDesignerScreen extends Screen {
 
     private void importFile(Path file) {
         if (file != lastDropped) {
-            crop = new float[]{0.0F, 0.0F, 1.0F, 1.0F};
+            crop = autoCrop ? ImageImport.autoCrop(file) : new float[]{0.0F, 0.0F, 1.0F, 1.0F};
         }
         lastDropped = file;
         try {
@@ -446,12 +459,10 @@ public class IdolDesignerScreen extends Screen {
             }
             g.drawString(this.font, "Tool: " + tool.name().toLowerCase() + "  (right-click erases)", l + 8, t + 20 + CANVAS + 16, 0xBBBBBB, false);
         } else {
-            g.drawString(this.font, "Drag a picture (PNG/JPG) from your", l + 208, t + 72, 0xDDDDDD, false);
-            g.drawString(this.font, "computer onto this window.", l + 208, t + 84, 0xDDDDDD, false);
-            g.drawString(this.font, "Busy photo? Drag a box on the", l + 208, t + 100, 0xFFDD88, false);
-            g.drawString(this.font, "picture to zoom in on the idol", l + 208, t + 112, 0xFFDD88, false);
-            g.drawString(this.font, "(right-click = whole picture).", l + 208, t + 124, 0xFFDD88, false);
-            g.drawString(this.font, "Then use Erase / Restore to tidy.", l + 208, t + 140, 0xBBBBBB, false);
+            g.drawString(this.font, "Drop a PNG/JPG onto this window.", l + 208, t + 94, 0xDDDDDD, false);
+            g.drawString(this.font, "Drag a box = zoom in on the idol.", l + 208, t + 106, 0xFFDD88, false);
+            g.drawString(this.font, "Right-click = whole picture.", l + 208, t + 118, 0xFFDD88, false);
+            g.drawString(this.font, "Then Erase / Restore to tidy.", l + 208, t + 130, 0xBBBBBB, false);
         }
 
         if (importTab && dragX0 >= 0) {
