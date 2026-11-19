@@ -18,11 +18,11 @@ public abstract class MusicianEntity extends PriestEntity {
 
     public enum Instrument {
         /** Cylindrical drum played with two sticks. */
-        CHENDA("X.xxX.x.X.xxXxx.", Items.STICK, Items.BARREL),
+        CHENDA("X.xxX.x.X.xxXxx.", null, null),
         /** Hourglass drum: the soft, deep timila. */
-        THIMILA("x...X...x...Xx..", Items.STICK, Items.NOTE_BLOCK),
+        THIMILA("x...X...x...Xx..", null, null),
         /** Bronze gong: the chengila marks the count. */
-        CHENGILA("X...x...X...x...", Items.STICK, Items.CLOCK);
+        CHENGILA("X...x...X...x...", null, null);
 
         public final String pattern;
         final net.minecraft.world.item.Item hand;
@@ -37,13 +37,31 @@ public abstract class MusicianEntity extends PriestEntity {
 
     protected MusicianEntity(EntityType<? extends PriestEntity> type, Level level, Instrument instrument) {
         super(type, level);
-        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(instrument.hand));
-        this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(instrument.other));
+        // the real instrument in one hand and the beating stick in the other
+        net.minecraft.world.item.Item drum = switch (instrument) {
+            case CHENDA -> com.example.keralatemple.registry.ModItems.CHENDA.get();
+            case THIMILA -> com.example.keralatemple.registry.ModItems.THIMILA.get();
+            default -> com.example.keralatemple.registry.ModItems.CHENGILA.get();
+        };
+        this.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(com.example.keralatemple.registry.ModItems.CHENDA_STICK.get()));
+        this.setItemSlot(EquipmentSlot.OFFHAND, new ItemStack(drum));
         this.setDropChance(EquipmentSlot.MAINHAND, 0.0F);
         this.setDropChance(EquipmentSlot.OFFHAND, 0.0F);
     }
 
     public abstract Instrument instrument();
+
+    private static final String[] MUSICIAN_FIRST = {"Unnikrishnan", "Sasidharan", "Radhakrishnan", "Mohanan", "Sivadasan",
+            "Padmanabhan", "Raghavan", "Gopalakrishnan", "Sreekumar", "Prakashan", "Biju", "Anil", "Sunil", "Ramesh",
+            "Venugopal", "Harikumar"};
+    private static final String[] MUSICIAN_FAMILY = {"Marar", "Poduval", "Pothuval", "Marar"};
+
+    /** Musicians have their own kind of names (Marar, Poduval), not brahmin names. */
+    @Override
+    protected String generateName() {
+        return MUSICIAN_FIRST[this.random.nextInt(MUSICIAN_FIRST.length)] + " "
+                + MUSICIAN_FAMILY[this.random.nextInt(MUSICIAN_FAMILY.length)];
+    }
 
     @Override
     public String roleId() {

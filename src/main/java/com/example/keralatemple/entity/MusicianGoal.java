@@ -101,20 +101,14 @@ public class MusicianGoal extends Goal {
 
     private void play(ServerLevel level, boolean accent, float volume) {
         SoundEvent sound;
-        float pitch;
+        float pitch = 0.95F + this.musician.getRandom().nextFloat() * 0.1F;   // a little human variation
         switch (this.musician.instrument()) {
-            case CHENDA -> {
-                sound = accent ? SoundEvents.NOTE_BLOCK_SNARE.value() : SoundEvents.NOTE_BLOCK_HAT.value();
-                pitch = accent ? 0.9F : 1.3F;
-            }
-            case THIMILA -> {
-                sound = SoundEvents.NOTE_BLOCK_BASEDRUM.value();
-                pitch = accent ? 1.1F : 1.4F;
-            }
-            default -> {
-                sound = SoundEvents.NOTE_BLOCK_COW_BELL.value();
-                pitch = accent ? 1.6F : 1.9F;
-            }
+            case CHENDA -> sound = accent ? com.example.keralatemple.registry.ModSounds.CHENDA_HIT.get()
+                    : com.example.keralatemple.registry.ModSounds.CHENDA_SOFT.get();
+            case THIMILA -> sound = accent ? com.example.keralatemple.registry.ModSounds.THIMILA_HIT.get()
+                    : com.example.keralatemple.registry.ModSounds.THIMILA_SOFT.get();
+            default -> sound = accent ? com.example.keralatemple.registry.ModSounds.CHENGILA_HIT.get()
+                    : com.example.keralatemple.registry.ModSounds.CHENGILA_SOFT.get();
         }
         level.playSound(null, this.musician.blockPosition(), sound, SoundSource.RECORDS, volume, pitch);
     }

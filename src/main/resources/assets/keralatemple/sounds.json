@@ -1,0 +1,32 @@
+{
+ "chenda_hit": {
+  "sounds": [
+   "keralatemple:chenda_hit"
+  ]
+ },
+ "chenda_soft": {
+  "sounds": [
+   "keralatemple:chenda_soft"
+  ]
+ },
+ "thimila_hit": {
+  "sounds": [
+   "keralatemple:thimila_hit"
+  ]
+ },
+ "thimila_soft": {
+  "sounds": [
+   "keralatemple:thimila_soft"
+  ]
+ },
+ "chengila_hit": {
+  "sounds": [
+   "keralatemple:chengila_hit"
+  ]
+ },
+ "chengila_soft": {
+  "sounds": [
+   "keralatemple:chengila_soft"
+  ]
+ }
+}

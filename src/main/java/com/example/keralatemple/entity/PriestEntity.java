@@ -60,9 +60,13 @@ public class PriestEntity extends PathfinderMob {
         this.setPersistenceRequired();
         if (!level.isClientSide) {
             this.entityData.set(LOOK, randomLook());
-            this.setCustomName(Component.literal(FIRST[this.random.nextInt(FIRST.length)] + " "
-                    + FAMILY[this.random.nextInt(FAMILY.length)]));
+            this.setCustomName(Component.literal(generateName()));
         }
+    }
+
+    /** A random name for this kind of temple worker; musicians use their own names. */
+    protected String generateName() {
+        return FIRST[this.random.nextInt(FIRST.length)] + " " + FAMILY[this.random.nextInt(FAMILY.length)];
     }
 
     @Override

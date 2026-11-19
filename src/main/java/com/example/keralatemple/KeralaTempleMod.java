@@ -22,6 +22,7 @@ public class KeralaTempleMod {
 
         // Blocks first: ModBlocks also queues the matching block items into ModItems.ITEMS.
         ModBlocks.BLOCKS.register(modEventBus);
+        com.example.keralatemple.registry.ModSounds.SOUNDS.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
         ModBlockEntities.BLOCK_ENTITIES.register(modEventBus);
         ModEntities.ENTITY_TYPES.register(modEventBus);

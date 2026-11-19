@@ -60,6 +60,10 @@ public class ModCreativeTabs {
                         output.accept(ModItems.CHISEL.get());
                         output.accept(ModItems.CARVING_CHISEL.get());
                         output.accept(ModItems.ASTHABANDHAM.get());
+                        output.accept(ModItems.CHENDA.get());
+                        output.accept(ModItems.THIMILA.get());
+                        output.accept(ModItems.CHENGILA.get());
+                        output.accept(ModItems.CHENDA_STICK.get());
                         for (com.example.keralatemple.ritual.Liquid liquid : com.example.keralatemple.ritual.Liquid.values()) {
                             output.accept(com.example.keralatemple.item.KalasamItem.of(liquid, ModItems.KALASAM.get()));
                             output.accept(com.example.keralatemple.item.KalasamItem.of(liquid, ModItems.SHANKHAM.get()));
