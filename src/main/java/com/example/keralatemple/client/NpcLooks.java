@@ -39,6 +39,10 @@ public final class NpcLooks {
         int hair = look % PriestEntity.HAIRS;
         int facial = (look / PriestEntity.HAIRS) % PriestEntity.FACIALS;
         int tilak = (look / (PriestEntity.HAIRS * PriestEntity.FACIALS)) % PriestEntity.TILAKS;
+        if (skin.equals("musician")) {
+            tilak = 0;       // musicians wear no ritual marks, only a white mundu
+            vastram = 0;     // and no angavastram
+        }
         try (InputStream in = Minecraft.getInstance().getResourceManager().getResource(base).orElseThrow().open()) {
             NativeImage img = NativeImage.read(in);
             paint(img, hair, facial, tilak);

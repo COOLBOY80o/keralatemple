@@ -217,7 +217,7 @@ public class PriestEntity extends PathfinderMob {
                     dressed = until <= 180;
                 }
             }
-            if (!dressed) {
+            if (!dressed || role.equals("musician")) {
                 v = 0;
             }
             if (v != getVastram()) {
