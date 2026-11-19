@@ -18,10 +18,10 @@ public final class IdolData {
     public static final float MAX_SIZE = 6.0F;
     public static final float MIN_THICKNESS = 0.4F;
     public static final float MAX_THICKNESS = 2.0F;
-    public static final int PEETHAM_STYLES = 4;
+    public static final int PEETHAM_STYLES = 5;
     public static final float MIN_PEETHAM_SIZE = 0.5F;
     public static final float MAX_PEETHAM_SIZE = 3.0F;
-    private static final float[] PEETHAM_HEIGHTS = {0.0F, 0.15F, 0.30F, 0.40F};
+    private static final float[] PEETHAM_HEIGHTS = {0.0F, 0.15F, 0.30F, 0.40F, 0.30F};
 
     public final int width;
     public final int height;

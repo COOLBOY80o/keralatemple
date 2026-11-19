@@ -124,6 +124,19 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
             return;
         }
         VertexConsumer vc = OrnamentRenderer.white(buffers);
+        if (style == 4) {
+            // Black granite Shiva peetham: stepped square base, a rim around a shallow trough, and a spout at the front.
+            int stone = 0x16181D;
+            int rim = 0x1F2229;
+            layer(vc, ps, 0.48F * s, y, y + 0.10F * s, stone, false, light);
+            layer(vc, ps, 0.42F * s, y + 0.10F * s, y + 0.18F * s, rim, false, light);
+            layer(vc, ps, 0.34F * s, y + 0.18F * s, y + 0.26F * s, stone, false, light);
+            layer(vc, ps, 0.34F * s, y + 0.26F * s, y + 0.30F * s, rim, false, light);
+            // the spout (pranala) pointing to the front, a little lower than the rim
+            OrnamentRenderer.box(vc, ps, 0.0F, y + 0.22F * s, -0.46F * s, 0.07F * s, 0.04F * s, 0.14F * s, stone, light);
+            OrnamentRenderer.box(vc, ps, 0.0F, y + 0.27F * s, -0.40F * s, 0.045F * s, 0.012F * s, 0.10F * s, 0x0C0D10, light);
+            return;
+        }
         if (style == 2) {
             layer(vc, ps, 0.46F * s, y, y + 0.06F * s, GOLD, false, light);
             layer(vc, ps, 0.38F * s, y + 0.06F * s, y + 0.10F * s, GOLD, false, light);
