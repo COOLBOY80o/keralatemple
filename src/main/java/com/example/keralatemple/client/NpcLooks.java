@@ -177,7 +177,14 @@ public final class NpcLooks {
         int red = 0xB01818;
         int sandal = 0xEEC46E;
         int dot = tilak == 2 ? red : sandal;
-        if (tilak == 0) {
+        if (tilak == 3) {
+            // An upright line of sandal paste (up and down) between the eyebrows, and a sandal band on each arm.
+            for (int y = 8; y <= 10; y++) {
+                set(img, 11, y, sandal);
+                set(img, 12, y, sandal);
+            }
+            armBands(img, new int[]{23}, new int[]{55}, sandal, -1);
+        } else if (tilak == 0) {
             // One line of sandal paste across the forehead, and one band round each arm.
             for (int x = 10; x <= 13; x++) {
                 set(img, x, 10, sandal);

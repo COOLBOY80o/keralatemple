@@ -53,7 +53,7 @@ public class PriestEntity extends PathfinderMob {
     private boolean carriedLoaded;
     public static final int HAIRS = 5;
     public static final int FACIALS = 4;
-    public static final int TILAKS = 3;
+    public static final int TILAKS = 4;
 
     public PriestEntity(EntityType<? extends PriestEntity> type, Level level) {
         super(type, level);
