@@ -154,13 +154,14 @@ public final class NpcLooks {
         if (hair != 0) {
             for (int y = 0; y < 16; y++) {
                 for (int x = 0; x < 32; x++) {
-                    if (x >= 8 && x < 16 && y >= 9) {
-                        continue;
+                    if (x >= 9 && x < 15 && y >= 9) {
+                        continue;       // the face itself (eyes and brows); the sideburns beside it are hair
                     }
                     int c = get(img, x, y);
                     int max = Math.max((c >> 16) & 255, Math.max((c >> 8) & 255, c & 255));
                     if (max < 0x34 && (img.getPixelRGBA(x, y) >>> 24) > 0) {
-                        set(img, x, y, scale(hairRgb, 0.55F + max / 28.0F * 0.45F));
+                        float strand = 1.0F + (((x * 7 + y * 13) % 5) - 2) * 0.05F;   // a little texture, so pale hair is not a flat helmet
+                        set(img, x, y, scale(hairRgb, (0.55F + max / 28.0F * 0.45F) * strand));
                     }
                 }
             }
@@ -178,7 +179,7 @@ public final class NpcLooks {
         int dot = tilak == 2 ? red : sandal;
         if (tilak == 0) {
             // One line of sandal paste across the forehead, and one band round each arm.
-            for (int x = 9; x <= 14; x++) {
+            for (int x = 10; x <= 13; x++) {
                 set(img, x, 10, sandal);
             }
             armBands(img, new int[]{23}, new int[]{55}, sandal, -1);
@@ -194,8 +195,8 @@ public final class NpcLooks {
         }
         // 3. Moustache, beard, full beard.
         if (facial > 0) {
-            int beard = hair == 0 ? 0x1B1614 : hairRgb;
-            for (int x = 10; x <= 13; x++) {
+            int beard = hair == 0 ? 0x1B1614 : hair == 3 ? 0x9A9A9A : hair == 4 ? 0xB4B4B4 : hairRgb;
+            for (int x = 9; x <= 14; x++) {
                 set(img, x, 13, scale(beard, (x + 13) % 2 == 0 ? 1.0F : 0.9F));
             }
             if (facial == 2) {
@@ -215,12 +216,10 @@ public final class NpcLooks {
                         set(img, x, y, scale(beard, (x + y) % 2 == 0 ? 1.0F : 0.9F));
                     }
                 }
-                for (int y = 11; y <= 13; y++) {
-                    set(img, 8, y, beard);
-                    set(img, 15, y, beard);
-                }
-                set(img, 9, 13, beard);
-                set(img, 14, 13, beard);
+                set(img, 8, 13, beard);
+                set(img, 15, 13, beard);
+                set(img, 8, 14, beard);
+                set(img, 15, 14, beard);
             }
         }
     }

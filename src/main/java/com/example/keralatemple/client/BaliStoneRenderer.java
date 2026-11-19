@@ -59,13 +59,13 @@ public class BaliStoneRenderer implements BlockEntityRenderer<BaliStoneBlockEnti
         float slab = height * 0.2F;
         prism(body, m, n, light, 4, half, 0.0F, slab);
         float usable = Math.max(0.05F, height - slab - gap * tiers);
-        float unit = usable / (tiers + 0.4F);
+        float unit = usable / (tiers - 0.55F);
         float y = slab + gap;
         for (int i = 0; i < tiers; i++) {
             boolean last = i == tiers - 1;
             float t = tiers == 1 ? 0.0F : (float) i / (tiers - 1);
-            float r = last ? half * 0.72F : half * (0.92F - 0.30F * t);
-            float h = last ? unit * 1.4F : unit;
+            float r = last ? half * 0.80F : half * (0.92F - 0.34F * t);
+            float h = last ? unit * 0.45F : unit;
             prism(last ? top : body, m, n, light, sides, r, y, y + h);
             y += h + gap;
         }
