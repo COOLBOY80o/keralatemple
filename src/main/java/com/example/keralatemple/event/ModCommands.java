@@ -88,6 +88,7 @@ public class ModCommands {
         root.then(balikkalNode());
         root.then(routeNode());
         root.then(vastramNode());
+        root.then(abhishekamNode());
         root.then(brahminNode());
         root.then(carryNode());
         root.then(wandNode());
@@ -475,6 +476,47 @@ public class ModCommands {
                                         .then(Commands.argument("accent", StringArgumentType.word()).suggests(COLOUR_IDS)
                                                 .then(Commands.argument("design", StringArgumentType.word()).suggests(DESIGN_IDS)
                                                         .executes(ModCommands::vastramSet)))))));
+    }
+
+    /** /keralatemple abhishekam show <temple> | set <temple> <liquid> <liquid> ... | reset <temple> */
+    private static LiteralArgumentBuilder<CommandSourceStack> abhishekamNode() {
+        return Commands.literal("abhishekam")
+                .then(Commands.literal("show").then(templeArg().executes(ctx -> {
+                    Temple t = temple(ctx);
+                    StringBuilder sb = new StringBuilder();
+                    int i = 1;
+                    for (com.example.keralatemple.ritual.Liquid l : t.abhishekamOrder()) {
+                        sb.append(i++).append(". ").append(l.label).append("   ");
+                    }
+                    say(ctx, "Abhishekam order: " + sb);
+                    say(ctx, "Liquids: " + com.example.keralatemple.ritual.Liquid.ids());
+                    return 1;
+                })))
+                .then(Commands.literal("reset").requires(ModCommands::canEdit).then(templeArg().executes(ctx -> {
+                    temple(ctx).abhishekam.clear();
+                    TempleData.get(ctx.getSource().getLevel()).touch();
+                    say(ctx, "Abhishekam order reset: all nine liquids in the usual order.");
+                    return 1;
+                })))
+                .then(Commands.literal("set").requires(ModCommands::canEdit)
+                        .then(templeArg().then(Commands.argument("liquids", StringArgumentType.greedyString())
+                                .executes(ctx -> {
+                                    Temple t = temple(ctx);
+                                    java.util.List<String> chosen = new java.util.ArrayList<>();
+                                    for (String word : StringArgumentType.getString(ctx, "liquids").trim().split("[\\s,]+")) {
+                                        com.example.keralatemple.ritual.Liquid l = com.example.keralatemple.ritual.Liquid.byId(word);
+                                        if (l == null) {
+                                            throw ERROR.create("Unknown liquid '" + word + "'. Liquids: "
+                                                    + com.example.keralatemple.ritual.Liquid.ids());
+                                        }
+                                        chosen.add(l.id());
+                                    }
+                                    t.abhishekam.clear();
+                                    t.abhishekam.addAll(chosen);
+                                    TempleData.get(ctx.getSource().getLevel()).touch();
+                                    say(ctx, "Abhishekam order saved: " + chosen);
+                                    return 1;
+                                }))));
     }
 
     private static int vastramSet(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {

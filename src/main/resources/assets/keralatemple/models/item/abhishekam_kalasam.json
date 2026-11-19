@@ -1,0 +1,62 @@
+{
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "keralatemple:item/kalasam_water"
+ },
+ "overrides": [
+  {
+   "predicate": {
+    "custom_model_data": 1
+   },
+   "model": "keralatemple:item/kalasam_water"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 2
+   },
+   "model": "keralatemple:item/kalasam_milk"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 3
+   },
+   "model": "keralatemple:item/kalasam_yogurt"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 4
+   },
+   "model": "keralatemple:item/kalasam_ghee"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 5
+   },
+   "model": "keralatemple:item/kalasam_honey"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 6
+   },
+   "model": "keralatemple:item/kalasam_kalabham"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 7
+   },
+   "model": "keralatemple:item/kalasam_panchamritam"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 8
+   },
+   "model": "keralatemple:item/kalasam_panchagavyam"
+  },
+  {
+   "predicate": {
+    "custom_model_data": 9
+   },
+   "model": "keralatemple:item/kalasam_tender_coconut"
+  }
+ ]
+}

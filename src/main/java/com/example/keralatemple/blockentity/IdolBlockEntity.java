@@ -46,6 +46,46 @@ public class IdolBlockEntity extends BlockEntity {
     @Nullable
     private IdolData angi;
     private boolean fixed;
+    private int pourLiquid = -1;
+    private long pourStart;
+    private long pourUntil;
+
+    /** Starts pouring a liquid over the idol, or keeps the same liquid going longer. */
+    public void startPour(com.example.keralatemple.ritual.Liquid liquid, int ticks) {
+        if (this.level == null) {
+            return;
+        }
+        long now = this.level.getGameTime();
+        if (this.pourLiquid == liquid.ordinal() && now < this.pourUntil + 25) {
+            this.pourUntil = Math.max(this.pourUntil, now + ticks);
+        } else {
+            this.pourLiquid = liquid.ordinal();
+            this.pourStart = now;
+            this.pourUntil = now + ticks;
+        }
+        sync();
+    }
+
+    /** The liquid on the idol right now (still running down for a moment after the pour), or null. */
+    @Nullable
+    public com.example.keralatemple.ritual.Liquid liquidAt(long now) {
+        if (this.pourLiquid < 0 || now > this.pourUntil + 30) {
+            return null;
+        }
+        return com.example.keralatemple.ritual.Liquid.byOrdinal(this.pourLiquid);
+    }
+
+    public boolean isPouring(long now) {
+        return this.pourLiquid >= 0 && now < this.pourUntil;
+    }
+
+    public long pourStart() {
+        return this.pourStart;
+    }
+
+    public long pourUntil() {
+        return this.pourUntil;
+    }
 
     public boolean isFixed() {
         return this.fixed;
@@ -141,6 +181,9 @@ public class IdolBlockEntity extends BlockEntity {
         }
         tag.put("Ornaments", list);
         tag.putBoolean("Fixed", this.fixed);
+        tag.putInt("PourLiquid", this.pourLiquid);
+        tag.putLong("PourStart", this.pourStart);
+        tag.putLong("PourUntil", this.pourUntil);
     }
 
     @Override
@@ -150,6 +193,9 @@ public class IdolBlockEntity extends BlockEntity {
         this.angi = tag.contains("Angi", 10) ? IdolData.load(tag.getCompound("Angi")) : null;
         this.garland = tag.getByteArray("Garland");
         this.fixed = tag.getBoolean("Fixed");
+        this.pourLiquid = tag.contains("PourLiquid") ? tag.getInt("PourLiquid") : -1;
+        this.pourStart = tag.getLong("PourStart");
+        this.pourUntil = tag.getLong("PourUntil");
         this.ornaments.clear();
         ListTag list = tag.getList("Ornaments", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {

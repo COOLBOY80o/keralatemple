@@ -314,6 +314,17 @@ public class RitualGoal extends Goal {
         double z = pos.getZ() + 0.5D;
         int t = this.arrivedTicks;
         switch (this.active.effect()) {
+            case ABHISHEKAM -> {
+                Temple temple = this.priest.getTemple();
+                java.util.List<com.example.keralatemple.ritual.Liquid> order = temple != null ? temple.abhishekamOrder()
+                        : java.util.Arrays.asList(com.example.keralatemple.ritual.Liquid.values());
+                if (t % 20 == 0) {
+                    pour(level, order.get(Math.min(order.size() - 1, t / 400)), 40);
+                }
+                if (t % 40 == 0) {
+                    play(level, pos, SoundEvents.BUCKET_EMPTY, 0.5F, 1.3F);
+                }
+            }
             case NIRMALYA -> {
                 if (t % 60 == 5) {
                     level.sendParticles(ParticleTypes.END_ROD, x, y - 0.4D, z, 6, 0.3D, 0.2D, 0.3D, 0.01D);
@@ -330,11 +341,17 @@ public class RitualGoal extends Goal {
                 if (t % 100 == 10) {
                     play(level, pos, SoundEvents.NOTE_BLOCK_FLUTE.value(), 1.6F, 0.5F);
                 }
+                if (t % 100 == 12) {
+                    pour(level, com.example.keralatemple.ritual.Liquid.WATER, 70);
+                }
                 if (t % 6 == 0) {
                     level.sendParticles(ParticleTypes.SPLASH, x, y - 0.2D, z, 5, 0.25D, 0.1D, 0.25D, 0.05D);
                 }
             }
             case JALADHARA -> {
+                if (t % 20 == 0) {
+                    pour(level, com.example.keralatemple.ritual.Liquid.WATER, 40);
+                }
                 if (t % 3 == 0) {
                     level.sendParticles(ParticleTypes.FALLING_WATER, x, y, z, 4, 0.15D, 0.05D, 0.15D, 0.0D);
                     level.sendParticles(ParticleTypes.SPLASH, x, y - 0.8D, z, 3, 0.2D, 0.05D, 0.2D, 0.05D);
@@ -344,6 +361,9 @@ public class RitualGoal extends Goal {
                 }
             }
             case KSHEERADHARA -> {
+                if (t % 20 == 0) {
+                    pour(level, com.example.keralatemple.ritual.Liquid.MILK, 40);
+                }
                 if (t % 3 == 0) {
                     level.sendParticles(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.WHITE_DYE)),
                             x, y, z, 4, 0.12D, 0.05D, 0.12D, 0.02D);
@@ -368,12 +388,21 @@ public class RitualGoal extends Goal {
                     ensureKudamKey(temple);
                     if (temple.kudams > this.lastKudams) {
                         this.lastKudams = temple.kudams;
+                        pour(level, com.example.keralatemple.ritual.Liquid.WATER, 30);
                         level.sendParticles(ParticleTypes.SPLASH, x, y - 0.5D, z, 10, 0.3D, 0.1D, 0.3D, 0.05D);
                         play(level, pos, SoundEvents.BUCKET_EMPTY, 0.7F, 1.2F);
                     }
                 }
             }
             default -> { }
+        }
+    }
+
+    /** Pours a liquid over the temple's idol. */
+    private void pour(ServerLevel level, com.example.keralatemple.ritual.Liquid liquid, int ticks) {
+        BlockPos idolPos = this.priest.findTempleIdolPos();
+        if (idolPos != null && level.getBlockEntity(idolPos) instanceof com.example.keralatemple.blockentity.IdolBlockEntity idol) {
+            idol.startPour(liquid, ticks);
         }
     }
 

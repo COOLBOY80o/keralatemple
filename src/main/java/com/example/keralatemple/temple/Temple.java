@@ -39,6 +39,23 @@ public class Temple {
     /** The sreeveli route the player marked, in walking order. Empty = automatic clockwise route. */
     /** Angavastram choice per role (melshanthi, keezhshanthi, kazhakam, cook): "base,accent,design". */
     public final Map<String, String> vastram = new java.util.HashMap<>();
+    /** The order of liquids poured at the Abhishekam pooja (Liquid ids). Empty means all nine in their usual order. */
+    public final java.util.List<String> abhishekam = new java.util.ArrayList<>();
+
+    /** The liquids to pour, in order. */
+    public java.util.List<com.example.keralatemple.ritual.Liquid> abhishekamOrder() {
+        java.util.List<com.example.keralatemple.ritual.Liquid> out = new java.util.ArrayList<>();
+        for (String id : abhishekam) {
+            com.example.keralatemple.ritual.Liquid l = com.example.keralatemple.ritual.Liquid.byId(id);
+            if (l != null) {
+                out.add(l);
+            }
+        }
+        if (out.isEmpty()) {
+            out.addAll(java.util.Arrays.asList(com.example.keralatemple.ritual.Liquid.values()));
+        }
+        return out;
+    }
     /** How the keezhshanthi takes the idol out for the seeveli: arms, head or none. */
     public String carry = "head";
     /** Places the player marked as wells (the ayirakudam water is drawn here). */
@@ -94,6 +111,11 @@ public class Temple {
             vast.putString(e.getKey(), e.getValue());
         }
         tag.put("Vastram", vast);
+        net.minecraft.nbt.ListTag abh = new net.minecraft.nbt.ListTag();
+        for (String a : abhishekam) {
+            abh.add(net.minecraft.nbt.StringTag.valueOf(a));
+        }
+        tag.put("Abhishekam", abh);
         tag.putString("Carry", carry);
         tag.putLongArray("Wells", wells.stream().mapToLong(BlockPos::asLong).toArray());
         tag.putLongArray("Bali", baliStones.stream().mapToLong(BlockPos::asLong).toArray());
@@ -137,6 +159,10 @@ public class Temple {
         }
         if (tag.contains("Carry")) {
             t.carry = tag.getString("Carry");
+        }
+        net.minecraft.nbt.ListTag abhTag = tag.getList("Abhishekam", 8);
+        for (int i = 0; i < abhTag.size(); i++) {
+            t.abhishekam.add(abhTag.getString(i));
         }
         CompoundTag vastTag = tag.getCompound("Vastram");
         for (String key : vastTag.getAllKeys()) {

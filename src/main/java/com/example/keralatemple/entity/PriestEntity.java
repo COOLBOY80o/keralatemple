@@ -134,6 +134,25 @@ public class PriestEntity extends PathfinderMob {
 
     /** The idol in the shrine (the angi if it wears one). */
     @javax.annotation.Nullable
+    /** The position of the idol nearest this priest's home, or null. */
+    public BlockPos findTempleIdolPos() {
+        BlockPos home = getHome();
+        BlockPos best = null;
+        double bestD = Double.MAX_VALUE;
+        for (Block b : new Block[]{com.example.keralatemple.registry.ModBlocks.ANJANA_SHILA.get(),
+                com.example.keralatemple.registry.ModBlocks.KRISHNA_SHILA.get(),
+                com.example.keralatemple.registry.ModBlocks.IDOL_PEDESTAL.get()}) {
+            for (BlockPos q : findMarkers(b)) {
+                if (this.level().getBlockEntity(q) instanceof com.example.keralatemple.blockentity.IdolBlockEntity be
+                        && be.getData() != null && q.distSqr(home) < bestD) {
+                    bestD = q.distSqr(home);
+                    best = q;
+                }
+            }
+        }
+        return best;
+    }
+
     private com.example.keralatemple.idol.IdolData findTempleIdol() {
         BlockPos home = getHome();
         BlockPos best = null;

@@ -133,6 +133,20 @@ public class IdolBlock extends BaseEntityBlock {
             return InteractionResult.CONSUME;
         }
 
+        if (held.getItem() instanceof com.example.keralatemple.item.KalasamItem && !player.isShiftKeyDown()) {
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            if (idol.getData() == null) {
+                player.displayClientMessage(Component.literal("There is no idol here to pour over yet."), true);
+            } else {
+                com.example.keralatemple.ritual.Liquid liquid = com.example.keralatemple.item.KalasamItem.liquid(held);
+                idol.startPour(liquid, 160);
+                level.playSound(null, pos, SoundEvents.BUCKET_EMPTY, SoundSource.BLOCKS, 0.8F, 1.1F);
+            }
+            return InteractionResult.CONSUME;
+        }
+
         Flower flower = Flower.byItem(held.getItem());
         if (flower != null) {
             if (level.isClientSide) {
@@ -247,6 +261,46 @@ public class IdolBlock extends BaseEntityBlock {
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         return InteractionResult.PASS;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> net.minecraft.world.level.block.entity.BlockEntityTicker<T> getTicker(Level level,
+            BlockState state, net.minecraft.world.level.block.entity.BlockEntityType<T> type) {
+        if (level.isClientSide || type != com.example.keralatemple.registry.ModBlockEntities.IDOL.get()) {
+            return null;
+        }
+        return (lvl, p, st, be) -> {
+            if (be instanceof IdolBlockEntity idol && lvl instanceof net.minecraft.server.level.ServerLevel server
+                    && lvl.getGameTime() % 3 == 0) {
+                pourTick(server, p, idol);
+            }
+        };
+    }
+
+    /** The liquid runs out of the spout (north side) and, if a carved channel continues north, out of its far end. */
+    private static void pourTick(net.minecraft.server.level.ServerLevel level, BlockPos pos, IdolBlockEntity idol) {
+        long now = level.getGameTime();
+        com.example.keralatemple.ritual.Liquid liquid = idol.liquidAt(now);
+        if (liquid == null || idol.getData() == null || idol.getData().peetham != 4 || now < idol.pourStart() + 40) {
+            return;
+        }
+        BlockPos end = pos;
+        int steps = 0;
+        while (steps < 24 && level.getBlockState(end.north()).getBlock() instanceof com.example.keralatemple.block.CarvedBlock) {
+            end = end.north();
+            steps++;
+        }
+        org.joml.Vector3f colour = new org.joml.Vector3f(((liquid.rgb >> 16) & 255) / 255.0F,
+                ((liquid.rgb >> 8) & 255) / 255.0F, (liquid.rgb & 255) / 255.0F);
+        net.minecraft.core.particles.DustParticleOptions dust = new net.minecraft.core.particles.DustParticleOptions(colour, 1.3F);
+        if (steps > 0) {
+            // out of the sheejovil: the channel's far (north) end
+            level.sendParticles(dust, end.getX() + 0.5D, end.getY() + 0.35D, end.getZ() - 0.05D, 3, 0.05D, 0.05D, 0.02D, 0.0D);
+            level.sendParticles(dust, end.getX() + 0.5D, end.getY() + 0.1D, end.getZ() - 0.4D, 2, 0.08D, 0.05D, 0.08D, 0.0D);
+        } else {
+            level.sendParticles(dust, pos.getX() + 0.5D, pos.getY() + 0.05D, pos.getZ() - 0.1D, 3, 0.1D, 0.02D, 0.05D, 0.0D);
+        }
     }
 
     private static void give(Player player, ItemStack stack) {

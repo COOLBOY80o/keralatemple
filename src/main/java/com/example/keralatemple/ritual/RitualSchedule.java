@@ -35,7 +35,7 @@ public final class RitualSchedule {
 
     /** What the priest visibly does during a pooja. */
     public enum Effect {
-        PLAIN, NIRMALYA, VAKACHARTHU, SHANKHA, JALADHARA, KSHEERADHARA, AYIRAKUDAM, DEEPARADHANA
+        PLAIN, NIRMALYA, VAKACHARTHU, SHANKHA, JALADHARA, KSHEERADHARA, AYIRAKUDAM, ABHISHEKAM, DEEPARADHANA
     }
 
     public record Definition(String displayName, Kind kind, Effect effect) {}
@@ -62,7 +62,7 @@ public final class RitualSchedule {
         define("JALADHARA", "Jaladhara", Kind.POOJA, Effect.JALADHARA);
         define("KSHEERADHARA", "Ksheeradhara", Kind.POOJA, Effect.KSHEERADHARA);
         define("AYIRAKUDAM", "Ayirakudam Abhishekam (1000 pots)", Kind.POOJA, Effect.AYIRAKUDAM);
-        define("ABHISHEKAM", "Abhishekam", Kind.POOJA);
+        define("ABHISHEKAM", "Abhishekam", Kind.POOJA, Effect.ABHISHEKAM);
         define("USHAH_POOJA", "Ushah Pooja", Kind.POOJA);
         define("ETHIRTHA_POOJA", "Ethirtha Pooja", Kind.POOJA);
         define("SEEVELI_MORNING", "Seeveli (morning)", Kind.SEEVELI);
