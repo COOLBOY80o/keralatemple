@@ -29,6 +29,11 @@ public final class ImageImport {
 
     /** @param cutMode 0 keep the whole picture, 1 normal cut-out, 2 generous cut-out (keeps more of the picture) */
     public static Result load(Path file, int cutMode) throws IOException {
+        return load(file, cutMode, 0.0F, 0.0F, 1.0F, 1.0F);
+    }
+
+    /** As above, but only the part of the picture inside the given rectangle (fractions 0..1 of the picture). */
+    public static Result load(Path file, int cutMode, float cx0, float cy0, float cx1, float cy1) throws IOException {
         if (Files.size(file) > MAX_FILE_BYTES) {
             throw new IOException("that file is too big (over 40 MB)");
         }
@@ -37,6 +42,15 @@ public final class ImageImport {
             throw new IOException("that is not a PNG or JPG picture");
         }
 
+        int fw = image.getWidth();
+        int fh = image.getHeight();
+        int x0 = Math.max(0, Math.min(fw - 4, Math.round(Math.min(cx0, cx1) * fw)));
+        int y0 = Math.max(0, Math.min(fh - 4, Math.round(Math.min(cy0, cy1) * fh)));
+        int x1 = Math.max(x0 + 4, Math.min(fw, Math.round(Math.max(cx0, cx1) * fw)));
+        int y1 = Math.max(y0 + 4, Math.min(fh, Math.round(Math.max(cy0, cy1) * fh)));
+        if (x0 != 0 || y0 != 0 || x1 != fw || y1 != fh) {
+            image = image.getSubimage(x0, y0, x1 - x0, y1 - y0);
+        }
         int sw = image.getWidth();
         int sh = image.getHeight();
         float scale = (float) MAX_RES / Math.max(sw, sh);

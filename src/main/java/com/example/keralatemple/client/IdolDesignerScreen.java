@@ -49,6 +49,8 @@ public class IdolDesignerScreen extends Screen {
     private int brush = 1;
     @Nullable
     private int[] original;   // the imported picture with nothing cut away
+    private float[] crop = {0.0F, 0.0F, 1.0F, 1.0F};   // the part of the dropped picture in use
+    private double dragX0 = -1, dragY0 = -1, dragX1 = -1, dragY1 = -1;
     private int cutMode = 1;   // 0 keep everything, 1 normal cut-out, 2 generous (keeps more)
     private boolean originalColours = false;
     private float size = 2.0F;
@@ -209,9 +211,12 @@ public class IdolDesignerScreen extends Screen {
     }
 
     private void importFile(Path file) {
+        if (file != lastDropped) {
+            crop = new float[]{0.0F, 0.0F, 1.0F, 1.0F};
+        }
         lastDropped = file;
         try {
-            ImageImport.Result r = ImageImport.load(file, cutMode);
+            ImageImport.Result r = ImageImport.load(file, cutMode, crop[0], crop[1], crop[2], crop[3]);
             gw = r.width();
             gh = r.height();
             pixels = r.argb();
@@ -254,12 +259,50 @@ public class IdolDesignerScreen extends Screen {
             }
             return paintAt(mx, my, button == 1);
         }
+        if (lastDropped != null && inCanvas(mx, my)) {
+            if (button == 1) {
+                crop = new float[]{0.0F, 0.0F, 1.0F, 1.0F};   // right-click: use the whole picture again
+                importFile(lastDropped);
+            } else {
+                dragX0 = dragX1 = mx;
+                dragY0 = dragY1 = my;
+            }
+            return true;
+        }
         return false;
+    }
+
+    private boolean inCanvas(double mx, double my) {
+        return mx >= canvasX() && mx < canvasX() + gw * cell() && my >= canvasY() && my < canvasY() + gh * cell();
+    }
+
+    @Override
+    public boolean mouseReleased(double mx, double my, int button) {
+        if (importTab && dragX0 >= 0 && button == 0) {
+            double ax = Math.min(dragX0, dragX1), bx = Math.max(dragX0, dragX1);
+            double ay = Math.min(dragY0, dragY1), by = Math.max(dragY0, dragY1);
+            dragX0 = -1;
+            if (bx - ax >= 8 && by - ay >= 8 && lastDropped != null) {
+                float vw = gw * cell(), vh = gh * cell();
+                float fx0 = (float) Math.max(0, (ax - canvasX()) / vw), fx1 = (float) Math.min(1, (bx - canvasX()) / vw);
+                float fy0 = (float) Math.max(0, (ay - canvasY()) / vh), fy1 = (float) Math.min(1, (by - canvasY()) / vh);
+                float cw = crop[2] - crop[0], ch = crop[3] - crop[1];
+                crop = new float[]{crop[0] + fx0 * cw, crop[1] + fy0 * ch, crop[0] + fx1 * cw, crop[1] + fy1 * ch};
+                importFile(lastDropped);
+            }
+            return true;
+        }
+        return super.mouseReleased(mx, my, button);
     }
 
     @Override
     public boolean mouseDragged(double mx, double my, int button, double dx, double dy) {
         if (super.mouseDragged(mx, my, button, dx, dy)) {
+            return true;
+        }
+        if (importTab && dragX0 >= 0) {
+            dragX1 = mx;
+            dragY1 = my;
             return true;
         }
         if (!importTab && tool != Tool.FILL) {
@@ -405,10 +448,17 @@ public class IdolDesignerScreen extends Screen {
         } else {
             g.drawString(this.font, "Drag a picture (PNG/JPG) from your", l + 208, t + 72, 0xDDDDDD, false);
             g.drawString(this.font, "computer onto this window.", l + 208, t + 84, 0xDDDDDD, false);
-            g.drawString(this.font, "Plain backgrounds are removed.", l + 208, t + 100, 0xBBBBBB, false);
-            g.drawString(this.font, "Then adjust the sliders below.", l + 208, t + 112, 0xBBBBBB, false);
+            g.drawString(this.font, "Busy photo? Drag a box on the", l + 208, t + 100, 0xFFDD88, false);
+            g.drawString(this.font, "picture to zoom in on the idol", l + 208, t + 112, 0xFFDD88, false);
+            g.drawString(this.font, "(right-click = whole picture).", l + 208, t + 124, 0xFFDD88, false);
+            g.drawString(this.font, "Then use Erase / Restore to tidy.", l + 208, t + 140, 0xBBBBBB, false);
         }
 
+        if (importTab && dragX0 >= 0) {
+            int ax = (int) Math.min(dragX0, dragX1), bx = (int) Math.max(dragX0, dragX1);
+            int ay = (int) Math.min(dragY0, dragY1), by = (int) Math.max(dragY0, dragY1);
+            g.renderOutline(ax, ay, bx - ax, by - ay, 0xFFFFFF00);
+        }
         if (!status.isEmpty()) {
             g.drawString(this.font, this.font.plainSubstrByWidth(status, CANVAS + 8), l + 8, t + 20 + CANVAS + 4, 0xFFCC88, false);
         }
