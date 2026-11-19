@@ -125,7 +125,7 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
         }
         VertexConsumer vc = OrnamentRenderer.white(buffers);
         if (style == 4) {
-            // Black granite Shiva peetham: stepped square base, a rim around a shallow trough, and a spout at the front.
+            // Peetham with spout: stepped square base, a rim around a shallow trough, and a spout at the front.
             int stone = 0x16181D;
             int rim = 0x1F2229;
             layer(vc, ps, 0.48F * s, y, y + 0.10F * s, stone, false, light);

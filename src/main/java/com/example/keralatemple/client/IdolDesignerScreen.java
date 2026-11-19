@@ -193,7 +193,7 @@ public class IdolDesignerScreen extends Screen {
             case 0 -> "none";
             case 1 -> "simple";
             case 2 -> "lotus";
-            case 4 -> "black Shiva (with spout)";
+            case 4 -> "with spout";
             default -> "tiered";
         };
     }
