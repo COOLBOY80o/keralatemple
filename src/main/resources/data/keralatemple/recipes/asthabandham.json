@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "minecraft:clay_ball"},
+    {"item": "minecraft:honey_bottle"},
+    {"item": "minecraft:bone_meal"},
+    {"item": "minecraft:copper_ingot"}
+  ],
+  "result": {
+    "item": "keralatemple:asthabandham",
+    "count": 4
+  }
+}

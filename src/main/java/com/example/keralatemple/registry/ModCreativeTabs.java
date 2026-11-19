@@ -59,6 +59,7 @@ public class ModCreativeTabs {
                         output.accept(ModItems.TEMPLE_DOOR_SET_GOLD.get());
                         output.accept(ModItems.CHISEL.get());
                         output.accept(ModItems.CARVING_CHISEL.get());
+                        output.accept(ModItems.ASTHABANDHAM.get());
                         output.accept(ModItems.TEMPLE_WAND.get());
                         output.accept(ModItems.ACHARI_SPAWN_EGG.get());
                         output.accept(ModItems.PRIEST_SPAWN_EGG.get());

@@ -59,6 +59,8 @@ public class IdolDesignerScreen extends Screen {
     private float thickness = 1.0F;
     private int peetham = 1;
     private float peethamSize = 1.0F;
+    private int peethamStone = 0;
+    private Button stoneBtn;
     private int metalIndex = 0;
     private String status = "";
     @Nullable
@@ -98,6 +100,7 @@ public class IdolDesignerScreen extends Screen {
             thickness = existing.thickness;
             peetham = existing.peetham;
             peethamSize = existing.peethamSize;
+            peethamStone = existing.peethamStone;
             originalColours = existing.originalColours;
         }
     }
@@ -162,6 +165,10 @@ public class IdolDesignerScreen extends Screen {
 
         peethamBtn = addRenderableWidget(Button.builder(Component.empty(),
                 b -> peetham = (peetham + 1) % IdolData.PEETHAM_STYLES).bounds(rx, t + 206, 70, 20).build());
+        stoneBtn = addRenderableWidget(Button.builder(Component.empty(), b -> {
+            peethamStone = 1 - peethamStone;
+            refreshLabels();
+        }).bounds(rx + 74, t + 206, 70, 20).build());
         colourBtn = addRenderableWidget(Button.builder(Component.empty(), b -> originalColours = !originalColours)
                 .bounds(rx + 74, t + 206, 70, 20).build());
         metalBtn = addRenderableWidget(Button.builder(Component.empty(),
@@ -199,6 +206,7 @@ public class IdolDesignerScreen extends Screen {
         mirrorBtn.setMessage(Component.literal("Mirror: " + (mirror ? "on" : "off")));
         bgBtn.setMessage(Component.literal("Cut-out: " + (cutMode == 0 ? "none (whole picture)" : cutMode == 1 ? "normal" : "generous (keeps more)")));
         peethamBtn.setMessage(Component.literal("Peetham: " + peethamName()));
+        stoneBtn.setMessage(Component.literal(peethamStone == 0 ? "Anjana" : "Krishna"));
         colourBtn.setMessage(Component.literal(originalColours ? "Own colours" : "Material"));
         metalBtn.setMessage(Component.literal("Metal: " + IdolMaterial.METALS.get(metalIndex).label));
     }
@@ -208,7 +216,7 @@ public class IdolDesignerScreen extends Screen {
             case 0 -> "none";
             case 1 -> "simple";
             case 2 -> "lotus";
-            case 4 -> "with spout";
+            case 4 -> "spout (stone)";
             default -> "tiered";
         };
     }
@@ -411,7 +419,7 @@ public class IdolDesignerScreen extends Screen {
             return;
         }
         IdolMaterial material = achari ? IdolMaterial.METALS.get(metalIndex) : IdolMaterial.ANJANA_SHILA;
-        IdolData data = new IdolData(gw, gh, rgba, size, thickness, peetham, peethamSize, originalColours, material);
+        IdolData data = new IdolData(gw, gh, rgba, size, thickness, peetham, peethamSize, peethamStone, originalColours, material);
         if (achari) {
             ModNetwork.CHANNEL.sendToServer(SubmitIdolPacket.forEntity(entityId, data));
         } else {

@@ -45,6 +45,16 @@ public class IdolBlockEntity extends BlockEntity {
     private byte[] garland = new byte[0];
     @Nullable
     private IdolData angi;
+    private boolean fixed;
+
+    public boolean isFixed() {
+        return this.fixed;
+    }
+
+    public void setFixed(boolean fixed) {
+        this.fixed = fixed;
+        sync();
+    }
     private final List<OrnamentData> ornaments = new ArrayList<>();
 
     public byte[] getGarland() {
@@ -130,6 +140,7 @@ public class IdolBlockEntity extends BlockEntity {
             list.add(o.save());
         }
         tag.put("Ornaments", list);
+        tag.putBoolean("Fixed", this.fixed);
     }
 
     @Override
@@ -138,6 +149,7 @@ public class IdolBlockEntity extends BlockEntity {
         this.data = tag.contains("Idol", 10) ? IdolData.load(tag.getCompound("Idol")) : null;
         this.angi = tag.contains("Angi", 10) ? IdolData.load(tag.getCompound("Angi")) : null;
         this.garland = tag.getByteArray("Garland");
+        this.fixed = tag.getBoolean("Fixed");
         this.ornaments.clear();
         ListTag list = tag.getList("Ornaments", Tag.TAG_COMPOUND);
         for (int i = 0; i < list.size(); i++) {

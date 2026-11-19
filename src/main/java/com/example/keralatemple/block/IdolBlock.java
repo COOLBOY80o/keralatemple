@@ -114,6 +114,25 @@ public class IdolBlock extends BaseEntityBlock {
         }
         ItemStack held = player.getItemInHand(hand);
 
+        if (held.getItem() instanceof com.example.keralatemple.item.AsthabandhamItem) {
+            if (level.isClientSide) {
+                return InteractionResult.SUCCESS;
+            }
+            if (idol.getData() == null) {
+                player.displayClientMessage(Component.literal("There is no idol here to fix yet."), true);
+            } else if (idol.isFixed()) {
+                player.displayClientMessage(Component.literal("This idol is already fixed with asthabandham."), true);
+            } else {
+                idol.setFixed(true);
+                if (!player.getAbilities().instabuild) {
+                    held.shrink(1);
+                }
+                level.playSound(null, pos, SoundEvents.ANVIL_PLACE, SoundSource.BLOCKS, 0.7F, 0.7F);
+                player.displayClientMessage(Component.literal("The idol is fixed to the peetham with asthabandham."), true);
+            }
+            return InteractionResult.CONSUME;
+        }
+
         Flower flower = Flower.byItem(held.getItem());
         if (flower != null) {
             if (level.isClientSide) {
@@ -217,6 +236,9 @@ public class IdolBlock extends BaseEntityBlock {
                     idol.setAngi(null);
                 } else if (!idol.getOrnaments().isEmpty()) {
                     give(player, OrnamentItem.create(idol.removeLastOrnament()));
+                } else if (idol.isFixed()) {
+                    player.displayClientMessage(Component.literal("The idol is fixed with asthabandham. "
+                            + "Break the block to free it."), true);
                 } else {
                     give(player, CastIdolItem.create(idol.getData()));
                     idol.setData(null);

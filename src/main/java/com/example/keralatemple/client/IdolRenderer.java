@@ -27,6 +27,11 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
     private static final ResourceLocation GRANITE =
             new ResourceLocation(KeralaTempleMod.MOD_ID, "textures/block/temple_granite.png");
 
+    private static final ResourceLocation ANJANA =
+            new ResourceLocation(KeralaTempleMod.MOD_ID, "textures/block/anjana_shila.png");
+    private static final ResourceLocation KRISHNA =
+            new ResourceLocation(KeralaTempleMod.MOD_ID, "textures/block/krishna_shila.png");
+
     public IdolRenderer(BlockEntityRendererProvider.Context context) {
     }
 
@@ -49,8 +54,14 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - facing.toYRot()));
 
         float y = block.kind().baseTop;
-        drawPeetham(poseStack, buffers, data.peetham, data.peethamSize, y, light, overlay);
+        drawPeetham(poseStack, buffers, data.peetham, data.peethamSize, y, light, overlay, data.peethamStone,
+                -(180.0F - facing.toYRot()));
         y += data.peethamHeight();
+        if (be.isFixed()) {
+            // the asthabandham: a ring of the eight-fold binding paste where the idol meets the peetham
+            OrnamentRenderer.box(OrnamentRenderer.white(buffers), poseStack, 0.0F, y + 0.01F, 0.0F, 0.20F * data.size * 0.5F + 0.10F,
+                    0.012F, 0.20F * data.size * 0.5F + 0.10F, 0xB07A34, light);
+        }
 
         // An angi (metal cover) replaces the stone idol, a touch larger so it hugs it.
         IdolData shown = be.getAngi() != null ? be.getAngi() : data;
@@ -114,7 +125,8 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
      * 3 tiered gold with red bands. Every width and height is multiplied by the peetham size.
      */
     private static void drawPeetham(PoseStack ps, MultiBufferSource buffers, int style, float s, float y,
-                                    int light, int overlay) {
+                                    int light, int overlay, int stone, float northFix) {
+        ResourceLocation stoneTex = stone == 1 ? KRISHNA : ANJANA;
         if (style <= 0) {
             return;
         }
@@ -123,20 +135,19 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
             box(granite, ps, 0.40F * s, y, y + 0.15F * s, light, overlay);
             return;
         }
-        VertexConsumer vc = OrnamentRenderer.white(buffers);
         if (style == 4) {
-            // Peetham with spout: stepped square base, a rim around a shallow trough, and a spout at the front.
-            int stone = 0x16181D;
-            int rim = 0x1F2229;
-            layer(vc, ps, 0.48F * s, y, y + 0.10F * s, stone, false, light);
-            layer(vc, ps, 0.42F * s, y + 0.10F * s, y + 0.18F * s, rim, false, light);
-            layer(vc, ps, 0.34F * s, y + 0.18F * s, y + 0.26F * s, stone, false, light);
-            layer(vc, ps, 0.34F * s, y + 0.26F * s, y + 0.30F * s, rim, false, light);
-            // the spout (pranala) pointing to the front, a little lower than the rim
-            OrnamentRenderer.box(vc, ps, 0.0F, y + 0.22F * s, -0.46F * s, 0.07F * s, 0.04F * s, 0.14F * s, stone, light);
-            OrnamentRenderer.box(vc, ps, 0.0F, y + 0.27F * s, -0.40F * s, 0.045F * s, 0.012F * s, 0.10F * s, 0x0C0D10, light);
+            // Peetham cut from Anjana or Krishna shila: stepped square base, a rim, and a spout that always faces north.
+            VertexConsumer rock = buffers.getBuffer(RenderType.entityCutoutNoCull(stoneTex));
+            box(rock, ps, 0.48F * s, y, y + 0.10F * s, light, overlay);
+            box(rock, ps, 0.42F * s, y + 0.10F * s, y + 0.18F * s, light, overlay);
+            box(rock, ps, 0.34F * s, y + 0.18F * s, y + 0.30F * s, light, overlay);
+            ps.pushPose();
+            ps.mulPose(Axis.YP.rotationDegrees(northFix));   // undo the idol's turn: the spout points to world north
+            boxXZ(rock, ps, 0.0F, -0.48F * s, 0.07F * s, 0.15F * s, y + 0.18F * s, y + 0.27F * s, light, overlay);
+            ps.popPose();
             return;
         }
+        VertexConsumer vc = OrnamentRenderer.white(buffers);
         if (style == 2) {
             layer(vc, ps, 0.46F * s, y, y + 0.06F * s, GOLD, false, light);
             layer(vc, ps, 0.38F * s, y + 0.06F * s, y + 0.10F * s, GOLD, false, light);
@@ -169,13 +180,19 @@ public class IdolRenderer implements BlockEntityRenderer<IdolBlockEntity> {
 
     /** A square-based box centred on the block, half-width hw, from y0 to y1. */
     private static void box(VertexConsumer vc, PoseStack ps, float hw, float y0, float y1, int light, int overlay) {
+        boxXZ(vc, ps, 0.0F, 0.0F, hw, hw, y0, y1, light, overlay);
+    }
+
+    /** A textured box centred at (cx, cz) with half-widths hx and hz, from y0 to y1. */
+    private static void boxXZ(VertexConsumer vc, PoseStack ps, float cx, float cz, float hx, float hz,
+                              float y0, float y1, int light, int overlay) {
         PoseStack.Pose pose = ps.last();
         Matrix4f m = pose.pose();
         Matrix3f n = pose.normal();
-        float x0 = -hw;
-        float x1 = hw;
-        float z0 = -hw;
-        float z1 = hw;
+        float x0 = cx - hx;
+        float x1 = cx + hx;
+        float z0 = cz - hz;
+        float z1 = cz + hz;
         face(vc, m, n, light, overlay, 0, -1, 0, x0, y0, z0, x1, y0, z0, x1, y0, z1, x0, y0, z1);
         face(vc, m, n, light, overlay, 0, 1, 0, x0, y1, z0, x0, y1, z1, x1, y1, z1, x1, y1, z0);
         face(vc, m, n, light, overlay, 0, 0, -1, x0, y0, z0, x0, y1, z0, x1, y1, z0, x1, y0, z0);

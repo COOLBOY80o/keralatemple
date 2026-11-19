@@ -33,6 +33,8 @@ public final class IdolData {
     public final int peetham;
     /** Scales the peetham's width and height together. */
     public final float peethamSize;
+    /** Which stone the peetham is cut from: 0 Anjana Shila, 1 Krishna Shila. */
+    public final int peethamStone;
     /** true = show the picture's own colours; false = show the material (carved stone or cast metal). */
     public final boolean originalColours;
     public final IdolMaterial material;
@@ -44,6 +46,12 @@ public final class IdolData {
 
     public IdolData(int width, int height, byte[] rgba, float size, float thickness, int peetham,
                     float peethamSize, boolean originalColours, IdolMaterial material) {
+        this(width, height, rgba, size, thickness, peetham, peethamSize, 0, originalColours, material);
+    }
+
+    public IdolData(int width, int height, byte[] rgba, float size, float thickness, int peetham,
+                    float peethamSize, int peethamStone, boolean originalColours, IdolMaterial material) {
+        this.peethamStone = peethamStone == 1 ? 1 : 0;
         this.peethamSize = peethamSize;
         this.width = width;
         this.height = height;
@@ -56,7 +64,7 @@ public final class IdolData {
     }
 
     public IdolData withMaterial(IdolMaterial newMaterial) {
-        return new IdolData(width, height, rgba, size, thickness, peetham, peethamSize, originalColours, newMaterial);
+        return new IdolData(width, height, rgba, size, thickness, peetham, peethamSize, peethamStone, originalColours, newMaterial);
     }
 
     public float peethamHeight() {
@@ -110,6 +118,7 @@ public final class IdolData {
         tag.putFloat("Thickness", thickness);
         tag.putInt("Peetham", peetham);
         tag.putFloat("PeethamSize", peethamSize);
+        tag.putInt("PeethamStone", peethamStone);
         tag.putBoolean("Original", originalColours);
         tag.putInt("Material", material.ordinal());
         return tag;
@@ -120,7 +129,7 @@ public final class IdolData {
     public static IdolData load(CompoundTag tag) {
         IdolData data = new IdolData(tag.getInt("W"), tag.getInt("H"), tag.getByteArray("Rgba"),
                 tag.getFloat("Size"), tag.getFloat("Thickness"), tag.getInt("Peetham"),
-                tag.contains("PeethamSize") ? tag.getFloat("PeethamSize") : 1.0F,
+                tag.contains("PeethamSize") ? tag.getFloat("PeethamSize") : 1.0F, tag.getInt("PeethamStone"),
                 tag.getBoolean("Original"), IdolMaterial.byId(tag.getInt("Material")));
         return data.isValid() ? data : null;
     }
@@ -135,6 +144,7 @@ public final class IdolData {
         buf.writeFloat(thickness);
         buf.writeVarInt(peetham);
         buf.writeFloat(peethamSize);
+        buf.writeVarInt(peethamStone);
         buf.writeBoolean(originalColours);
         buf.writeVarInt(material.ordinal());
     }
@@ -147,8 +157,9 @@ public final class IdolData {
         float thickness = buf.readFloat();
         int peetham = buf.readVarInt();
         float peethamSize = buf.readFloat();
+        int peethamStone = buf.readVarInt();
         boolean original = buf.readBoolean();
         IdolMaterial material = IdolMaterial.byId(buf.readVarInt());
-        return new IdolData(w, h, rgba, size, thickness, peetham, peethamSize, original, material);
+        return new IdolData(w, h, rgba, size, thickness, peetham, peethamSize, peethamStone, original, material);
     }
 }
